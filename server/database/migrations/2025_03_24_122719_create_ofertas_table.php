@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('titulo');
             $table->text('descripcion');
-            $table->string('empresa_nombre'); // Texto libre
+            // $table->string('empresa_nombre'); // Texto libre
+            $table->foreignId('empresa_id')->nullable()->constrained();
             $table->text('sobre_empresa')->nullable();
             $table->foreignId('user_id')->constrained(); // Publicado por (profesor/alumno)
             $table->enum('jornada', ['completa', 'media_jornada', '3_6_horas', 'menos_3_horas']);

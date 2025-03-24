@@ -10,13 +10,34 @@ class Oferta extends Model
     /** @use HasFactory<\Database\Factories\OfertaFactory> */
     use HasFactory;
 
-    protected $fillable = ['titulo', 'descripcion', 'empresa_nombre', 'user_id'];
+    protected $fillable = [
+        'titulo',
+        'descripcion',
+        'empresa_id', 
+        'user_id',
+        'jornada',
+        'localizacion',
+        'fecha_publicacion',
+        'fecha_expiracion'
+    ];
 
     // Relación con tecnologías (N:M)
     public function tecnologias()
     {
         return $this->belongsToMany(Tecnologia::class, 'requisitos_oferta')
             ->withPivot('nivel');
+    }
+
+    // Relación con empresa (1:N)
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class); // ¡Simple y limpio!
+    }
+
+    // Relación con usuario (1:N)
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // // Evento que se dispara al crear una oferta
