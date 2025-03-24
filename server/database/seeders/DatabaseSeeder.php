@@ -21,7 +21,9 @@ class DatabaseSeeder extends Seeder
             TituloSeeder::class,      // 2. Títulos (ciclos, grados)
             AlumnoTituloSeeder::class,// 3. Relaciones alumno-título
             TecnologiaSeeder::class,  // 4. Tecnologías
-            OfertaSeeder::class,      // 5. Ofertas (depende de usuarios y tecnologías)
+            EmpresaSeeder::class,  // 5. Empresas
+            OfertaSeeder::class,      // 6. Ofertas (depende de usuarios, empresas y tecnologías)
+            OpinionSeeder::class,      // 7. Opiniones (depende de usuarios y empresas)
         ]);
     }
 }

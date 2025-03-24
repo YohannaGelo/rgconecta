@@ -12,9 +12,14 @@ class Alumno extends Model
 
     protected $fillable = ['user_id', 'fecha_nacimiento', 'situacion_laboral', 'is_verified'];
 
-    // Relación con títulos (N:M)
+    // Relación con títulos
     public function titulos()
     {
         return $this->belongsToMany(Titulo::class)->withPivot('año_graduacion');
+    }
+
+    // Relación con opiniones
+    public function opiniones() {
+        return $this->hasMany(Opinion::class);
     }
 }
