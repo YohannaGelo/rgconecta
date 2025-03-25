@@ -35,7 +35,7 @@ class Oferta extends Model
     }
 
     // Relación con usuario (1:N)
-    public function usuario()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

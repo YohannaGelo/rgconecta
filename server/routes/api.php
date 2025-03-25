@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Api\{OfertaController, AlumnoController};
 use App\Http\Controllers\Api\OfertaController;
 use App\Http\Controllers\Api\AlumnoController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +18,27 @@ use App\Http\Controllers\Api\AlumnoController;
 |
 */
 
-Route::apiResource('ofertas', OfertaController::class);
-Route::apiResource('alumnos', AlumnoController::class);
+// Route::post('/ofertas', [OfertaController::class, 'store'])->middleware('auth:sanctum');
+// Route::apiResource('alumnos', AlumnoController::class);
+
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Rutas PÚBLICAS
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/ofertas', [OfertaController::class, 'index']); // Listado público
+Route::get('/alumnos', [AlumnoController::class, 'index']); // Listado público
+
+// Rutas PROTEGIDAS
+Route::middleware('auth:sanctum')->group(function () {
+    // Ofertas
+    Route::post('/ofertas', [OfertaController::class, 'store']);
+    Route::get('/ofertas/{oferta}', [OfertaController::class, 'show']); // Detalle protegido
+    
+    // Alumnos
+    Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
+    Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
+    
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout']);
+});

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Oferta;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OfertaController extends Controller
 {
@@ -12,10 +14,17 @@ class OfertaController extends Controller
      * Display a listing of the resource.
      */
     // Obtener todas las ofertas (con tecnologías)
+    // public function index()
+    // {
+    //     $ofertas = Oferta::with('tecnologias')->get();
+    //     return response()->json($ofertas);
+    // }
+
     public function index()
     {
-        $ofertas = Oferta::with('tecnologias')->get();
-        return response()->json($ofertas);
+        return Oferta::with(['tecnologias', 'empresa:id,nombre'])
+            ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion'])
+            ->paginate(8);
     }
 
     /**
@@ -24,23 +33,35 @@ class OfertaController extends Controller
     // Crear una nueva oferta
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'empresa_nombre' => 'required|string',
+            'empresa_id' => 'nullable|integer|exists:empresas,id',
+            'sobre_empresa' => 'nullable|string|required_without:empresa_id',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
             'localizacion' => 'required|string',
-            'tecnologias' => 'nullable|array', // IDs de tecnologías con niveles
+            'tecnologias' => 'nullable|array',
+            'fecha_expiracion' => 'required|date|after:today',
         ]);
 
-        $oferta = Oferta::create($request->except('tecnologias'));
+        // Gestionar empresa
+        $empresa = $request->empresa_id
+            ? Empresa::find($request->empresa_id)
+            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => 'Otro']);
 
-        // Asignar tecnologías si existen
+        // Crear oferta (con usuario autenticado)
+        $oferta = Oferta::create([
+            ...$validated,
+            'empresa_id' => $empresa->id,
+            'user_id' => Auth::id(), // Ahora funcionará con Sanctum
+            'fecha_publicacion' => now(),
+        ]);
+
         if ($request->tecnologias) {
             $oferta->tecnologias()->attach($request->tecnologias);
         }
 
-        return response()->json($oferta->load('tecnologias'), 201);
+        return response()->json($oferta->load(['tecnologias', 'empresa']), 201);
     }
 
     /**
@@ -49,7 +70,12 @@ class OfertaController extends Controller
     // Mostrar una oferta específica
     public function show(Oferta $oferta)
     {
-        return response()->json($oferta->load('tecnologias'));
+        // return response()->json($oferta->load('tecnologias'));
+
+        // Solo usuarios autenticados ven detalles completos
+        return response()->json(
+            $oferta->load(['tecnologias', 'empresa', 'user:id,name'])
+        );
     }
 
     /**
