@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\Api\{OfertaController, AlumnoController};
 use App\Http\Controllers\Api\OfertaController;
+use App\Http\Controllers\Api\AlumnoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +17,5 @@ use App\Http\Controllers\Api\OfertaController;
 |
 */
 
-// Grupo para rutas API con prefijo '/api'
-Route::middleware('api')->group(function () {
-    // Rutas para Ofertas
-    Route::apiResource('ofertas', OfertaController::class);
-    
-    // Más rutas aquí
-});
+Route::apiResource('ofertas', OfertaController::class);
+Route::apiResource('alumnos', AlumnoController::class);
