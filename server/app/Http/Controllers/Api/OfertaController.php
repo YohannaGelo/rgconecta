@@ -5,21 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Oferta;
 use App\Models\Empresa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+use App\Interfaces\RoleCheck;
+
 
 class OfertaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    // Obtener todas las ofertas (con tecnologías)
-    // public function index()
-    // {
-    //     $ofertas = Oferta::with('tecnologias')->get();
-    //     return response()->json($ofertas);
-    // }
-
+    // Listar ofertas
     public function index()
     {
         return Oferta::with(['tecnologias', 'empresa:id,nombre'])
@@ -53,7 +51,7 @@ class OfertaController extends Controller
         $oferta = Oferta::create([
             ...$validated,
             'empresa_id' => $empresa->id,
-            'user_id' => Auth::id(), // Ahora funcionará con Sanctum
+            'user_id' => Auth::id(),
             'fecha_publicacion' => now(),
         ]);
 
@@ -84,14 +82,25 @@ class OfertaController extends Controller
     // Actualizar una oferta
     public function update(Request $request, Oferta $oferta)
     {
-        $oferta->update($request->except('tecnologias'));
+        // Validación (similar a store())
+        $validated = $request->validate([
+            'titulo' => 'sometimes|string|max:255',
+            'descripcion' => 'sometimes|string',
+            'jornada' => 'sometimes|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'localizacion' => 'sometimes|string',
+            'tecnologias' => 'nullable|array',
+            'fecha_expiracion' => 'sometimes|date|after:today',
+        ]);
 
-        // Sync tecnologías (actualiza las relaciones)
-        if ($request->tecnologias) {
+        // Actualizar campos
+        $oferta->update($validated);
+
+        // Sync tecnologías
+        if ($request->has('tecnologias')) {
             $oferta->tecnologias()->sync($request->tecnologias);
         }
 
-        return response()->json($oferta->load('tecnologias'));
+        return response()->json($oferta->fresh()->load('tecnologias', 'empresa'));
     }
 
     /**
@@ -100,6 +109,12 @@ class OfertaController extends Controller
     // Eliminar una oferta
     public function destroy(Oferta $oferta)
     {
+        // Validar que el usuario es el creador o admin
+        if (Auth::id() !== $oferta->user_id && !(Auth::user() instanceof RoleCheck && Auth::user()->isAdmin())) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+
         $oferta->delete();
         return response()->json(null, 204);
     }

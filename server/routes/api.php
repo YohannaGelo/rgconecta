@@ -33,7 +33,9 @@ Route::get('/alumnos', [AlumnoController::class, 'index']); // Listado público
 Route::middleware('auth:sanctum')->group(function () {
     // Ofertas
     Route::post('/ofertas', [OfertaController::class, 'store']);
-    Route::get('/ofertas/{oferta}', [OfertaController::class, 'show']); // Detalle protegido
+    Route::get('/ofertas/{oferta}', [OfertaController::class, 'show']); 
+    Route::put('/ofertas/{oferta}', [OfertaController::class, 'update']); 
+    Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']); 
     
     // Alumnos
     Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
