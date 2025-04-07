@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
+use App\Enums\SectorEmpresa;
+
 use Illuminate\Http\Request;
 
 class EmpresaController extends Controller
@@ -118,7 +120,20 @@ class EmpresaController extends Controller
      */
     public function update(Request $request, Empresa $empresa)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'sometimes|string|max:255',
+            'sector' => 'sometimes|string|in:' . implode(',', SectorEmpresa::values()),
+            'web' => 'nullable|url',
+            'descripcion' => 'nullable|string'
+        ]);
+
+        // Actualizar solo los campos proporcionados
+        $empresa->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'data' => $empresa->fresh() // Devuelve los datos actualizados
+        ]);
     }
 
     /**
@@ -126,6 +141,19 @@ class EmpresaController extends Controller
      */
     public function destroy(Empresa $empresa)
     {
-        //
+        // Validar que la empresa no tenga ofertas u opiniones asociadas
+        if ($empresa->ofertas()->exists() || $empresa->opiniones()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar la empresa porque tiene ofertas u opiniones asociadas.'
+            ], 422);
+        }
+
+        $empresa->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Empresa eliminada correctamente.'
+        ]);
     }
 }
