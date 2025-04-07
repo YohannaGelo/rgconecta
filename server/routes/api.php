@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Api\{OfertaController, AlumnoController};
 use App\Http\Controllers\Api\OfertaController;
 use App\Http\Controllers\Api\AlumnoController;
+use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\AuthController;
 
 /*
@@ -18,16 +19,12 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-// Route::post('/ofertas', [OfertaController::class, 'store'])->middleware('auth:sanctum');
-// Route::apiResource('alumnos', AlumnoController::class);
-
-// Route::post('/login', [AuthController::class, 'login']);
-// Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
 // Rutas PÚBLICAS
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/ofertas', [OfertaController::class, 'index']); // Listado público
 Route::get('/alumnos', [AlumnoController::class, 'index']); // Listado público
+Route::get('/empresas', [EmpresaController::class, 'index']);
+Route::get('/empresas/{id}', [EmpresaController::class, 'show']);
 
 // Rutas PROTEGIDAS
 Route::middleware('auth:sanctum')->group(function () {
@@ -43,4 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Empresas
+    Route::post('/empresas', [EmpresaController::class, 'store']);
+    Route::put('/empresas/{id}', [EmpresaController::class, 'update']);
+    Route::delete('/empresas/{id}', [EmpresaController::class, 'destroy']);
 });

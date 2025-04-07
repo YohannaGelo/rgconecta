@@ -54,18 +54,6 @@ class AlumnoController extends Controller
      * Display the specified resource.
      */
     // Mostrar alumno específico con todas sus relaciones
-    // public function show(Alumno $alumno)
-    // {
-    //     return $alumno->load([
-    //         'user:id,name,email',
-    //         'titulos',
-    //         'tecnologias',
-    //         'opiniones' => function ($query) {
-    //             $query->with('empresa:id,nombre');
-    //         }
-    //     ]);
-    // }
-
     public function show(Alumno $alumno)
     {
         // Detalle solo para autenticados

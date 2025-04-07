@@ -9,5 +9,6 @@ interface RoleCheck
      *
      * @return bool
      */
+    // Verifica si el usuario autenticado es administrador
     public function isAdmin(): bool;
 }

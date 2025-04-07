@@ -13,13 +13,21 @@ class Oferta extends Model
     protected $fillable = [
         'titulo',
         'descripcion',
-        'empresa_id', 
+        'empresa_id',
         'user_id',
         'jornada',
         'localizacion',
         'fecha_publicacion',
         'fecha_expiracion'
     ];
+
+    // Dentro de la clase Oferta:
+    protected $appends = ['empresa_nombre']; // Añade este campo a las respuestas JSON
+
+    public function getEmpresaNombreAttribute()
+    {
+        return $this->empresa->nombre; // Devuelve el nombre desde la relación
+    }
 
     // Relación con tecnologías (N:M)
     public function tecnologias()

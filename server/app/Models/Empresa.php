@@ -12,7 +12,11 @@ class Empresa extends Model
         return $this->hasMany(Opinion::class);
     }
 
+    // public function ofertas() {
+    //     return $this->hasMany(Oferta::class, 'empresa_nombre', 'nombre'); // Relación por nombre
+    // }
+
     public function ofertas() {
-        return $this->hasMany(Oferta::class, 'empresa_nombre', 'nombre'); // Relación por nombre
+        return $this->hasMany(Oferta::class, 'empresa_id'); // Relación ESTÁNDAR por ID
     }
 }
