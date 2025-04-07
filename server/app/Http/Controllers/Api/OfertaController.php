@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Oferta;
 use App\Models\Empresa;
+use App\Enums\SectorEmpresa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,7 @@ class OfertaController extends Controller
             'descripcion' => 'required|string',
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'sobre_empresa' => 'nullable|string|required_without:empresa_id',
+            'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
             'localizacion' => 'required|string',
             'tecnologias' => 'nullable|array',
@@ -45,7 +47,7 @@ class OfertaController extends Controller
         // Gestionar empresa
         $empresa = $request->empresa_id
             ? Empresa::find($request->empresa_id)
-            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => 'Otro']);
+            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => $validated['sector']]);
 
         // Crear oferta (con usuario autenticado)
         $oferta = Oferta::create([
