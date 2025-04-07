@@ -5,6 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Gate;
+use App\Models\Opinion;
+use App\Policies\OpinionPolicy;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -18,16 +22,6 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    // public function boot(): void
-    // {
-    //     Route::prefix('api')
-    //     ->middleware('api')
-    //     ->group(function () {
-    //         Route::apiResource('ofertas', \App\Http\Controllers\Api\OfertaController::class);
-    //         Route::apiResource('alumnos', \App\Http\Controllers\Api\AlumnoController::class);
-    //     });
-    // }
-
     public function boot(): void
     {
         $this->configureRateLimiting();
@@ -35,9 +29,12 @@ class AppServiceProvider extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->group(base_path('routes/api.php'));
+
+        // Registra la política para el modelo Opinion
+        Gate::policy(Opinion::class, OpinionPolicy::class);
     }
 
-     /**
+    /**
      * Configure the rate limiting for the application.
      */
     protected function configureRateLimiting(): void

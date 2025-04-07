@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OfertaController;
 use App\Http\Controllers\Api\AlumnoController;
 use App\Http\Controllers\Api\EmpresaController;
+use App\Http\Controllers\Api\OpinionController; 
 use App\Http\Controllers\AuthController;
 
 /*
@@ -21,10 +22,16 @@ use App\Http\Controllers\AuthController;
 
 // Rutas PÚBLICAS
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/ofertas', [OfertaController::class, 'index']); // Listado público
-Route::get('/alumnos', [AlumnoController::class, 'index']); // Listado público
+
+Route::get('/ofertas', [OfertaController::class, 'index']);
+
+Route::get('/alumnos', [AlumnoController::class, 'index']);
+
 Route::get('/empresas', [EmpresaController::class, 'index']);
 Route::get('/empresas/{id}', [EmpresaController::class, 'show']);
+
+Route::get('/opiniones', [OpinionController::class, 'index']);
+Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
 
 // Rutas PROTEGIDAS
 Route::middleware('auth:sanctum')->group(function () {
@@ -45,4 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/empresas', [EmpresaController::class, 'store']);
     Route::put('/empresas/{empresa}', [EmpresaController::class, 'update']);
     Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy']);
+
+    // Opiniones
+    Route::post('/opiniones', [OpinionController::class, 'store']);
+    Route::put('/opiniones/{opinion}', [OpinionController::class, 'update']);
+    Route::delete('/opiniones/{opinion}', [OpinionController::class, 'destroy']);
 });
