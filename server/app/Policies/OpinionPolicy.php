@@ -46,7 +46,7 @@ class OpinionPolicy
      */
     public function delete(User $user, Opinion $opinion)
     {
-        return $this->update($user, $opinion); // Mismos permisos
+        return $this->update($user, $opinion);
     }
 
     /**

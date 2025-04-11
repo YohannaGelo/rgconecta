@@ -21,8 +21,8 @@ class OfertaController extends Controller
     // Listar ofertas
     public function index()
     {
-        return Oferta::with(['tecnologias', 'empresa:id,nombre'])
-            ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion'])
+        return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
+            ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion', 'fecha_expiracion'])
             ->paginate(8);
     }
 
