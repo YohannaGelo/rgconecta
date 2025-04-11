@@ -62,7 +62,8 @@ class AlumnoController extends Controller
                 'user:id,name,email',
                 'titulos',
                 'tecnologias',
-                'opiniones.empresa:id,nombre'
+                'opiniones.empresa:id,nombre',
+                'experiencias.empresa:id,nombre'
             ])
         );
     }
@@ -76,6 +77,9 @@ class AlumnoController extends Controller
         $validated = $request->validate([
             'situacion_laboral' => 'sometimes|in:trabajando,buscando_empleo,desempleado',
             'tecnologias' => 'sometimes|array', // Formato: [ [id, nivel], ... ]
+            'titulo_profesional' => 'sometimes|string|max:100',
+            'promocion' => 'sometimes|string|max:9', // Formato: "AAAA/AAAA"
+            'experiencias' => 'sometimes|array'  // Formato: [ {empresa_id, puesto, fecha_inicio...} ]
         ]);
 
         if (isset($validated['tecnologias'])) {
@@ -86,8 +90,14 @@ class AlumnoController extends Controller
             $alumno->tecnologias()->sync($syncData);
         }
 
+        if (isset($validated['experiencias'])) {
+            $alumno->experiencias()->delete(); // Eliminar existentes
+            $alumno->experiencias()->createMany($validated['experiencias']);
+        }
+    
+
         $alumno->update($validated);
-        return response()->json($alumno->fresh()->load('tecnologias'));
+        return response()->json($alumno->fresh()->load(['tecnologias', 'experiencias']));
     }
 
     /**
