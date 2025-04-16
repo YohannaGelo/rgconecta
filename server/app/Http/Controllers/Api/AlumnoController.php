@@ -4,7 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alumno;
+use App\Models\User;
+use App\Models\Titulo;
+use App\Models\Tecnologia;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+use Illuminate\Support\Facades\DB;
+
 
 
 class AlumnoController extends Controller
@@ -13,19 +21,6 @@ class AlumnoController extends Controller
      * Display a listing of the resource.
      */
     // Obtener todos los alumnos (con relaciones opcionales)
-    // public function index(Request $request)
-    // {
-    //     $query = Alumno::with(['user:id,name,email', 'tecnologias']);
-
-    //     if ($request->has('tecnologia')) {
-    //         $query->whereHas('tecnologias', function ($q) use ($request) {
-    //             $q->where('nombre', 'like', '%' . $request->tecnologia . '%');
-    //         });
-    //     }
-
-    //     return $query->paginate(8);
-    // }
-
     public function index(Request $request)
     {
         $query = Alumno::with(['user:id,name', 'tecnologias:nombre'])
@@ -46,9 +41,95 @@ class AlumnoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
+{
+    DB::beginTransaction();
+
+    try {
+        // 1. Crear usuario
+        $user = User::create([
+            'name' => $request->user['name'],
+            'email' => $request->user['email'],
+            'password' => Hash::make('password') // o lo que toque
+        ]);
+
+        // 2. Crear alumno
+        $alumno = Alumno::create([
+            'user_id' => $user->id,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'situacion_laboral' => $request->situacion_laboral,
+            'foto_perfil' => $request->foto_perfil ?? null,
+            'is_verified' => $request->is_verified ?? false,
+        ]);
+
+        // 3. TÍTULOS
+        foreach ($request->titulos as $titulo) {
+            $tituloModel = Titulo::firstOrCreate([
+                'nombre' => $titulo['nombre'],
+                'tipo' => $titulo['tipo']
+            ]);
+
+            $alumno->titulos()->attach($tituloModel->id, [
+                'año_inicio' => $titulo['pivot']['año_inicio'],
+                'año_fin' => $titulo['pivot']['año_fin'],
+                'institucion' => $titulo['pivot']['institucion'],
+            ]);
+        }
+
+        // 4. TECNOLOGÍAS
+        foreach ($request->tecnologias as $tecno) {
+            $tecnologia = Tecnologia::firstOrCreate([
+                'nombre' => $tecno['nombre'],
+                'tipo' => $tecno['tipo']
+            ]);
+
+            $alumno->tecnologias()->attach($tecnologia->id, [
+                'nivel' => $tecno['pivot']['nivel']
+            ]);
+        }
+
+        // 5. EXPERIENCIAS
+        foreach ($request->experiencias as $exp) {
+            $empresa = Empresa::firstOrCreate([
+                'nombre' => $exp['empresa']['nombre']
+            ], [
+                'sector' => $exp['empresa']['sector'] ?? null,
+                'web' => $exp['empresa']['web'] ?? null
+            ]);
+
+            $alumno->experiencias()->create([
+                'empresa_id' => $empresa->id,
+                'puesto' => $exp['puesto'],
+                'fecha_inicio' => $exp['fecha_inicio'],
+                'fecha_fin' => $exp['fecha_fin']
+            ]);
+        }
+
+        // 6. OPINIONES (opcional)
+        if ($request->has('opiniones')) {
+            foreach ($request->opiniones as $opinion) {
+                $empresa = Empresa::firstOrCreate([
+                    'nombre' => $opinion['empresa']['nombre']
+                ]);
+
+                $alumno->opiniones()->create([
+                    'empresa_id' => $empresa->id,
+                    'contenido' => $opinion['contenido'],
+                    'valoracion' => $opinion['valoracion'],
+                    'años_en_empresa' => $opinion['años_en_empresa']
+                ]);
+            }
+        }
+
+        DB::commit();
+
+        return response()->json($alumno->load(['user', 'titulos', 'tecnologias', 'experiencias', 'opiniones.empresa']), 201);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['error' => 'Error al crear el alumno', 'message' => $e->getMessage()], 500);
     }
+}
+
 
     /**
      * Display the specified resource.

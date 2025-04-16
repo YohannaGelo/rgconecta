@@ -26,9 +26,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/ofertas', [OfertaController::class, 'index']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
+Route::post('/alumnos', [AlumnoController::class, 'store']);
+Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); 
 
-Route::get('/empresas', [EmpresaController::class, 'index']);
-Route::get('/empresas/{id}', [EmpresaController::class, 'show']);
+
+// Route::get('/empresas', [EmpresaController::class, 'index']);
+// Route::get('/empresas/{id}', [EmpresaController::class, 'show']);
 
 Route::get('/opiniones', [OpinionController::class, 'index']);
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
@@ -42,8 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']); 
     
     // Alumnos
-    Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
-    Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
+    // Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
+    // Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
+    Route::apiResource('alumnos', AlumnoController::class)->only(['update', 'destroy']);
+
     
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
