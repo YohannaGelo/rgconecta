@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OfertaController;
 use App\Http\Controllers\Api\AlumnoController;
 use App\Http\Controllers\Api\EmpresaController;
-use App\Http\Controllers\Api\OpinionController; 
+use App\Http\Controllers\Api\OpinionController;
 use App\Http\Controllers\AuthController;
 
 /*
@@ -27,7 +27,7 @@ Route::get('/ofertas', [OfertaController::class, 'index']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);
-Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); 
+Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']);
 
 
 // Route::get('/empresas', [EmpresaController::class, 'index']);
@@ -40,20 +40,22 @@ Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByE
 Route::middleware('auth:sanctum')->group(function () {
     // Ofertas
     Route::post('/ofertas', [OfertaController::class, 'store']);
-    Route::get('/ofertas/{oferta}', [OfertaController::class, 'show']); 
-    Route::put('/ofertas/{oferta}', [OfertaController::class, 'update']); 
-    Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']); 
-    
+    Route::get('/ofertas/{oferta}', [OfertaController::class, 'show']);
+    Route::put('/ofertas/{oferta}', [OfertaController::class, 'update']);
+    Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']);
+
     // Alumnos
     // Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
     // Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
     Route::apiResource('alumnos', AlumnoController::class)->only(['update', 'destroy']);
 
-    
+
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Empresas
+    Route::get('/empresas', [EmpresaController::class, 'index']);
+    Route::get('/empresas/{empresa}', [EmpresaController::class, 'show']);
     Route::post('/empresas', [EmpresaController::class, 'store']);
     Route::put('/empresas/{empresa}', [EmpresaController::class, 'update']);
     Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy']);

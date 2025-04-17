@@ -47,6 +47,13 @@ class User extends Authenticatable implements RoleCheck
         return $this->hasMany(Oferta::class); // Un usuario puede publicar muchas ofertas
     }
 
+    // Verifica la foto de perfil
+    public function getFotoPerfilAttribute($value)
+    {
+        return $value ?? 'default.jpg'; // Devuelve 'default.jpg' si el valor es null
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -70,7 +77,7 @@ class User extends Authenticatable implements RoleCheck
         ];
     }
 
-     /**
+    /**
      * Verificar si el usuario es un administrador.
      *
      * @return bool

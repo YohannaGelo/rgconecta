@@ -100,12 +100,14 @@ class EmpresaController extends Controller
                 $query->select('id', 'titulo', 'empresa_id', 'localizacion', 'fecha_publicacion')
                     ->where('fecha_expiracion', '>', now());
             },
-            'opiniones.alumno.user:id,name,foto_perfil'
+            // 'opiniones.alumno.user:id,name,foto_perfil'
+            'opiniones.alumno.user:id,name'
         ])->findOrFail($id);
 
         // Estadísticas adicionales
         $stats = [
-            'avg_valoracion' => round($empresa->opiniones()->avg('valoracion'), 1),
+            // 'avg_valoracion' => round($empresa->opiniones()->avg('valoracion'), 1),
+            'avg_valoracion' => round($empresa->opiniones()->avg('valoracion') ?? 0, 1),
             'total_ofertas_activas' => $empresa->ofertas()->where('fecha_expiracion', '>', now())->count()
         ];
 
@@ -114,6 +116,16 @@ class EmpresaController extends Controller
             'data' => array_merge($empresa->toArray(), $stats),
         ]);
     }
+
+//     public function show($id)
+// {
+//     $empresa = Empresa::findOrFail($id);
+
+//     return response()->json([
+//         'success' => true,
+//         'data' => $empresa
+//     ]);
+// }
 
     /**
      * Update the specified resource in storage.
