@@ -27,7 +27,7 @@ Route::get('/ofertas', [OfertaController::class, 'index']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);
-Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']);
+// Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']);
 
 
 // Route::get('/empresas', [EmpresaController::class, 'index']);
@@ -45,9 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']);
 
     // Alumnos
-    // Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
+    Route::post('/alumnos/{alumno}/verify', [AlumnoController::class, 'verify']);
+    Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
+    Route::put('/alumnos/{alumno}', [AlumnoController::class, 'update']);
+    Route::delete('/alumnos/{alumno}', [AlumnoController::class, 'destroy']);
     // Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
-    Route::apiResource('alumnos', AlumnoController::class)->only(['update', 'destroy']);
+    // Route::apiResource('alumnos', AlumnoController::class)->only(['update', 'destroy']);
 
 
     // Auth
