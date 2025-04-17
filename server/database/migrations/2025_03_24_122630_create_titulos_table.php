@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('institucion')->default('IES Ruiz Gijón'); // Ej: "Universidad de Sevilla"
             $table->timestamps();
         });
+
     }
 
     /**

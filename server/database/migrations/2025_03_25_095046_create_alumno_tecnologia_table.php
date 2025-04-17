@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('alumno_tecnologia', function (Blueprint $table) {
             $table->foreignId('alumno_id')->constrained()->onDelete('cascade');
             $table->foreignId('tecnologia_id')->constrained()->onDelete('cascade');
-            $table->enum('nivel', ['basico', 'intermedio', 'avanzado']);
+            $table->enum('nivel', [
+                'basico', 'intermedio', 'avanzado', // para tecnologías generales
+                'A1', 'A2', 'B1', 'B2', 'C1', 'C2'   // para idiomas
+            ]);
             $table->timestamps();
             
             // Clave primaria compuesta

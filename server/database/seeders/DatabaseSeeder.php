@@ -17,13 +17,16 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
-            UserSeeder::class,        // 1. Usuarios (admin, profesor, alumno)
-            TituloSeeder::class,      // 2. Títulos (ciclos, grados)
-            AlumnoTituloSeeder::class,// 3. Relaciones alumno-título
-            TecnologiaSeeder::class,  // 4. Tecnologías
-            EmpresaSeeder::class,  // 5. Empresas
-            OfertaSeeder::class,      // 6. Ofertas (depende de usuarios, empresas y tecnologías)
-            OpinionSeeder::class,      // 7. Opiniones (depende de usuarios y empresas)
+            UserSeeder::class,              // 1. Usuarios (admin, profesor, alumnos)
+            TituloSeeder::class,           // 2. Títulos (grados, ciclos, etc.)
+            TecnologiaSeeder::class,       // 3. Tecnologías (todas las categorías)
+            
+            AlumnoTituloSeeder::class,     // 4. Relaciones alumno-título
+            AlumnoTecnologiaSeeder::class, // 5. Relaciones alumno-tecnología (con niveles)
+            
+            EmpresaSeeder::class,          // 6. Empresas
+            OfertaSeeder::class,           // 7. Ofertas (depende de empresa y tecnologías)
+            OpinionSeeder::class,          // 8. Opiniones (depende de alumno y empresa)
         ]);
     }
 }

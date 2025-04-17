@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('alumnos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
@@ -18,8 +19,10 @@ return new class extends Migration
             $table->enum('situacion_laboral', ['trabajando', 'buscando_empleo', 'desempleado']);
             $table->string('foto_perfil')->nullable();
             $table->boolean('is_verified')->default(false); // Validación admin
+            $table->string('promocion')->nullable(false);
             $table->timestamps();
         });
+        
     }
 
     /**

@@ -13,28 +13,71 @@ class AlumnoTituloSeeder extends Seeder
      */
     public function run()
     {
-        // Obtener el primer alumno y títulos de ejemplo
-        $alumno = Alumno::first(); // Asegúrate de que el UserSeeder y AlumnoSeeder ya se ejecutaron
-        $tituloCiclo = Titulo::where('nombre', 'DAW')->first();
-        $tituloGrado = Titulo::where('nombre', 'Ingeniería Informática')->first();
+        $alumnos = Alumno::all();
+        $titulos = Titulo::all();
 
-        // Relacionar alumno con títulos (datos de ejemplo)
-        if ($alumno && $tituloCiclo) {
-            $alumno->titulos()->attach($tituloCiclo->id, [
-                'año_inicio' => 2018,
-                'año_fin' => 2020,
-                'institucion' => 'IES Ruiz Gijón'
-            ]);
+        foreach ($alumnos as $alumno) {
+            $titulosAleatorios = $titulos->random(rand(1, 3));
+
+            foreach ($titulosAleatorios as $titulo) {
+                $añoInicio = rand(2015, 2020);
+                $duracion = $this->getDuracionPorTipo($titulo->tipo);
+
+                $alumno->titulos()->attach($titulo->id, [
+                    'año_inicio' => $añoInicio,
+                    'año_fin' => $añoInicio + $duracion,
+                    'institucion' => $this->getInstitucionAleatoria(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
         }
+    }
 
-        if ($alumno && $tituloGrado) {
-            $alumno->titulos()->attach($tituloGrado->id, [
-                'año_inicio' => 2020,
-                'año_fin' => 2024,
-                'institucion' => 'Universidad de Sevilla'
-            ]);
-        }
+    private function getDuracionPorTipo($tipo)
+    {
+        return match ($tipo) {
+            'ciclo_medio' => 2,
+            'ciclo_superior' => 2,
+            'grado_universitario' => 4,
+            'master' => 1,
+            default => 2
+        };
+    }
 
-        $this->command->info('Relaciones alumno-título creadas correctamente!');
+    private function getInstitucionAleatoria()
+    {
+        $instituciones = [
+            'IES Ruiz Gijón',
+            'Universidad de Sevilla',
+            'Universidad Pablo de Olavide',
+            'IES Polígono Sur',
+            'Universidad de Málaga'
+        ];
+
+        return $instituciones[array_rand($instituciones)];
     }
 }
+        // // Obtener el primer alumno y títulos de ejemplo
+        // $alumno = Alumno::first(); // Asegúrate de que el UserSeeder y AlumnoSeeder ya se ejecutaron
+        // $tituloCiclo = Titulo::where('nombre', 'DAW')->first();
+        // $tituloGrado = Titulo::where('nombre', 'Ingeniería Informática')->first();
+
+        // // Relacionar alumno con títulos (datos de ejemplo)
+        // if ($alumno && $tituloCiclo) {
+        //     $alumno->titulos()->attach($tituloCiclo->id, [
+        //         'año_inicio' => 2018,
+        //         'año_fin' => 2020,
+        //         'institucion' => 'IES Ruiz Gijón'
+        //     ]);
+        // }
+
+        // if ($alumno && $tituloGrado) {
+        //     $alumno->titulos()->attach($tituloGrado->id, [
+        //         'año_inicio' => 2020,
+        //         'año_fin' => 2024,
+        //         'institucion' => 'Universidad de Sevilla'
+        //     ]);
+        // }
+
+        // $this->command->info('Relaciones alumno-título creadas correctamente!');

@@ -14,61 +14,105 @@ class OfertaSeeder extends Seeder
 
     public function run()
     {
-        // 1. Crear tecnologías si no existen
-        $tecnologias = [
-            ['nombre' => 'Angular', 'tipo' => 'programacion'],
-            ['nombre' => 'Laravel', 'tipo' => 'programacion'],
-            ['nombre' => 'MySQL', 'tipo' => 'programacion']
-        ];
+        // Asegurar que las tecnologías ya existen (ya insertadas en TecnologiaSeeder)
 
-        foreach ($tecnologias as $tech) {
-            Tecnologia::firstOrCreate(
-                ['nombre' => $tech['nombre']],
-                ['tipo' => $tech['tipo']]
-            );
-        }
+        // 1. Obtener empresas
+        $empresa1 = Empresa::firstWhere('nombre', 'TechSolutions S.L.');
+        $empresa2 = Empresa::firstWhere('nombre', 'GeloTech');
 
-        // 2. Obtener empresa existente o crear
-        $empresa = Empresa::firstOrCreate([
-            'nombre' => 'TechSolutions S.L.',
-            'sector' => 'Tecnología'
-        ]);
-
-        // 3. Crear la oferta con TODOS los campos
-        $oferta = Oferta::create([
+        // 2. Crear primera oferta
+        $oferta1 = Oferta::create([
             'titulo'          => 'Desarrollador FullStack Senior',
-            'descripcion'     => 'Buscamos un desarrollador con experiencia en Angular y Laravel para proyecto internacional. Se valorarán conocimientos en Docker y AWS.',
-            'empresa_id' => $empresa->id,
+            'descripcion'     => 'Buscamos un desarrollador con experiencia en Angular y Laravel. Se valorarán conocimientos en Docker y AWS.',
+            'empresa_id'      => $empresa1->id,
             'sobre_empresa'   => 'Empresa líder en desarrollo de software con sede en Sevilla y clientes en 20 países.',
-            'user_id'         => 2, // ID del profesor que publica
+            'user_id'         => 2, // Profesor
             'jornada'         => 'completa',
             'localizacion'    => 'Sevilla (híbrido)',
-            'fecha_publicacion' => now()->subDays(3), // Publicada hace 3 días
-            'fecha_expiracion'  => now()->addWeeks(6), // Expira en 6 semanas
+            'fecha_publicacion' => now()->subDays(3),
+            'fecha_expiracion'  => now()->addWeeks(6),
         ]);
 
-        // 3. Asignar tecnologías con niveles específicos
-        $oferta->tecnologias()->attach([
+        $oferta1->tecnologias()->attach([
             Tecnologia::where('nombre', 'Angular')->first()->id => ['nivel' => 'avanzado'],
-            Tecnologia::where('nombre', 'Laravel')->first()->id  => ['nivel' => 'avanzado'],
-            Tecnologia::where('nombre', 'MySQL')->first()->id    => ['nivel' => 'intermedio']
+            Tecnologia::where('nombre', 'Laravel')->first()->id => ['nivel' => 'avanzado'],
+            Tecnologia::where('nombre', 'MySQL')->first()->id   => ['nivel' => 'intermedio'],
         ]);
 
-
-        // Opcional: Crear segunda oferta de ejemplo
-        Oferta::create([
+        // 3. Segunda oferta
+        $oferta2 = Oferta::create([
             'titulo'          => 'Técnico de Soporte IT',
             'descripcion'     => 'Puesto para dar soporte técnico a usuarios en entorno Windows y Office.',
-            'empresa_id'      => 2,
-            'sobre_empresa'   => null, // Campo opcional
-            'user_id'         => 3, // ID de un alumno
+            'empresa_id'      => $empresa2->id,
+            'sobre_empresa'   => null,
+            'user_id'         => 3, // Alumno
             'jornada'         => 'media_jornada',
             'localizacion'    => 'Utrera (presencial)',
-            'fecha_publicacion' => now()->subWeek(), // Publicada hace 1 semana
-            'fecha_expiracion'  => now()->addMonth(), // Expira en 1 mes
-        ])->tecnologias()->attach(
-            Tecnologia::where('nombre', 'Excel')->first()->id,
-            ['nivel' => 'intermedio']
-        );
+            'fecha_publicacion' => now()->subWeek(),
+            'fecha_expiracion'  => now()->addMonth(),
+        ]);
+
+        $oferta2->tecnologias()->attach([
+            Tecnologia::where('nombre', 'Excel')->first()->id => ['nivel' => 'intermedio'],
+            Tecnologia::where('nombre', 'Microsoft Office')->first()->id => ['nivel' => 'intermedio'],
+        ]);
+
+
+        // // 1. Crear tecnologías si no existen
+        // $tecnologias = [
+        //     ['nombre' => 'Angular', 'tipo' => 'programacion'],
+        //     ['nombre' => 'Laravel', 'tipo' => 'programacion'],
+        //     ['nombre' => 'MySQL', 'tipo' => 'programacion']
+        // ];
+
+        // foreach ($tecnologias as $tech) {
+        //     Tecnologia::firstOrCreate(
+        //         ['nombre' => $tech['nombre']],
+        //         ['tipo' => $tech['tipo']]
+        //     );
+        // }
+
+        // // 2. Obtener empresa existente o crear
+        // $empresa = Empresa::firstOrCreate([
+        //     'nombre' => 'TechSolutions S.L.',
+        //     'sector' => 'Tecnología'
+        // ]);
+
+        // // 3. Crear la oferta con TODOS los campos
+        // $oferta = Oferta::create([
+        //     'titulo'          => 'Desarrollador FullStack Senior',
+        //     'descripcion'     => 'Buscamos un desarrollador con experiencia en Angular y Laravel para proyecto internacional. Se valorarán conocimientos en Docker y AWS.',
+        //     'empresa_id' => $empresa->id,
+        //     'sobre_empresa'   => 'Empresa líder en desarrollo de software con sede en Sevilla y clientes en 20 países.',
+        //     'user_id'         => 2, // ID del profesor que publica
+        //     'jornada'         => 'completa',
+        //     'localizacion'    => 'Sevilla (híbrido)',
+        //     'fecha_publicacion' => now()->subDays(3), // Publicada hace 3 días
+        //     'fecha_expiracion'  => now()->addWeeks(6), // Expira en 6 semanas
+        // ]);
+
+        // // 3. Asignar tecnologías con niveles específicos
+        // $oferta->tecnologias()->attach([
+        //     Tecnologia::where('nombre', 'Angular')->first()->id => ['nivel' => 'avanzado'],
+        //     Tecnologia::where('nombre', 'Laravel')->first()->id  => ['nivel' => 'avanzado'],
+        //     Tecnologia::where('nombre', 'MySQL')->first()->id    => ['nivel' => 'intermedio']
+        // ]);
+
+
+        // // Opcional: Crear segunda oferta de ejemplo
+        // Oferta::create([
+        //     'titulo'          => 'Técnico de Soporte IT',
+        //     'descripcion'     => 'Puesto para dar soporte técnico a usuarios en entorno Windows y Office.',
+        //     'empresa_id'      => 2,
+        //     'sobre_empresa'   => null, // Campo opcional
+        //     'user_id'         => 3, // ID de un alumno
+        //     'jornada'         => 'media_jornada',
+        //     'localizacion'    => 'Utrera (presencial)',
+        //     'fecha_publicacion' => now()->subWeek(), // Publicada hace 1 semana
+        //     'fecha_expiracion'  => now()->addMonth(), // Expira en 1 mes
+        // ])->tecnologias()->attach(
+        //     Tecnologia::where('nombre', 'Excel')->first()->id,
+        //     ['nivel' => 'intermedio']
+        // );
     }
 }

@@ -14,10 +14,25 @@ return new class extends Migration
         Schema::create('tecnologias', function (Blueprint $table) {
             $table->id();
             $table->string('nombre'); // Ej: "PHP", "Angular"
-            $table->enum('tipo', ['programacion', 'ofimatica', 'idioma', 'otros'])->default('programacion');
+            $table->enum('tipo', [
+                'frontend',
+                'backend',
+                'fullstack',
+                'database',
+                'devops',
+                'ofimatica',
+                'idioma',
+                'marketing',
+                'gestion',
+                'disenio',
+                'otros'
+            ])->default('otros');
             $table->timestamps();
+
+            // Evita duplicados tipo: PHP + programacion repetido
+            $table->unique(['nombre', 'tipo']);
         });
-        
+
         // Tabla pivot para ofertas
         Schema::create('requisitos_oferta', function (Blueprint $table) {
             $table->foreignId('oferta_id')->constrained()->onDelete('cascade');

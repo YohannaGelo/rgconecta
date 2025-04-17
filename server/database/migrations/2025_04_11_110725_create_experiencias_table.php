@@ -9,7 +9,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    // database/migrations/YYYY_MM_DD_create_experiencias_table.php
     public function up()
     {
         Schema::create('experiencias', function (Blueprint $table) {

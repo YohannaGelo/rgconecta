@@ -14,12 +14,21 @@ class OpinionSeeder extends Seeder
      */
     public function run()
     {
-        Opinion::create([
-            'alumno_id' => 1,
-            'empresa_id' => 1,
-            'años_en_empresa' => 2,
-            'contenido' => 'Excelente ambiente laboral',
-            'valoracion' => 5
+        Opinion::insert([
+            [
+                'alumno_id' => 1,
+                'empresa_id' => 1,
+                'años_en_empresa' => 2,
+                'contenido' => 'Excelente ambiente laboral y aprendizaje continuo.',
+                'valoracion' => 5
+            ],
+            [
+                'alumno_id' => 2,
+                'empresa_id' => 2,
+                'años_en_empresa' => 1,
+                'contenido' => 'Buena empresa, aunque mucha carga de trabajo en picos.',
+                'valoracion' => 4
+            ]
         ]);
     }
 }
