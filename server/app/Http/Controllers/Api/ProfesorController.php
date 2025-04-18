@@ -78,9 +78,10 @@ class ProfesorController extends Controller
             return response()->json($profesor->load('user'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error' => 'Error al crear el profesor',
-                'message' => $e->getMessage()
+            return response()->json([ 
+                'success' => false,
+                'message' => 'Error al crear el profesor.',
+                'error_details' => $e->getMessage()
             ], 500);
         }
     }
@@ -105,8 +106,11 @@ class ProfesorController extends Controller
 
         $profesor->update($validated);
 
-        // return response()->json($profesor, 200);
-        return response()->json($profesor->load('user'), 200);
+        return response()->json([ 
+            'success' => true,
+            'message' => 'Profesor actualizado correctamente.',
+            'data' => $profesor->load('user')
+        ], 200);
     }
 
     /**
@@ -120,9 +124,9 @@ class ProfesorController extends Controller
             $profesor->delete();
         });
 
-        return response()->json([
+        return response()->json([ 
             'success' => true,
             'message' => 'Profesor y usuario asociado eliminados correctamente.'
-        ]);
+        ], 204);
     }
 }

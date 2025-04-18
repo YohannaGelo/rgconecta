@@ -7,30 +7,17 @@ use App\Models\Empresa;
 use App\Enums\SectorEmpresa;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class EmpresaController extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      */
     // Listar empresas con sus ofertas y opiniones
-    // public function index()
-    // {
-    //     $empresas = Empresa::withCount(['ofertas', 'opiniones'])
-    //         ->with('ofertas') // carga relaciones necesarias
-    //         ->paginate(8); // El número que necesitamos para el front (8)
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $empresas->items(),
-    //         'pagination' => [
-    //             'total' => $empresas->total(),
-    //             'current_page' => $empresas->currentPage(),
-    //             'per_page' => $empresas->perPage(),
-    //             'last_page' => $empresas->lastPage(),
-    //         ],
-    //     ]);
-    // }
     public function index(Request $request)
     {
         $query = Empresa::withCount(['ofertas', 'opiniones'])
@@ -50,6 +37,7 @@ class EmpresaController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Empresas obtenidas correctamente.',
             'data' => $empresas->items(),
             'pagination' => $empresas->only(['total', 'current_page', 'per_page', 'last_page']),
             // Estadísticas globales
@@ -67,7 +55,8 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'sector' => 'required|string|in:tecnologia,educacion,salud,otros',
+            // 'sector' => 'required|string|in:tecnologia,educacion,salud,otros',
+            'sector' => ['required', 'string', Rule::in(Empresa::SECTORES)],
             'web' => 'nullable|url',
             'descripcion' => 'nullable|string'
         ]);
@@ -76,6 +65,7 @@ class EmpresaController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Empresa creada correctamente.',
             'data' => $empresa,
         ], 201);
     }
@@ -83,16 +73,6 @@ class EmpresaController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show($id)
-    // {
-    //     $empresa = Empresa::with(['ofertas', 'opiniones.alumno.user:id,name'])
-    //         ->findOrFail($id);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $empresa,
-    //     ]);
-    // }
     public function show($id)
     {
         $empresa = Empresa::with([
@@ -113,19 +93,10 @@ class EmpresaController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Detalles de la empresa obtenidos correctamente.',
             'data' => array_merge($empresa->toArray(), $stats),
         ]);
     }
-
-//     public function show($id)
-// {
-//     $empresa = Empresa::findOrFail($id);
-
-//     return response()->json([
-//         'success' => true,
-//         'data' => $empresa
-//     ]);
-// }
 
     /**
      * Update the specified resource in storage.
@@ -144,6 +115,7 @@ class EmpresaController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Empresa actualizada correctamente.',
             'data' => $empresa->fresh() // Devuelve los datos actualizados
         ]);
     }
@@ -166,6 +138,6 @@ class EmpresaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Empresa eliminada correctamente.'
-        ]);
+        ], 204);
     }
 }

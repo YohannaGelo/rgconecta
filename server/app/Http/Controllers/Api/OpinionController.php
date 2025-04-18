@@ -16,9 +16,16 @@ class OpinionController extends Controller
     // Listar opiniones (público)
     public function index()
     {
-        return Opinion::with(['alumno.user:id,name', 'empresa:id,nombre'])
+        $opiniones = Opinion::with(['alumno.user:id,name', 'empresa:id,nombre'])
             ->latest()
             ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Opiniones obtenidas correctamente.',
+            'data' => $opiniones->items(),
+            'pagination' => $opiniones->only(['total', 'current_page', 'per_page', 'last_page']),
+        ]);
     }
 
     // Listar opiniones de una empresa (público)
@@ -52,7 +59,11 @@ class OpinionController extends Controller
 
         $opinion = $alumno->opiniones()->create($validated);
 
-        return response()->json($opinion->load('alumno.user'), 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Opinión creada correctamente.',
+            'data' => $opinion->load('alumno.user')
+        ], 201);
     }
 
     // Actualizar opinión (autor/profesor/admin)
@@ -68,7 +79,11 @@ class OpinionController extends Controller
 
         $opinion->update($validated);
 
-        return response()->json($opinion);
+        return response()->json([ 
+            'success' => true,
+            'message' => 'Opinión actualizada correctamente.',
+            'data' => $opinion
+        ]);
     }
 
     // Eliminar opinión (autor/profesor/admin)
@@ -76,6 +91,10 @@ class OpinionController extends Controller
     {
         $this->authorize('delete', $opinion);
         $opinion->delete();
-        return response()->noContent();
+
+        return response()->json([ 
+            'success' => true,
+            'message' => 'Opinión eliminada correctamente.'
+        ], 204);
     }
 }

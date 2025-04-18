@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Interfaces\RoleCheck;
+use Illuminate\Validation\Rule;
 
 
 class OfertaController extends Controller
@@ -24,6 +25,13 @@ class OfertaController extends Controller
         return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
             ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion', 'fecha_expiracion'])
             ->paginate(8);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ofertas obtenidas correctamente.',
+            'data' => $ofertas->items(),
+            'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
+        ]);
     }
 
     /**
@@ -37,7 +45,8 @@ class OfertaController extends Controller
             'descripcion' => 'required|string',
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'sobre_empresa' => 'nullable|string|required_without:empresa_id',
-            'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
+            // 'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
+            'sector' => ['required_if:empresa_id,null', 'string', Rule::in(Empresa::SECTORES)],
             'web' => 'nullable|url|required_if:empresa_id,null',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
             'anios_experiencia' => 'nullable|integer|min:0',
@@ -63,7 +72,11 @@ class OfertaController extends Controller
             $oferta->tecnologias()->attach($request->tecnologias);
         }
 
-        return response()->json($oferta->load(['tecnologias', 'empresa']), 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Oferta creada correctamente.',
+            'data' => $oferta->load(['tecnologias', 'empresa'])
+        ], 201);
     }
 
     /**
@@ -75,9 +88,11 @@ class OfertaController extends Controller
         // return response()->json($oferta->load('tecnologias'));
 
         // Solo usuarios autenticados ven detalles completos
-        return response()->json(
-            $oferta->load(['tecnologias', 'empresa', 'user:id,name'])
-        );
+        return response()->json([ // Añadido mensaje de éxito
+            'success' => true,
+            'message' => 'Oferta obtenida correctamente.',
+            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name']),
+        ]);
     }
 
     /**
@@ -104,7 +119,11 @@ class OfertaController extends Controller
             $oferta->tecnologias()->sync($request->tecnologias);
         }
 
-        return response()->json($oferta->fresh()->load('tecnologias', 'empresa'));
+        return response()->json([
+            'success' => true,
+            'message' => 'Oferta actualizada correctamente.',
+            'data' => $oferta->fresh()->load('tecnologias', 'empresa')
+        ]);
     }
 
     /**
@@ -120,6 +139,9 @@ class OfertaController extends Controller
 
 
         $oferta->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Oferta eliminada correctamente.',
+        ], 204);
     }
 }
