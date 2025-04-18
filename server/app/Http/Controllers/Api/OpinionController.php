@@ -37,23 +37,50 @@ class OpinionController extends Controller
             'años_en_empresa' => 'nullable|numeric|min:0'
         ]);
 
+        $alumno = Auth::user()->alumno;
+
+        if (!$alumno) {
+            return response()->json(['message' => 'El usuario no está registrado como alumno'], 403);
+        }
+
         // Validar que el alumno no haya opinado antes
-        if (Auth::user()->alumno->opiniones()->where('empresa_id', $request->empresa_id)->exists()) {
+        if ($alumno->opiniones()->where('empresa_id', $validated['empresa_id'])->exists()) {
             return response()->json([
                 'message' => 'Ya has opinado sobre esta empresa'
             ], 422);
         }
 
-        $opinion = Auth::user()->alumno->opiniones()->create($validated);
+        $opinion = $alumno->opiniones()->create($validated);
 
         return response()->json($opinion->load('alumno.user'), 201);
     }
 
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'empresa_id' => 'required|exists:empresas,id',
+    //         'contenido' => 'required|string|max:500',
+    //         'valoracion' => 'required|integer|between:1,5',
+    //         'años_en_empresa' => 'nullable|numeric|min:0'
+    //     ]);
+
+    //     // Validar que el alumno no haya opinado antes
+    //     if (Auth::user()->alumno->opiniones()->where('empresa_id', $request->empresa_id)->exists()) {
+    //         return response()->json([
+    //             'message' => 'Ya has opinado sobre esta empresa'
+    //         ], 422);
+    //     }
+
+    //     $opinion = Auth::user()->alumno->opiniones()->create($validated);
+
+    //     return response()->json($opinion->load('alumno.user'), 201);
+    // }
+
     // Actualizar opinión (autor/profesor/admin)
     public function update(Request $request, Opinion $opinion)
     {
-        
-        $this->authorize('update', $opinion); 
+
+        $this->authorize('update', $opinion);
 
         $validated = $request->validate([
             'contenido' => 'sometimes|string|max:500',
