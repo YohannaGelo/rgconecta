@@ -38,7 +38,9 @@ class OfertaController extends Controller
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'sobre_empresa' => 'nullable|string|required_without:empresa_id',
             'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
+            'web' => 'nullable|url|required_if:empresa_id,null',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'anios_experiencia' => 'nullable|integer|min:0',
             'localizacion' => 'required|string',
             'tecnologias' => 'nullable|array',
             'fecha_expiracion' => 'required|date|after:today',
@@ -47,7 +49,7 @@ class OfertaController extends Controller
         // Gestionar empresa
         $empresa = $request->empresa_id
             ? Empresa::find($request->empresa_id)
-            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => $validated['sector']]);
+            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => $validated['sector'], 'web' => $validated['web'] ?? null]);
 
         // Crear oferta (con usuario autenticado)
         $oferta = Oferta::create([

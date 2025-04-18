@@ -28,6 +28,7 @@ class OfertaSeeder extends Seeder
             'sobre_empresa'   => 'Empresa líder en desarrollo de software con sede en Sevilla y clientes en 20 países.',
             'user_id'         => 2, // Profesor
             'jornada'         => 'completa',
+            'anios_experiencia' => 5,
             'localizacion'    => 'Sevilla (híbrido)',
             'fecha_publicacion' => now()->subDays(3),
             'fecha_expiracion'  => now()->addWeeks(6),
@@ -47,6 +48,7 @@ class OfertaSeeder extends Seeder
             'sobre_empresa'   => null,
             'user_id'         => 3, // Alumno
             'jornada'         => 'media_jornada',
+            'anios_experiencia' => 2,
             'localizacion'    => 'Utrera (presencial)',
             'fecha_publicacion' => now()->subWeek(),
             'fecha_expiracion'  => now()->addMonth(),

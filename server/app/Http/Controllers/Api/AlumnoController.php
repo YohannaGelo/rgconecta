@@ -199,36 +199,6 @@ class AlumnoController extends Controller
         ]);
     }
 
-
-
-    // public function update(Request $request, Alumno $alumno)
-    // {
-    //     $validated = $request->validate([
-    //         'situacion_laboral' => 'sometimes|in:trabajando,buscando_empleo,desempleado',
-    //         'tecnologias' => 'sometimes|array', // Formato: [ [id, nivel], ... ]
-    //         'titulo_profesional' => 'sometimes|string|max:100',
-    //         'promocion' => 'sometimes|string|max:9', // Formato: "AAAA/AAAA"
-    //         'experiencias' => 'sometimes|array'  // Formato: [ {empresa_id, puesto, fecha_inicio...} ]
-    //     ]);
-
-    //     if (isset($validated['tecnologias'])) {
-    //         $syncData = [];
-    //         foreach ($validated['tecnologias'] as $tech) {
-    //             $syncData[$tech['id']] = ['nivel' => $tech['nivel']];
-    //         }
-    //         $alumno->tecnologias()->sync($syncData);
-    //     }
-
-    //     if (isset($validated['experiencias'])) {
-    //         $alumno->experiencias()->delete(); // Eliminar existentes
-    //         $alumno->experiencias()->createMany($validated['experiencias']);
-    //     }
-
-
-    //     $alumno->update($validated);
-    //     return response()->json($alumno->fresh()->load(['tecnologias', 'experiencias']));
-    // }
-
     /**
      * Remove the specified resource from storage.
      */

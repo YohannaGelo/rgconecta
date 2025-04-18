@@ -55,27 +55,6 @@ class OpinionController extends Controller
         return response()->json($opinion->load('alumno.user'), 201);
     }
 
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'empresa_id' => 'required|exists:empresas,id',
-    //         'contenido' => 'required|string|max:500',
-    //         'valoracion' => 'required|integer|between:1,5',
-    //         'años_en_empresa' => 'nullable|numeric|min:0'
-    //     ]);
-
-    //     // Validar que el alumno no haya opinado antes
-    //     if (Auth::user()->alumno->opiniones()->where('empresa_id', $request->empresa_id)->exists()) {
-    //         return response()->json([
-    //             'message' => 'Ya has opinado sobre esta empresa'
-    //         ], 422);
-    //     }
-
-    //     $opinion = Auth::user()->alumno->opiniones()->create($validated);
-
-    //     return response()->json($opinion->load('alumno.user'), 201);
-    // }
-
     // Actualizar opinión (autor/profesor/admin)
     public function update(Request $request, Opinion $opinion)
     {

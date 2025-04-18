@@ -16,6 +16,7 @@ class Oferta extends Model
         'empresa_id',
         'user_id',
         'jornada',
+        'anios_experiencia',
         'localizacion',
         'fecha_publicacion',
         'fecha_expiracion'

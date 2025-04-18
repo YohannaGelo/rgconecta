@@ -1,7 +1,7 @@
 ## Apartado ver empresa
 
 - Quitaré el componente negro de 'Front-end'
-- Cambiar 'Conoce la empresa' por 'Sector'
+- Cambiar 'Conoce la empresa' y 'Sobre la empresa' por 'Sector' y 'web'
 
 
 ---
