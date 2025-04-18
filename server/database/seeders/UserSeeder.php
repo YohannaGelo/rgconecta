@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
         Profesor::create([
             'user_id' => $profesor1->id,
             'departamento' => 'Informática',
-            'email_corporativo' => 'juan.perez@iesruizgijon.es',
+            'foto_perfil' => null,
         ]);
 
         $profesor2 = User::create([
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
         Profesor::create([
             'user_id' => $profesor2->id,
             'departamento' => 'Matemáticas',
-            'email_corporativo' => 'ana.lopez@iesruizgijon.es',
+            'foto_perfil' => null,
         ]);
 
         // Alumno (no verificado)

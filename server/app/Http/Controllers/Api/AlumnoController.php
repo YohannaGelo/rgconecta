@@ -41,6 +41,35 @@ class AlumnoController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'user.name' => 'required|string|max:255',
+            'user.email' => 'required|email|unique:users,email',
+            'user.password' => 'required|string|min:6',
+
+            'fecha_nacimiento' => 'required|date',
+            'situacion_laboral' => 'required|string',
+            'promocion' => 'nullable|string',
+            'foto_perfil' => 'nullable|string',
+
+            'titulos' => 'array',
+            'titulos.*.nombre' => 'required|string',
+            'titulos.*.tipo' => 'required|string',
+            'titulos.*.pivot.año_inicio' => 'required|string',
+            'titulos.*.pivot.año_fin' => 'required|string',
+            'titulos.*.pivot.institucion' => 'required|string',
+
+            'tecnologias' => 'array',
+            'tecnologias.*.nombre' => 'required|string',
+            'tecnologias.*.tipo' => 'required|string',
+            'tecnologias.*.pivot.nivel' => 'required|string',
+
+            'experiencias' => 'array',
+            'experiencias.*.empresa.nombre' => 'required|string',
+            'experiencias.*.puesto' => 'required|string',
+            'experiencias.*.fecha_inicio' => 'required|date',
+            'experiencias.*.fecha_fin' => 'nullable|date',
+        ]);
+
         DB::beginTransaction();
 
         try {
@@ -48,7 +77,8 @@ class AlumnoController extends Controller
             $user = User::create([
                 'name' => $request->user['name'],
                 'email' => $request->user['email'],
-                'password' => Hash::make('password')
+                'password' => Hash::make($request->user['password']),
+                'role' => 'alumno'
             ]);
 
             // 2. Crear alumno
@@ -61,7 +91,7 @@ class AlumnoController extends Controller
                 'promocion' => $request->promocion ?? null,
             ]);
 
-            // 3. TÍTULOS
+            // 3. Títulos
             foreach ($request->titulos as $titulo) {
                 $tituloModel = Titulo::firstOrCreate([
                     'nombre' => $titulo['nombre'],
@@ -75,7 +105,7 @@ class AlumnoController extends Controller
                 ]);
             }
 
-            // 4. TECNOLOGÍAS
+            // 4. Tecnologías
             foreach ($request->tecnologias as $tecno) {
                 $tecnologia = Tecnologia::firstOrCreate([
                     'nombre' => $tecno['nombre'],
@@ -84,7 +114,7 @@ class AlumnoController extends Controller
 
                 $nivel = $tecno['pivot']['nivel'];
 
-                // Validar el nivel según el tipo
+                // Validar nivel según tipo
                 if ($tecnologia->tipo === 'idioma') {
                     $nivelesValidos = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
                 } else {
@@ -100,20 +130,21 @@ class AlumnoController extends Controller
                 ]);
             }
 
-            // 5. EXPERIENCIAS
+            // 5. Experiencias
             foreach ($request->experiencias as $exp) {
-                $empresa = Empresa::firstOrCreate([
-                    'nombre' => $exp['empresa']['nombre']
-                ], [
-                    'sector' => $exp['empresa']['sector'] ?? null,
-                    'web' => $exp['empresa']['web'] ?? null
-                ]);
+                $empresa = Empresa::firstOrCreate(
+                    ['nombre' => $exp['empresa']['nombre']],
+                    [
+                        'sector' => $exp['empresa']['sector'] ?? null,
+                        'web' => $exp['empresa']['web'] ?? null
+                    ]
+                );
 
                 $alumno->experiencias()->create([
                     'empresa_id' => $empresa->id,
                     'puesto' => $exp['puesto'],
                     'fecha_inicio' => $exp['fecha_inicio'],
-                    'fecha_fin' => $exp['fecha_fin']
+                    'fecha_fin' => $exp['fecha_fin'] ?? null
                 ]);
             }
 
@@ -122,9 +153,100 @@ class AlumnoController extends Controller
             return response()->json($alumno->load(['user', 'titulos', 'tecnologias', 'experiencias']), 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al crear el alumno', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al crear el alumno',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
+
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // 1. Crear usuario
+    //         $user = User::create([
+    //             'name' => $request->user['name'],
+    //             'email' => $request->user['email'],
+    //             'password' => Hash::make($request->user['password']),
+    //             // 'password' => Hash::make('password') // Para pruebas, usar una contraseña por defecto
+    //         ]);
+
+    //         // 2. Crear alumno
+    //         $alumno = Alumno::create([
+    //             'user_id' => $user->id,
+    //             'fecha_nacimiento' => $request->fecha_nacimiento,
+    //             'situacion_laboral' => $request->situacion_laboral,
+    //             'foto_perfil' => $request->foto_perfil ?? null,
+    //             'is_verified' => $request->is_verified ?? false,
+    //             'promocion' => $request->promocion ?? null,
+    //         ]);
+
+    //         // 3. TÍTULOS
+    //         foreach ($request->titulos as $titulo) {
+    //             $tituloModel = Titulo::firstOrCreate([
+    //                 'nombre' => $titulo['nombre'],
+    //                 'tipo' => $titulo['tipo']
+    //             ]);
+
+    //             $alumno->titulos()->attach($tituloModel->id, [
+    //                 'año_inicio' => $titulo['pivot']['año_inicio'],
+    //                 'año_fin' => $titulo['pivot']['año_fin'],
+    //                 'institucion' => $titulo['pivot']['institucion'],
+    //             ]);
+    //         }
+
+    //         // 4. TECNOLOGÍAS
+    //         foreach ($request->tecnologias as $tecno) {
+    //             $tecnologia = Tecnologia::firstOrCreate([
+    //                 'nombre' => $tecno['nombre'],
+    //                 'tipo' => $tecno['tipo']
+    //             ]);
+
+    //             $nivel = $tecno['pivot']['nivel'];
+
+    //             // Validar el nivel según el tipo
+    //             if ($tecnologia->tipo === 'idioma') {
+    //                 $nivelesValidos = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    //             } else {
+    //                 $nivelesValidos = ['basico', 'intermedio', 'avanzado'];
+    //             }
+
+    //             if (!in_array($nivel, $nivelesValidos)) {
+    //                 throw new \Exception("Nivel '{$nivel}' no válido para la tecnología '{$tecnologia->nombre}' de tipo '{$tecnologia->tipo}'");
+    //             }
+
+    //             $alumno->tecnologias()->attach($tecnologia->id, [
+    //                 'nivel' => $nivel
+    //             ]);
+    //         }
+
+    //         // 5. EXPERIENCIAS
+    //         foreach ($request->experiencias as $exp) {
+    //             $empresa = Empresa::firstOrCreate([
+    //                 'nombre' => $exp['empresa']['nombre']
+    //             ], [
+    //                 'sector' => $exp['empresa']['sector'] ?? null,
+    //                 'web' => $exp['empresa']['web'] ?? null
+    //             ]);
+
+    //             $alumno->experiencias()->create([
+    //                 'empresa_id' => $empresa->id,
+    //                 'puesto' => $exp['puesto'],
+    //                 'fecha_inicio' => $exp['fecha_inicio'],
+    //                 'fecha_fin' => $exp['fecha_fin']
+    //             ]);
+    //         }
+
+    //         DB::commit();
+
+    //         return response()->json($alumno->load(['user', 'titulos', 'tecnologias', 'experiencias']), 201);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json(['error' => 'Error al crear el alumno', 'message' => $e->getMessage()], 500);
+    //     }
+    // }
 
 
     /**
@@ -160,10 +282,10 @@ class AlumnoController extends Controller
             'tecnologias' => 'sometimes|array',
             'experiencias' => 'sometimes|array'
         ]);
-    
+
         // 2. Debug: Ver datos recibidos
         // \Log::info('Datos recibidos para actualización:', $validated);
-    
+
         // 3. Actualizar relaciones si existen
         if (isset($validated['tecnologias'])) {
             $syncData = collect($validated['tecnologias'])
@@ -172,25 +294,25 @@ class AlumnoController extends Controller
             $alumno->tecnologias()->sync($syncData);
             unset($validated['tecnologias']);
         }
-    
+
         if (isset($validated['experiencias'])) {
             $alumno->experiencias()->delete();
             $alumno->experiencias()->createMany($validated['experiencias']);
             unset($validated['experiencias']);
         }
-    
+
         // 4. Actualizar campos directos (SOLUCIÓN CLAVE)
         if (!empty($validated)) {
             $alumno->fill($validated);
-            
+
             // Debug: Ver cambios detectados
             // \Log::info('Cambios detectados:', $alumno->getDirty());
-            
+
             if ($alumno->isDirty()) {
                 $alumno->save();
             }
         }
-    
+
         // 5. Respuesta con datos frescos
         return response()->json([
             'message' => 'Alumno actualizado correctamente',

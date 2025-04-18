@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+
 class Profesor extends Model
 {
     /** @use HasFactory<\Database\Factories\ProfesorFactory> */
@@ -16,7 +18,7 @@ class Profesor extends Model
     protected $fillable = [
         'user_id',
         'departamento',
-        'email_corporativo'
+        'foto_perfil'
     ];
 
     // Relación 1:1 inversa con User

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Api\{OfertaController, AlumnoController};
 use App\Http\Controllers\Api\OfertaController;
+use App\Http\Controllers\Api\ProfesorController;
 use App\Http\Controllers\Api\AlumnoController;
 use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\OpinionController;
@@ -27,13 +28,11 @@ Route::get('/ofertas', [OfertaController::class, 'index']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);
-// Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']);
 
-
-// Route::get('/empresas', [EmpresaController::class, 'index']);
-// Route::get('/empresas/{id}', [EmpresaController::class, 'show']);
+Route::post('/profesores', [ProfesorController::class, 'store']);
 
 Route::get('/opiniones', [OpinionController::class, 'index']);
+
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
 
 // Rutas PROTEGIDAS
@@ -49,9 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
     Route::put('/alumnos/{alumno}', [AlumnoController::class, 'update']);
     Route::delete('/alumnos/{alumno}', [AlumnoController::class, 'destroy']);
-    // Route::apiResource('alumnos', AlumnoController::class)->except(['index', 'show']);
-    // Route::apiResource('alumnos', AlumnoController::class)->only(['update', 'destroy']);
-
 
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -67,4 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/opiniones', [OpinionController::class, 'store']);
     Route::put('/opiniones/{opinion}', [OpinionController::class, 'update']);
     Route::delete('/opiniones/{opinion}', [OpinionController::class, 'destroy']);
+
+    // Profesores
+    Route::get('/profesores', [ProfesorController::class, 'index']); 
+    Route::get('/profesores/{profesor}', [ProfesorController::class, 'show']);
+    Route::put('/profesores/{profesor}', [ProfesorController::class, 'update']);
+    Route::delete('/profesores/{profesor}', [ProfesorController::class, 'destroy']); 
 });
