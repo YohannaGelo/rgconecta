@@ -19,6 +19,20 @@
         - Experiencia (empresas)
         - Promoción
 
+
+---
+---
+
+## Comprobaciones
+
+### Endpoints comprobados y funcionando correctamente
+- Ofertas
+- Alumnos
+- Profesores
+- Empresa
+- Opiniones
+
+
 ---
 ---
 

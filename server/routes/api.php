@@ -31,6 +31,8 @@ Route::post('/alumnos', [AlumnoController::class, 'store']);
 
 Route::post('/profesores', [ProfesorController::class, 'store']);
 
+Route::get('/empresas', [EmpresaController::class, 'index']);
+
 Route::get('/opiniones', [OpinionController::class, 'index']);
 
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
@@ -53,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Empresas
-    Route::get('/empresas', [EmpresaController::class, 'index']);
+    // Route::get('/empresas', [EmpresaController::class, 'index']);
     Route::get('/empresas/{empresa}', [EmpresaController::class, 'show']);
     Route::post('/empresas', [EmpresaController::class, 'store']);
     Route::put('/empresas/{empresa}', [EmpresaController::class, 'update']);
@@ -65,8 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/opiniones/{opinion}', [OpinionController::class, 'destroy']);
 
     // Profesores
-    Route::get('/profesores', [ProfesorController::class, 'index']); 
+    Route::get('/profesores', [ProfesorController::class, 'index']);
     Route::get('/profesores/{profesor}', [ProfesorController::class, 'show']);
     Route::put('/profesores/{profesor}', [ProfesorController::class, 'update']);
-    Route::delete('/profesores/{profesor}', [ProfesorController::class, 'destroy']); 
+    Route::delete('/profesores/{profesor}', [ProfesorController::class, 'destroy']);
 });

@@ -1,153 +1,305 @@
 # Guía de Usuario de la API RuizGijon-Conecta
 
-Esta guía proporciona una documentación completa sobre cómo interactuar con la API RuizGijon-Conecta, que permite gestionar ofertas de empleo, alumnos, empresas y opiniones.
+Esta guía proporciona una documentación completa sobre cómo interactuar con la API RuizGijon-Conecta, que permite gestionar ofertas de empleo, alumnos, profesores, empresas y opiniones.
 
 ## URL Base
 
 Todas las peticiones deben dirigirse a:  
 `https://yohannagelo.ruix.iesruizgijon.es/rgconecta_api/`
 
+---
+
 ## Autenticación
+La API utiliza tokens Bearer para la autenticación. Para obtener un token, realiza una solicitud al endpoint `/api/login` con tus credenciales.
 
-La mayoría de los endpoints requieren autenticación mediante token Bearer. Para obtener un token:
-
+### Ejemplo de Login:
 ```http
-POST /api/login
+POST /api/login HTTP/1.1
+Host: localhost:8000
 Content-Type: application/json
 
 {
-    "email": "admin@iesruizgijon.es",
+    "email": "juan.perez@iesruizgijon.es",
     "password": "password"
 }
 ```
 
-Respuesta exitosa:
+**Respuesta:**
 ```json
 {
-    "token": "2|2izmV79aFMFrCkFIyqVpIoixuNjzEQi5tUTzHBFqfec09881"
+    "token": "1|W2TJCUyg3tkGXZbCjF2B6uYZ3jobXVYGWqMjk9Ar616aebb5"
 }
 ```
 
-Incluye el token en las cabeceras de las peticiones:
-```
-Authorization: Bearer [tu_token]
-```
-
-## Ofertas
-
-### Obtener todas las ofertas
-
+Incluye el token en el header `Authorization` de las solicitudes que lo requieran:
 ```http
-GET /api/ofertas
+Authorization: Bearer 1|W2TJCUyg3tkGXZbCjF2B6uYZ3jobXVYGWqMjk9Ar616aebb5
 ```
 
-### Obtener una oferta por ID
+---
 
+## Endpoints Disponibles
+
+### 1. Ofertas
+
+#### Obtener todas las ofertas
 ```http
-GET /api/ofertas/3
-Authorization: Bearer 2|2izmV79aFMFrCkFIyqVpIoixuNjzEQi5tUTzHBFqfec09881
+GET /api/ofertas HTTP/1.1
+Host: localhost:8000
 ```
 
-### Crear una oferta para empresa existente
-
+#### Obtener una oferta por ID
 ```http
-POST /api/ofertas
-Authorization: Bearer 2|2izmV79aFMFrCkFIyqVpIoixuNjzEQi5tUTzHBFqfec09881
+GET /api/ofertas/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Crear una oferta (empresa existente)
+```http
+POST /api/ofertas HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
-Accept: application/json
 
 {
     "titulo": "Desarrollador Backend",
     "descripcion": "Experto en Laravel y APIs",
     "empresa_id": 1,
     "jornada": "completa",
+    "anios_experiencia": 3,
     "localizacion": "Sevilla",
     "fecha_expiracion": "2025-12-15",
     "tecnologias": [1, 2]
 }
 ```
 
-### Crear una oferta con nueva empresa
-
+#### Crear una oferta y empresa nueva
 ```http
-POST /api/ofertas
-Authorization: Bearer 2|2izmV79aFMFrCkFIyqVpIoixuNjzEQi5tUTzHBFqfec09881
+POST /api/ofertas HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
-Accept: application/json
 
 {
-    "titulo": "Secretarío y Contable",
-    "descripcion": "Gestión de nóminas",
-    "sobre_empresa": "Nomineando",
-    "sector": "educacion",
+    "titulo": "Especialista en Marketing Digital",
+    "descripcion": "Planificación y ejecución de campañas SEO/SEM, redes sociales y email marketing.",
+    "sobre_empresa": "MarketLab",
+    "sector": "marketing",
+    "web": "https://marketlab.agency",
     "jornada": "completa",
-    "localizacion": "Madrid",
-    "fecha_expiracion": "2025-09-20"
+    "anios_experiencia": 2,
+    "localizacion": "Barcelona",
+    "fecha_expiracion": "2025-08-15"
 }
 ```
 
-### Actualizar una oferta
-
+#### Actualizar una oferta
 ```http
-PUT /api/ofertas/3
-Authorization: Bearer 3|DoW0rkocSboDzQ03o5Gz9aMGRM3IO9fDIU5bUaA73be18657
+PUT /api/ofertas/3 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
 
 {
-    "titulo": "Desarrollador Angular",
-    "descripcion": "Buscamos experto en Angular para proyecto remoto",
-    "jornada": "media_jornada",
-    "tecnologias": [2, 6]
+    "titulo": "Desarrollador Backend PHP",
+    "descripcion": "Experto en Laravel y APIs para proyecto remoto"
 }
 ```
 
-### Eliminar una oferta
-
+#### Eliminar una oferta
 ```http
-DELETE /api/ofertas/7
-Authorization: Bearer 3|DoW0rkocSboDzQ03o5Gz9aMGRM3IO9fDIU5bUaA73be18657
+DELETE /api/ofertas/4 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 ```
 
-## Alumnos
+---
 
-### Obtener todos los alumnos
+### 2. Alumnos
 
+#### Obtener todos los alumnos
 ```http
-GET /api/alumnos
+GET /api/alumnos HTTP/1.1
+Host: localhost:8000
 ```
 
-### Obtener un alumno por ID
-
+#### Obtener un alumno por ID
 ```http
-GET /api/alumnos/1
-Authorization: Bearer 2|2izmV79aFMFrCkFIyqVpIoixuNjzEQi5tUTzHBFqfec09881
+GET /api/alumnos/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 ```
 
-### Filtrar alumnos por tecnología
-
+#### Crear un alumno
 ```http
-GET /api/alumnos?tecnologia=php
+POST /api/alumnos HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "user": {
+        "name": "Samuel Gómez",
+        "email": "samuel.gomez@example.com",
+        "password": "contraseñaSegura123"
+    },
+    "fecha_nacimiento": "1993-03-10",
+    "situacion_laboral": "trabajando",
+    "promocion": "2011/2013",
+    "titulos": [
+        {
+            "nombre": "Técnico en Sistemas de Información",
+            "tipo": "ciclo_medio",
+            "pivot": {
+                "año_inicio": "2011",
+                "año_fin": "2013",
+                "institucion": "IES La Albuera"
+            }
+        }
+    ],
+    "tecnologias": [
+        {
+            "nombre": "Microsoft Office",
+            "tipo": "ofimatica",
+            "pivot": {
+                "nivel": "avanzado"
+            }
+        }
+    ]
+}
 ```
 
-## Empresas
-
-### Obtener todas las empresas
-
+#### Actualizar un alumno
 ```http
-GET /api/empresas
+PUT /api/alumnos/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+Content-Type: application/json
+
+{
+    "fecha_nacimiento": "2000-05-30",
+    "promocion": "2019/2021"
+}
 ```
 
-### Filtrar empresas por sector
-
+#### Eliminar un alumno
 ```http
-GET /api/empresas?sector=tecnologia
+DELETE /api/alumnos/3 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 ```
 
-### Actualizar una empresa
-
+#### Filtrar alumnos por tecnología
 ```http
-PUT /api/empresas/1
-Authorization: Bearer 3|DoW0rkocSboDzQ03o5Gz9aMGRM3IO9fDIU5bUaA73be18657
+GET /api/alumnos?tecnologia=ingles HTTP/1.1
+Host: localhost:8000
+```
+
+---
+
+### 3. Profesores
+
+#### Obtener todos los profesores
+```http
+GET /api/profesores HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Obtener un profesor por ID
+```http
+GET /api/profesores/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Crear un profesor
+```http
+POST /api/profesores HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+    "user": {
+        "name": "Javier Soldado",
+        "email": "javier.soldado@iesruizgijon.es",
+        "password": "password"
+    },
+    "departamento": "Informática",
+    "foto_perfil": null
+}
+```
+
+#### Actualizar un profesor
+```http
+PUT /api/profesores/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+Content-Type: application/json
+
+{
+    "departamento": "Historia"
+}
+```
+
+#### Eliminar un profesor
+```http
+DELETE /api/profesores/3 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Filtrar profesores por departamento
+```http
+GET /api/profesores?departamento=informatica HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+---
+
+### 4. Empresas
+
+#### Obtener todas las empresas
+```http
+GET /api/empresas HTTP/1.1
+Host: localhost:8000
+```
+
+#### Crear una empresa
+```http
+POST /api/empresas HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+Content-Type: application/json
+
+{
+    "nombre": "GestiónPro Consulting",
+    "sector": "otros",
+    "web": "https://gestionpro.com",
+    "descripcion": "Consultora que ofrece asesoramiento a emprendedores, pymes y autónomos en el ámbito de la gestión empresarial y fiscal."
+}
+```
+
+#### Obtener una empresa por ID
+```http
+GET /api/empresas/2 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Filtrar empresas por sector
+```http
+GET /api/empresas?sector=tecnologia HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
+```
+
+#### Actualizar una empresa
+```http
+PUT /api/empresas/1 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
 
 {
@@ -155,32 +307,34 @@ Content-Type: application/json
 }
 ```
 
-### Eliminar una empresa
-
+#### Eliminar una empresa
 ```http
-DELETE /api/empresas/4
-Authorization: Bearer 3|DoW0rkocSboDzQ03o5Gz9aMGRM3IO9fDIU5bUaA73be18657
+DELETE /api/empresas/5 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 ```
 
-## Opiniones
+---
 
-### Obtener todas las opiniones
+### 5. Opiniones
 
+#### Obtener todas las opiniones
 ```http
-GET /api/opiniones
+GET /api/opiniones HTTP/1.1
+Host: localhost:8000
 ```
 
-### Obtener opiniones por empresa
-
+#### Obtener opiniones de una empresa
 ```http
-GET /api/empresas/1/opiniones
+GET /api/empresas/1/opiniones HTTP/1.1
+Host: localhost:8000
 ```
 
-### Crear una nueva opinión
-
+#### Crear una opinión
 ```http
-POST /api/opiniones
-Authorization: Bearer 4|sIHCIFkmvB50JjAj7rlLtuBmxeodtMkhd2AwQ53C33e920e3
+POST /api/opiniones HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
 
 {
@@ -191,11 +345,11 @@ Content-Type: application/json
 }
 ```
 
-### Actualizar una opinión
-
+#### Actualizar una opinión
 ```http
-PUT /api/opiniones/3
-Authorization: Bearer 4|sIHCIFkmvB50JjAj7rlLtuBmxeodtMkhd2AwQ53C33e920e3
+PUT /api/opiniones/3 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 Content-Type: application/json
 
 {
@@ -204,18 +358,18 @@ Content-Type: application/json
 }
 ```
 
-### Eliminar una opinión
-
+#### Eliminar una opinión
 ```http
-DELETE /api/opiniones/2
-Authorization: Bearer 3|DoW0rkocSboDzQ03o5Gz9aMGRM3IO9fDIU5bUaA73be18657
+DELETE /api/opiniones/3 HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer [token]
 ```
 
-## Consideraciones
+---
 
-1. Los endpoints marcados como protegidos requieren autenticación mediante token Bearer.
-2. Para operaciones de creación (POST) y actualización (PUT), asegúrate de incluir la cabecera `Content-Type: application/json`.
-3. Algunos endpoints aceptan parámetros de consulta para filtrar resultados.
-4. Los IDs en las URLs (como `/api/ofertas/3`) deben ser reemplazados por los IDs reales de los recursos.
+## Consideraciones Finales
+- Asegúrate de incluir el token de autenticación en los headers cuando sea necesario.
+- Utiliza el método HTTP adecuado para cada operación (GET, POST, PUT, DELETE).
+- Verifica los datos enviados en el body para evitar errores.
 
-Esta guía cubre todas las operaciones disponibles en la API RuizGijon-Conecta. Para cualquier duda o problema, contacta con el administrador del sistema.
+Para cualquier duda o problema, contacta con el equipo de soporte. ¡Gracias por usar la API REST RuizGijon-Conecta!
