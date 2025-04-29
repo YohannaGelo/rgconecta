@@ -37,7 +37,8 @@
               "src/favicon.ico"
             ],
             "styles": [
-              "src/scss/app.scss"
+              "src/scss/app.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
             "scripts": []
           },
@@ -94,7 +95,8 @@
               "src/favicon.ico"
             ],
             "styles": [
-              "src/scss/app.scss"
+              "src/scss/app.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
             "scripts": []
           }

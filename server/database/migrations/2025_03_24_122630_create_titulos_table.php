@@ -19,7 +19,8 @@ return new class extends Migration
                 'ciclo_superior',
                 'grado_universitario',
                 'master',
-                'doctorado'
+                'doctorado',
+                'otros'
             ]);
             $table->timestamps();
         });
