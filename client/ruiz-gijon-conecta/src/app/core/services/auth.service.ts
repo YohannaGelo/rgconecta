@@ -34,6 +34,11 @@ export class AuthService {
       );
   }
 
+  // Realizar el registro
+  register(userData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/alumnos`, userData);
+  }
+
   // Cerrar sesión
   logout() {
     // Borramos el token y actualizamos el estado
