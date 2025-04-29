@@ -1,0 +1,45 @@
+<header
+  class="row flex-column flex-xl-row align-items-center bg-white rounded-2 shadow m-2 p-2 justify-content-between">
+
+  <!-- Logo -->
+  <figure class="col-8 col-sm-4 col-lg-3 col-xl-2 d-flex justify-content-center mt-2">
+    <a routerLink="/">
+      <img src="assets/img/banner_RG_web.png" alt="Logo IES Ruiz Gijón" class="img-fluid">
+    </a>
+  </figure>
+
+  <!-- Switch Navegación -->
+  <nav class="col-10 col-sm-7 col-xl-3 rounded-5 bg-light p-1 d-flex justify-content-around">
+    <a routerLink="/ofertas" class="btn btn-primary text-white rounded-5 py-1 px-4">Ofertas</a>
+    <a routerLink="/alumnado" class="text-decoration-none py-1 text-primary fw-medium">Alumnado</a>
+  </nav>
+
+  <!-- Botones de Enlaces -->
+  <div class="row col-xl-4 justify-content-center gap-3 gap-sm-4 gap-xl-2 mt-3 mt-xl-0">
+    <a routerLink="/opiniones" class="col-sm-4 col-xl-5 btn btn-dark rounded-5 text-center py-1 px-3">
+      Opiniones <i class="bi bi-chat ms-1"></i>
+    </a>
+    <a routerLink="/nuevo-trabajo" class="col-sm-4 col-xl-6 btn btn-primary rounded-5 text-center py-1 px-3">
+      Nuevo Trabajo <i class="bi bi-plus"></i>
+    </a>
+  </div>
+
+  <!-- Perfil de Usuario -->
+  <section class="col-xl-2 d-flex align-items-center justify-content-center gap-2 mt-3 mt-xl-0">
+
+    <!-- NO autenticado -->
+    <ng-container *ngIf="!(isAuthenticated$ | async); else loggedIn">
+      <p class="mb-0 fw-semibold">Inicia sesión</p>
+      <a routerLink="/login" class="d-flex align-items-center">
+        <img src="assets/img/perfil.png" alt="Imagen de usuario" class="img-fluid rounded-circle" style="width: 55px;">
+      </a>
+    </ng-container>
+
+    <!-- SÍ autenticado -->
+    <ng-template #loggedIn>
+      <button (click)="logout()" class="btn btn-danger">
+        Logout
+      </button>
+    </ng-template>
+  </section>
+</header>
