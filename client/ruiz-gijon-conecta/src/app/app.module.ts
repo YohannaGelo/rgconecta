@@ -13,7 +13,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
-import { NuevoUsuarioComponent } from './nuevo-usuario/nuevo-usuario.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 
 @NgModule({
@@ -27,7 +26,6 @@ import { RegistroComponent } from './auth/registro/registro.component';
     AlumnosComponent,
     OpinionesComponent,
     NuevaOfertaComponent,
-    NuevoUsuarioComponent,
     RegistroComponent
   ],
   imports: [

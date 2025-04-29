@@ -8,23 +8,24 @@ import { RegistroComponent } from './auth/registro/registro.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
-import { NuevoUsuarioComponent } from './nuevo-usuario/nuevo-usuario.component';
-
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
-  { path: 'ofertas', component: OfertasComponent }, 
+  { path: 'ofertas', component: OfertasComponent },
   { path: 'alumnos', component: AlumnosComponent },
   { path: 'opiniones', component: OpinionesComponent },
-  { path: 'nueva-oferta', component: NuevaOfertaComponent, canActivate: [AuthGuard] },
-  { path: 'nuevo-usuario', component: NuevoUsuarioComponent },
+  {
+    path: 'nueva-oferta',
+    component: NuevaOfertaComponent,
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

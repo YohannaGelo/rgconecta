@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AlumnoController;
 use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\OpinionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\TituloController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,13 @@ Route::get('/empresas', [EmpresaController::class, 'index']);
 Route::get('/opiniones', [OpinionController::class, 'index']);
 
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
+
+
+Route::get('/titulos', [TituloController::class, 'index']);
+Route::post('/alumnos/{alumno}/titulos', [TituloController::class, 'store']);
+Route::get('/titulos/{titulo}', [TituloController::class, 'show']);
+Route::delete('/titulos/{titulo}', [TituloController::class, 'destroy']);
+
 
 // Rutas PROTEGIDAS
 Route::middleware('auth:sanctum')->group(function () {
