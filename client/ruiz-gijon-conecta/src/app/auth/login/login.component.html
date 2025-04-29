@@ -1,0 +1,36 @@
+<div class="container mt-5">
+    <h2>Iniciar sesión</h2>
+  
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          placeholder="Introduce tu correo electrónico"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+      </div>
+  
+      <div class="form-group mt-3">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          placeholder="Introduce tu contraseña"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+  
+      <button type="submit" class="btn btn-primary mt-4" [disabled]="!loginForm.form.valid">
+        Iniciar sesión
+      </button>
+    </form>
+  </div>
+  

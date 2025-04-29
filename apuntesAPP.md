@@ -170,3 +170,56 @@ posibles tecnologias:
         });
     }
  
+
+# GitHub RAMAS
+
+### ✅ **1. Fusionar `feature/controladores` a `develop` y `main`**
+
+Asumiendo que estás en tu proyecto local, carpeta raiz:
+
+```bash
+# 1. Cambia a la rama develop
+git checkout develop
+
+# 2. Trae los últimos cambios del remoto (opcional pero recomendable)
+git pull origin develop
+
+# 3. Fusiona la rama feature/controladores
+git merge feature/controladores
+
+# 4. Sube los cambios al remoto
+git push origin develop
+```
+
+### ✅ **2. Crear una nueva rama para el frontend**
+
+Sí, es buena práctica. Puedes crear una rama desde `develop`:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/frontend
+git push -u origin feature/frontend
+```
+
+Esto te deja listo para empezar a trabajar en Angular dentro de la carpeta `Client` sin mezclar aún los cambios con `develop` ni `main`.
+
+
+## FUSIÓN LIMPIA
+
+- **`develop`**: con todo el historial, útil para seguimiento técnico.  
+- **`main`**: limpio, solo cambios estables y resumidos.
+
+### Para fusionar a `main` de forma limpia:
+
+Desde la raíz del repo (o cualquier subcarpeta dentro del mismo):
+
+```bash
+git checkout main
+git pull origin main
+git merge --squash develop
+git commit -m "Versión estable: controladores API añadidos"
+git push origin main
+```
+
+Con eso tendrás en `main` un único commit que representa todos los cambios funcionales sin ruido.
