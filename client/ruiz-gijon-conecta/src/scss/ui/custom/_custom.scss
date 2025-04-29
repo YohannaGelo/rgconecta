@@ -1,0 +1,31 @@
+@use 'sass:color';
+
+// Variables propias
+$azul: #2b4e84;
+$azul-oscuro: #1c2256;
+$oscuro: #0a1015;
+$oscuro-hover: #1b2d3b;
+$gris: #999ea2;
+$fondo: #eaeff4;
+
+// Reescribimos variables de bootstrap
+// Colores
+$primary: $azul;
+$primary-hover: $azul-oscuro;
+$secondary: $gris;
+$dark: $oscuro;
+$dark-hover: $oscuro-hover;
+
+$light: $fondo;
+
+// Tipografías
+$font-size-base: 0.95rem;
+$font-family-sans-serif: 'Manrope', sans-serif;
+$form-label-font-size: 0.8rem; 
+
+// Cards
+$card-border-color: transparent;
+
+// Importamos Bootstrap de node_modules
+@import '../../../../node_modules/bootstrap/scss/bootstrap.scss';
+

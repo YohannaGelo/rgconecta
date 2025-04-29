@@ -11,6 +11,10 @@ import { OfertasComponent } from './ofertas/ofertas.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { OpinionesComponent } from './opiniones/opiniones.component';
+import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
+import { NuevoUsuarioComponent } from './nuevo-usuario/nuevo-usuario.component';
+import { RegistroComponent } from './auth/registro/registro.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +24,11 @@ import { FormsModule } from '@angular/forms';
     FooterComponent,
     HomeComponent,
     OfertasComponent,
-    AlumnosComponent
+    AlumnosComponent,
+    OpinionesComponent,
+    NuevaOfertaComponent,
+    NuevoUsuarioComponent,
+    RegistroComponent
   ],
   imports: [
     BrowserModule,

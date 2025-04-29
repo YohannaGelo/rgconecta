@@ -1,0 +1,16 @@
+@use '../custom/custom' as cus;
+
+// Modifica el espaciado de las letras del formulario
+.form-label {
+    letter-spacing: 0.2em;
+}
+
+// Modificar el tamaño de la letra de los placeholder
+::placeholder {
+    font-size: 0.7rem;
+}
+
+// Cambiar el color de las letras del select
+.form-select {
+    color: cus.$gris;
+}
