@@ -51,11 +51,39 @@ export class RegistroComponent implements OnInit {
   tecnologiaSeleccionada: string = '';
   tecnologiasSeleccionadas: string[] = [];
 
-
   nuevaTecnologia = {
     nombre: '',
     tipo: '',
   };
+
+  // Array para las empresas disponibles (desde la API)
+  empresasDisponibles: any[] = [];
+  empresaSeleccionada: string = '';
+  nuevaEmpresa = {
+    nombre: '',
+    sector: '',
+    web: '',
+    descripcion: '',
+  };
+  sectoresEmpresa: string[] = [
+    'tecnología',
+    'educación',
+    'salud',
+    'diseno',
+    'otros',
+  ];
+
+  // Mapeo para mostrar etiquetas más legibles
+  sectoresEmpresaMap: { [key: string]: string } = {
+    tecnología: 'Tecnología',
+    educación: 'Educación',
+    salud: 'Salud',
+    diseno: 'Diseño',
+    otros: 'Otros',
+  };
+
+  experiencias: any[] = []; // Guardará la lista de experiencias añadidas
+  empresasNuevas: any[] = []; // Guardará las nuevas empresas añadidas
 
   constructor(
     private authService: AuthService,
@@ -65,6 +93,7 @@ export class RegistroComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarTitulos(); // Llamar al método para cargar los títulos disponibles
+    this.cargarEmpresas(); // Llamar al método para cargar las empresas disponibles
     this.cargarTecnologias(); // Llamar al método para cargar las tecnologías disponibles
   }
 
@@ -125,17 +154,17 @@ export class RegistroComponent implements OnInit {
   agregarNuevaTecnologiaLocal(): void {
     if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
       const nombreTecnologia = this.nuevaTecnologia.nombre;
-      
+
       // Agregar a tecnologías seleccionadas
       if (!this.tecnologiasSeleccionadas.includes(nombreTecnologia)) {
         this.tecnologiasSeleccionadas.push(nombreTecnologia);
       }
-      
+
       // Agregar a tecnologías disponibles (localmente)
       if (!this.tecnologiasDisponibles.includes(nombreTecnologia)) {
         this.tecnologiasDisponibles.push(nombreTecnologia);
       }
-      
+
       // Resetear campos
       this.tecnologiaSeleccionada = '';
       this.nuevaTecnologia = { nombre: '', tipo: '' };
@@ -144,6 +173,91 @@ export class RegistroComponent implements OnInit {
 
   eliminarTecnologia(index: number): void {
     this.tecnologiasSeleccionadas.splice(index, 1);
+  }
+
+  // EMPRESAS
+  cargarEmpresas(): void {
+    this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
+      (response) => {
+        // Asegúrate de que la respuesta tiene la propiedad 'data'
+        if (response && Array.isArray(response.data)) {
+          this.empresasDisponibles = [
+            ...response.data.map((e: { nombre: string }) => e.nombre),
+            'Otras',
+          ];
+        } else {
+          console.error(
+            'Formato inesperado en la respuesta de empresas',
+            response
+          );
+          this.empresasDisponibles = ['Otras'];
+        }
+      },
+      (error) => {
+        console.error('Error al cargar empresas', error);
+        this.empresasDisponibles = ['Otras'];
+      }
+    );
+  }
+
+  onEmpresaChange(): void {
+    if (this.empresaSeleccionada !== 'Otras') {
+      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+    }
+  }
+
+  // agregarExperiencia(): void {
+  //   if (this.empresaSeleccionada && this.comienzoExperiencia && this.finExperiencia) {
+  //     this.experiencias.push({
+  //       empresa: this.empresaSeleccionada,
+  //       comienzo: this.comienzoExperiencia,
+  //       fin: this.finExperiencia,
+  //     });
+
+  //     // Limpiar campos
+  //     this.empresaSeleccionada = '';
+  //     this.comienzoExperiencia = '';
+  //     this.finExperiencia = '';
+  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+  //   } else {
+  //     alert('Por favor, completa todos los campos de experiencia.');
+  //   }
+  // }
+  agregarExperiencia(): void {
+    let nombreEmpresa: string;
+
+    if (this.empresaSeleccionada === 'Otras') {
+      if (!this.nuevaEmpresa.nombre) {
+        alert('Debes introducir el nombre de la nueva empresa.');
+        return;
+      }
+      nombreEmpresa = this.nuevaEmpresa.nombre;
+
+      // Si quieres guardar también el resto de datos para el backend
+      this.empresasNuevas.push({ ...this.nuevaEmpresa });
+    } else {
+      nombreEmpresa = this.empresaSeleccionada;
+    }
+
+    if (nombreEmpresa && this.comienzoExperiencia && this.finExperiencia) {
+      this.experiencias.push({
+        empresa: nombreEmpresa,
+        comienzo: this.comienzoExperiencia,
+        fin: this.finExperiencia,
+      });
+
+      // Limpiar campos
+      this.empresaSeleccionada = '';
+      this.comienzoExperiencia = '';
+      this.finExperiencia = '';
+      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+    } else {
+      alert('Por favor, completa todos los campos.');
+    }
+  }
+
+  eliminarExperiencia(index: number): void {
+    this.experiencias.splice(index, 1);
   }
 
   formatearTipo(tipo: string): string {
@@ -212,22 +326,37 @@ export class RegistroComponent implements OnInit {
     // Agregar los títulos seleccionados
     formData.append('titulos', JSON.stringify(this.titulosSeleccionados));
 
-      // Agregar tecnologías seleccionadas
-  formData.append('tecnologias', JSON.stringify(this.tecnologiasSeleccionadas));
-  
-  // Agregar nuevas tecnologías (las que no estaban en tecnologiasDisponibles inicialmente)
-  const nuevasTecnologias = this.tecnologiasSeleccionadas.filter(
-    tech => !this.tecnologiasDisponibles.includes(tech)
-  );
-  
-  if (nuevasTecnologias.length > 0) {
-    formData.append('nuevas_tecnologias', JSON.stringify(
-      nuevasTecnologias.map(tech => ({
-        nombre: tech,
-        tipo: this.nuevaTecnologia.tipo // Esto necesitará ajuste para manejar múltiples
-      }))
-    ));
-  }
+    // Agregar tecnologías seleccionadas
+    formData.append(
+      'tecnologias',
+      JSON.stringify(this.tecnologiasSeleccionadas)
+    );
+
+    // Agregar nuevas tecnologías (las que no estaban en tecnologiasDisponibles inicialmente)
+    const nuevasTecnologias = this.tecnologiasSeleccionadas.filter(
+      (tech) => !this.tecnologiasDisponibles.includes(tech)
+    );
+
+    if (nuevasTecnologias.length > 0) {
+      formData.append(
+        'nuevas_tecnologias',
+        JSON.stringify(
+          nuevasTecnologias.map((tech) => ({
+            nombre: tech,
+            tipo: this.nuevaTecnologia.tipo, // Esto necesitará ajuste para manejar múltiples
+          }))
+        )
+      );
+    }
+
+    // EXPERIENCIAS
+    formData.append('experiencias', JSON.stringify(this.experiencias));
+
+    const nuevasEmpresas = this.empresasNuevas;
+
+    if (nuevasEmpresas.length > 0) {
+      formData.append('nuevas_empresas', JSON.stringify(nuevasEmpresas));
+    }
 
     // Si el usuario sube una imagen, la agregamos al FormData
     if (this.imagenPerfil) {
