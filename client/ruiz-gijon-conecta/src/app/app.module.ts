@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { RegistroComponent } from './auth/registro/registro.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { RegistroComponent } from './auth/registro/registro.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule, 
-    HttpClientModule
+    HttpClientModule,
+    NgSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

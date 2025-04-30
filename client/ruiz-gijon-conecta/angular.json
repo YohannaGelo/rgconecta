@@ -37,6 +37,7 @@
               "src/favicon.ico"
             ],
             "styles": [
+              "node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/scss/app.scss",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
@@ -95,6 +96,7 @@
               "src/favicon.ico"
             ],
             "styles": [
+              "node_modules/@ng-select/ng-select/themes/default.theme.css",
               "src/scss/app.scss",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
