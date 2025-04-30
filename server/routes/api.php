@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\OpinionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\TituloController;
+use App\Http\Controllers\Api\TecnologiaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,10 @@ Route::get('/titulos', [TituloController::class, 'index']);
 Route::post('/alumnos/{alumno}/titulos', [TituloController::class, 'store']);
 Route::get('/titulos/{titulo}', [TituloController::class, 'show']);
 Route::delete('/titulos/{titulo}', [TituloController::class, 'destroy']);
+
+Route::get('/tecnologias', [TecnologiaController::class, 'index']);
+Route::post('/tecnologias', [TecnologiaController::class, 'store']);
+
 
 
 // Rutas PROTEGIDAS
