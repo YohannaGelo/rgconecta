@@ -38,7 +38,7 @@ Route::get('/empresas', [EmpresaController::class, 'index']);
 Route::get('/opiniones', [OpinionController::class, 'index']);
 
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
-
+Route::post('/empresas', [EmpresaController::class, 'store']);
 
 Route::get('/titulos', [TituloController::class, 'index']);
 Route::post('/alumnos/{alumno}/titulos', [TituloController::class, 'store']);
@@ -70,7 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Empresas
     // Route::get('/empresas', [EmpresaController::class, 'index']);
     Route::get('/empresas/{empresa}', [EmpresaController::class, 'show']);
-    Route::post('/empresas', [EmpresaController::class, 'store']);
     Route::put('/empresas/{empresa}', [EmpresaController::class, 'update']);
     Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy']);
 
