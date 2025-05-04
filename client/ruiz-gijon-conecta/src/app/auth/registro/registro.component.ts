@@ -14,6 +14,8 @@ import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 export class RegistroComponent implements OnInit {
   // Datos del formulario
   name: string = '';
+  email: string = '';
+  password: string = '';
   titulo: any = ''; // Aquí será el objeto del título seleccionado
   ciclo: string = '';
   comienzoEstudios: string = '';
@@ -58,13 +60,25 @@ export class RegistroComponent implements OnInit {
   };
   tiposTecnologia: string[] = Object.keys(this.tiposTecnologiaMap);
 
-  tecnologiaSeleccionada: string = '';
-  tecnologiasSeleccionadas: string[] = [];
+  tecnologiaSeleccionada: any = null; // Cambiar a objeto
+  tecnologiasSeleccionadas: any[] = [];
+
+  niveles: string[] = ['basico', 'intermedio', 'avanzado'];
 
   nuevaTecnologia = {
     nombre: '',
     tipo: '',
+    pivot: { nivel: '' }, // Inicializamos el pivot vacío
   };
+
+  nivelesMap: { [key: string]: string[] } = {
+    idioma: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+    default: ['basico', 'intermedio', 'avanzado']
+  };
+  
+  // Nivel seleccionado asociado a la nueva tecnología
+  nivelSeleccionado: string = '';
+  
 
   // Array para las empresas disponibles (desde la API)
   empresasDisponibles: any[] = [];
@@ -107,6 +121,7 @@ export class RegistroComponent implements OnInit {
     this.cargarTecnologias(); // Llamar al método para cargar las tecnologías disponibles
   }
 
+  // #region 🎓 TÍTULOS
   cargarTitulos(): void {
     this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe(
       (response) => {
@@ -124,60 +139,223 @@ export class RegistroComponent implements OnInit {
     );
   }
 
+  formatearTipo(tipo: string): string {
+    // Crear un objeto de mapeo para cada tipo
+    const tiposMap = {
+      ciclo_medio: 'Ciclo Medio',
+      ciclo_superior: 'Ciclo Superior',
+      grado_universitario: 'Grado Universitario',
+      master: 'Máster',
+      doctorado: 'Doctorado',
+      otros: 'Otros',
+    };
+
+    // Devolver el valor formateado o el tipo original si no se encuentra en el mapeo
+    return tiposMap[tipo as keyof typeof tiposMap] || tipo;
+  }
+
+  // Método para agregar un título a la lista de títulos seleccionados
+  agregarTitulo(): void {
+    if (
+      this.titulo &&
+      this.comienzoEstudios &&
+      this.finEstudios &&
+      this.empresa
+    ) {
+      this.titulosSeleccionados.push({
+        titulo: this.titulo,
+        comienzoEstudios: this.comienzoEstudios,
+        finEstudios: this.finEstudios,
+        empresa: this.empresa,
+      });
+
+      // Limpiar los campos de título, años e institución después de añadir
+      this.titulo = '';
+      this.comienzoEstudios = '';
+      this.finEstudios = '';
+      this.empresa = '';
+    } else {
+      alert('Por favor, completa todos los campos.');
+    }
+  }
+
+  // Método para eliminar un título de la lista
+  eliminarTitulo(index: number): void {
+    this.titulosSeleccionados.splice(index, 1);
+  }
+
+  // #region 💻 TECNOLOGÍAS (Habilidades de cara al usuario)
   cargarTecnologias(): void {
     this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
-      (data) =>
-        (this.tecnologiasDisponibles = [...data.map((t) => t.nombre), 'Otros']),
+      (data) => {
+        // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
+        this.tecnologiasDisponibles = data.map((tec) => ({
+          nombre: tec.nombre,
+          tipo: tec.tipo,
+          pivot: tec.pivot || { nivel: '' }, // Incluimos pivot si no existe
+        }));
+        this.tecnologiasDisponibles.push({
+          nombre: 'Otros',
+          tipo: 'otros',
+          pivot: { nivel: '' },
+        });
+      },
       (error) => console.error('Error al cargar tecnologías', error)
     );
   }
 
   // Método para manejar el cambio de selección de tecnología
   onTecnologiaChange(): void {
-    if (this.tecnologiaSeleccionada !== 'Otros') {
-      this.nuevaTecnologia = { nombre: '', tipo: '' };
+    if (
+      this.tecnologiaSeleccionada &&
+      this.tecnologiaSeleccionada.nombre !== 'Otros'
+    ) {
+      this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
     }
   }
 
   agregarTecnologia(): void {
     if (
       this.tecnologiaSeleccionada &&
-      this.tecnologiaSeleccionada !== 'Otros'
+      this.tecnologiaSeleccionada.nombre !== 'Otros'
     ) {
       if (
-        !this.tecnologiasSeleccionadas.includes(this.tecnologiaSeleccionada)
+        !this.tecnologiasSeleccionadas.some((tec) => tec.nombre === this.tecnologiaSeleccionada.nombre)
       ) {
-        this.tecnologiasSeleccionadas.push(this.tecnologiaSeleccionada);
+        const tecnologiaConNivel = {
+          ...this.tecnologiaSeleccionada,
+          pivot: { nivel: this.nivelSeleccionado || '' } // Añadir nivel
+        };
+        this.tecnologiasSeleccionadas.push(tecnologiaConNivel);
       }
-      this.tecnologiaSeleccionada = '';
+  
+      this.tecnologiaSeleccionada = null;
+      this.nivelSeleccionado = '';
     }
   }
+  
 
   agregarNuevaTecnologiaLocal(): void {
-    if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
-      const nombreTecnologia = this.nuevaTecnologia.nombre;
-
-      // Agregar a tecnologías seleccionadas
-      if (!this.tecnologiasSeleccionadas.includes(nombreTecnologia)) {
-        this.tecnologiasSeleccionadas.push(nombreTecnologia);
+    console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
+  
+    if (
+      this.nuevaTecnologia.nombre &&
+      this.nuevaTecnologia.tipo &&
+      this.nuevaTecnologia.pivot.nivel
+    ) {
+      const nuevaTecnologia = {
+        nombre: this.nuevaTecnologia.nombre,
+        tipo: this.nuevaTecnologia.tipo,
+        pivot: { nivel: this.nuevaTecnologia.pivot.nivel }
+      };
+  
+      if (!this.tecnologiasSeleccionadas.some(t => t.nombre === nuevaTecnologia.nombre)) {
+        this.tecnologiasSeleccionadas.push(nuevaTecnologia);
       }
-
-      // Agregar a tecnologías disponibles (localmente)
-      if (!this.tecnologiasDisponibles.includes(nombreTecnologia)) {
-        this.tecnologiasDisponibles.push(nombreTecnologia);
+  
+      if (!this.tecnologiasDisponibles.includes(nuevaTecnologia.nombre)) {
+        this.tecnologiasDisponibles.push(nuevaTecnologia.nombre);
       }
-
-      // Resetear campos
-      this.tecnologiaSeleccionada = '';
-      this.nuevaTecnologia = { nombre: '', tipo: '' };
+  
+      this.tecnologiaSeleccionada = null;
+      this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
+    } else {
+      console.warn('Faltan datos al agregar tecnología', this.nuevaTecnologia);
     }
   }
+  
+  
+  // agregarNuevaTecnologiaLocal(): void {
+  //   if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
+  //     const nuevaTecnologia = {
+  //       nombre: this.nuevaTecnologia.nombre,
+  //       tipo: this.nuevaTecnologia.tipo,
+  //       pivot: { nivel: this.nuevaTecnologia.pivot.nivel || '' }, // Añadimos el campo pivot
+  //     };
+
+  //     // Agregar a tecnologías seleccionadas
+  //     if (
+  //       !this.tecnologiasSeleccionadas.some(
+  //         (tec) => tec.nombre === nuevaTecnologia.nombre
+  //       )
+  //     ) {
+  //       this.tecnologiasSeleccionadas.push(nuevaTecnologia);
+  //     }
+
+  //     // Agregar a tecnologías disponibles (localmente)
+  //     if (
+  //       !this.tecnologiasDisponibles.some(
+  //         (tec) => tec.nombre === nuevaTecnologia.nombre
+  //       )
+  //     ) {
+  //       this.tecnologiasDisponibles.push(nuevaTecnologia);
+  //     }
+
+  //     // Resetear campos
+  //     this.tecnologiaSeleccionada = null;
+  //     this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
+  //   }
+  // }
 
   eliminarTecnologia(index: number): void {
     this.tecnologiasSeleccionadas.splice(index, 1);
   }
+  // cargarTecnologias(): void {
+  //   this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
+  //     (data) =>
+  //       // (this.tecnologiasDisponibles = [...data.map((t) => t.nombre), 'Otros']),
+  //     (this.tecnologiasDisponibles = [...data.map((t) => t.nombre), 'Otros']),
+  //     (error) => console.error('Error al cargar tecnologías', error)
+  //   );
+  // }
 
-  // EMPRESAS
+  // // Método para manejar el cambio de selección de tecnología
+  // onTecnologiaChange(): void {
+  //   if (this.tecnologiaSeleccionada !== 'Otros') {
+  //     this.nuevaTecnologia = { nombre: '', tipo: '' };
+  //   }
+  // }
+
+  // agregarTecnologia(): void {
+  //   if (
+  //     this.tecnologiaSeleccionada &&
+  //     this.tecnologiaSeleccionada !== 'Otros'
+  //   ) {
+  //     if (
+  //       !this.tecnologiasSeleccionadas.includes(this.tecnologiaSeleccionada)
+  //     ) {
+  //       this.tecnologiasSeleccionadas.push(this.tecnologiaSeleccionada);
+  //     }
+  //     this.tecnologiaSeleccionada = '';
+  //   }
+  // }
+
+  // agregarNuevaTecnologiaLocal(): void {
+  //   if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
+  //     const nombreTecnologia = this.nuevaTecnologia.nombre;
+
+  //     // Agregar a tecnologías seleccionadas
+  //     if (!this.tecnologiasSeleccionadas.includes(nombreTecnologia)) {
+  //       this.tecnologiasSeleccionadas.push(nombreTecnologia);
+  //     }
+
+  //     // Agregar a tecnologías disponibles (localmente)
+  //     if (!this.tecnologiasDisponibles.includes(nombreTecnologia)) {
+  //       this.tecnologiasDisponibles.push(nombreTecnologia);
+  //     }
+
+  //     // Resetear campos
+  //     this.tecnologiaSeleccionada = '';
+  //     this.nuevaTecnologia = { nombre: '', tipo: '' };
+  //   }
+  // }
+
+  // eliminarTecnologia(index: number): void {
+  //   this.tecnologiasSeleccionadas.splice(index, 1);
+  // }
+
+  // #region 🧑🏻‍💻 EXPERIENCIA
+  // empresas
   cargarEmpresas(): void {
     this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
       (response) => {
@@ -245,52 +423,7 @@ export class RegistroComponent implements OnInit {
     this.experiencias.splice(index, 1);
   }
 
-  formatearTipo(tipo: string): string {
-    // Crear un objeto de mapeo para cada tipo
-    const tiposMap = {
-      ciclo_medio: 'Ciclo Medio',
-      ciclo_superior: 'Ciclo Superior',
-      grado_universitario: 'Grado Universitario',
-      master: 'Máster',
-      doctorado: 'Doctorado',
-      otros: 'Otros',
-    };
-
-    // Devolver el valor formateado o el tipo original si no se encuentra en el mapeo
-    return tiposMap[tipo as keyof typeof tiposMap] || tipo;
-  }
-
-  // Método para agregar un título a la lista de títulos seleccionados
-  agregarTitulo(): void {
-    if (
-      this.titulo &&
-      this.comienzoEstudios &&
-      this.finEstudios &&
-      this.empresa
-    ) {
-      this.titulosSeleccionados.push({
-        titulo: this.titulo,
-        comienzoEstudios: this.comienzoEstudios,
-        finEstudios: this.finEstudios,
-        empresa: this.empresa,
-      });
-
-      // Limpiar los campos de título, años e institución después de añadir
-      this.titulo = '';
-      this.comienzoEstudios = '';
-      this.finEstudios = '';
-      this.empresa = '';
-    } else {
-      alert('Por favor, completa todos los campos.');
-    }
-  }
-
-  // Método para eliminar un título de la lista
-  eliminarTitulo(index: number): void {
-    this.titulosSeleccionados.splice(index, 1);
-  }
-
-  // IMAGEN
+  // #region 🏞️ IMAGEN DE PERFIL
   // Método para manejar el cambio de imagen
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
@@ -319,9 +452,9 @@ export class RegistroComponent implements OnInit {
     };
   }
 
+  // #region ✅ onSubmit()
   // Enviar datos de registro
   onSubmit(): void {
-    // Validar formato de promoción y que el segundo año sea mayor
     const promocionRegex = /^\d{4} \/ \d{4}$/;
     if (!promocionRegex.test(this.promocion)) {
       alert('La promoción debe tener el formato "2023 / 2025"');
@@ -334,75 +467,48 @@ export class RegistroComponent implements OnInit {
       return;
     }
 
-    const formData = new FormData();
+    const alumno = {
+      user: {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        foto_perfil: this.croppedImage || null,
+      },
+      fecha_nacimiento: this.fechaNacimiento,
+      situacion_laboral: this.situacionLaboral,
+      is_verified: false,
+      promocion: `${inicio}/${fin}`,
+      titulos: this.titulosSeleccionados.map((t) => ({
+        nombre: t.titulo.nombre, // suponiendo que "titulo" es un objeto con nombre y tipo
+        tipo: t.titulo.tipo,
+        pivot: {
+          año_inicio: t.comienzoEstudios,
+          año_fin: t.finEstudios,
+          institucion: t.empresa,
+        },
+      })),
+      tecnologias: this.tecnologiasSeleccionadas, 
+      experiencias: this.experiencias.map((exp) => ({
+        empresa: exp.empresa,
+        fecha_inicio: exp.comienzo,
+        fecha_fin: exp.fin,
+      })),
+    };
 
-    // Agregar los campos del formulario al FormData
-    formData.append('name', this.name);
-    formData.append('titulo', this.titulo);
-    formData.append('ciclo', this.ciclo);
-    formData.append('comienzo_estudios', this.comienzoEstudios);
-    formData.append('fin_estudios', this.finEstudios);
-    formData.append('empresa', this.empresa);
-    formData.append('comienzo_experiencia', this.comienzoExperiencia);
-    formData.append('fin_experiencia', this.finExperiencia);
-    formData.append('situacion_laboral', this.situacionLaboral);
-    formData.append('fecha_nacimiento', this.fechaNacimiento);
-    formData.append('tecnologia', this.tecnologia);
-    formData.append('promocion', this.promocion);
+    console.log('Datos del alumno a enviar:', alumno);
 
-    // Agregar los títulos seleccionados
-    formData.append('titulos', JSON.stringify(this.titulosSeleccionados));
-
-    // Agregar tecnologías seleccionadas
-    formData.append(
-      'tecnologias',
-      JSON.stringify(this.tecnologiasSeleccionadas)
-    );
-
-    // Agregar nuevas tecnologías (las que no estaban en tecnologiasDisponibles inicialmente)
-    const nuevasTecnologias = this.tecnologiasSeleccionadas.filter(
-      (tech) => !this.tecnologiasDisponibles.includes(tech)
-    );
-
-    if (nuevasTecnologias.length > 0) {
-      formData.append(
-        'nuevas_tecnologias',
-        JSON.stringify(
-          nuevasTecnologias.map((tech) => ({
-            nombre: tech,
-            tipo: this.nuevaTecnologia.tipo, // Esto necesitará ajuste para manejar múltiples
-          }))
-        )
-      );
-    }
-
-    // EXPERIENCIAS
-    formData.append('experiencias', JSON.stringify(this.experiencias));
-
-    const nuevasEmpresas = this.empresasNuevas;
-
-    if (nuevasEmpresas.length > 0) {
-      formData.append('nuevas_empresas', JSON.stringify(nuevasEmpresas));
-    }
-
-    // Si el usuario sube una imagen, la agregamos al FormData
-    if (this.croppedImage) {
-      // Convertir base64 a File
-      const file = this.base64ToFile(this.croppedImage, 'avatar.jpg');
-      // Agregar la imagen al FormData
-      formData.append('imagen', file, file.name);
-      console.log('Imagen lista para subir:', file);
-    }
-
-    // Llamada al servicio de registro
-    this.authService.register(formData).subscribe(
-      (response) => {
-        console.log('Usuario registrado', response);
+    this.authService.register(alumno).subscribe(
+      (res) => {
+        console.log('Alumno creado', res);
         this.router.navigate(['/login']);
       },
-      (error) => {
-        console.error('Error en el registro', error);
-        alert('Hubo un error al registrarte. Intenta nuevamente.');
+      (err) => {
+        // console.error('Error al crear alumno', err);
+        // alert('Hubo un error al registrarte. Intenta nuevamente.');
+        console.error('Error al crear alumno', err);
+        if (err.status === 422) {
+          console.error('Errores de validación:', err.error.errors); // Laravel suele enviar esto
+        }
       }
     );
   }

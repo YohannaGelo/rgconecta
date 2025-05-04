@@ -17,6 +17,25 @@
         <div class="invalid-feedback">Debes completar el nombre completo</div>
       </div>
 
+      <!-- 📧 EMAIL -->
+      <div class="mt-3">
+        <label for="input-email" class="form-label text-uppercase text-secondary">Correo electrónico</label>
+        <input type="email" class="form-control text-secondary" id="input-email" placeholder="ejemplo@correo.com"
+          required [(ngModel)]="email" name="email" />
+        <div class="valid-feedback">Correcto</div>
+        <div class="invalid-feedback">Debes introducir un email válido</div>
+      </div>
+
+      <!-- 🔒 CONTRASEÑA -->
+      <div class="mt-3">
+        <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña</label>
+        <input type="password" class="form-control text-secondary" id="input-password" placeholder="********" required
+          [(ngModel)]="password" name="password" minlength="6" />
+        <div class="valid-feedback">Correcto</div>
+        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres</div>
+      </div>
+
+
       <!-- 🔖 TÍTULO IDENTIFICATIVO -->
       <div class="mt-3">
         <label for="input-title" class="form-label text-uppercase text-secondary">Título identificativo</label>
@@ -184,6 +203,7 @@
       <div class="row bg-white rounded-1 shadow p-4 px-2">
 
         <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
+        <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
         <div class="row d-flex align-items-end">
           <div class="col-12 col-md-9">
             <label for="input-tec" class="form-label text-uppercase text-secondary">Habilidades</label>
@@ -191,6 +211,31 @@
               name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe una tecnología"
               (change)="onTecnologiaChange()">
             </ng-select>
+
+            <!-- Selector de nivel si NO se selecciona 'Otros' -->
+            <!-- <div class="row mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+              <div class="col-md-4">
+                <label class="form-label text-uppercase text-secondary">Nivel</label>
+                <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
+                  <option value="" disabled selected>Selecciona un nivel</option>
+                  <option *ngFor="let nivel of niveles" [value]="nivel">{{ nivel | titlecase }}</option>
+                </select>
+              </div>
+            </div>
+          </div> -->
+            <!-- Selector de nivel solo cuando no se selecciona 'Otros' -->
+            <div class="row mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+              <div class="col-md-4">
+                <label class="form-label text-uppercase text-secondary">Nivel</label>
+                <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
+                  <option value="" disabled selected>Selecciona un nivel</option>
+                  <option *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
+                    [value]="nivel">
+                    {{ nivel | titlecase }}
+                  </option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <div class="col d-flex justify-content-end">
@@ -202,12 +247,12 @@
         </div>
 
         <!-- Si se selecciona 'Otros', mostrar campos para nueva tecnología -->
-        <div class="row mt-3" *ngIf="tecnologiaSeleccionada === 'Otros'">
+        <div class="row mt-3" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
           <div class="col-md-4">
             <label class="form-label text-uppercase text-secondary">Tipo</label>
             <select class="form-select" [(ngModel)]="nuevaTecnologia.tipo" name="tipoTecnologia" required>
               <option value="" disabled selected>Selecciona un tipo</option>
-              <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">{{ tiposTecnologiaMap[tipo] }}</option>
+              <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">{{ tiposTecnologiaMap[tipo] | titlecase }}</option>
             </select>
           </div>
           <div class="col-md-5">
@@ -215,25 +260,44 @@
             <input class="form-control" [(ngModel)]="nuevaTecnologia.nombre" name="nombreTecnologia"
               placeholder="Ej: Figma" required>
           </div>
+          <!-- Select de Nivel -->
+          <div class="col-md-3">
+            <label class="form-label text-uppercase text-secondary">Nivel</label>
+            <select class="form-select" [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia" required>
+              <option value="" disabled selected>Selecciona un nivel</option>
+              <option *ngFor="let nivel of nivelesMap[nuevaTecnologia.tipo] || nivelesMap['default']" [value]="nivel">
+                {{ nivel  | titlecase}}
+              </option>
+            </select>
+          </div>
           <div class="col-md-3 d-flex align-items-end justify-content-end">
             <button type="button" class="btn btn-success" (click)="agregarNuevaTecnologiaLocal()">Agregar</button>
           </div>
         </div>
 
-        <!-- Lista de tecnologías añadidas -->
-        <div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
-          <div class="col-12">
-            <h6 class="text-secondary">Tecnologías añadidas:</h6>
-            <ul class="list-group">
-              <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
-                class="list-group-item d-flex justify-content-between">
-                {{ tec }}
-                <button type="button" class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)"><i
-                    class="bi bi-x"></i></button>
-              </li>
-            </ul>
-          </div>
-        </div>
+<!-- Lista de tecnologías añadidas -->
+<div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
+  <div class="col-12">
+    <h6 class="text-secondary">Tecnologías añadidas:</h6>
+    <ul class="list-group">
+      <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index" class="list-group-item d-flex justify-content-between">
+        <!-- Mostrar el tipo, nombre y nivel -->
+        <span class="text-secondary">
+          {{ tiposTecnologiaMap[tec.tipo] }}: <span class="text-black">{{ tec.nombre | titlecase }}</span>
+          <span *ngIf="tec.pivot?.nivel">
+            ({{ tec.pivot.nivel | titlecase }})
+          </span>
+        </span>
+        <button type="button" class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)">
+          <i class="bi bi-x"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+
 
 
         <!-- 📆 PROMOCIÓN -->
