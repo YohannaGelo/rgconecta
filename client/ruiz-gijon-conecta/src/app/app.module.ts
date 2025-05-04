@@ -15,6 +15,7 @@ import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ImageCropperModule } from 'ngx-image-cropper';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AppRoutingModule,
     FormsModule, 
     HttpClientModule,
-    NgSelectModule
+    NgSelectModule,
+    ImageCropperModule
   ],
   providers: [],
   bootstrap: [AppComponent]

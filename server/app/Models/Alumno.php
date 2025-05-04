@@ -14,7 +14,7 @@ class Alumno extends Model
         'fecha_nacimiento',
         'situacion_laboral',
         'is_verified',
-        'foto_perfil',
+        // 'foto_perfil',
         'titulo_profesional',
         'promocion'
     ];

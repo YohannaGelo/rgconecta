@@ -52,7 +52,9 @@ class ProfesorController extends Controller
             'user.password' => 'required|string|min:6',
 
             'departamento' => 'required|string|max:255',
-            'foto_perfil' => 'nullable|string',
+            // 'foto_perfil' => 'nullable|string',
+            'user.foto_perfil' => 'nullable|string',
+
         ]);
 
         DB::beginTransaction();
@@ -63,14 +65,16 @@ class ProfesorController extends Controller
                 'name' => $request->user['name'],
                 'email' => $request->user['email'],
                 'password' => Hash::make($request->user['password']),
-                'role' => 'profesor'
+                'role' => 'profesor',
+                'foto_perfil' => $request->user['foto_perfil'] ?? null,
+
             ]);
 
             // 2. Crear el profesor
             $profesor = Profesor::create([
                 'user_id' => $user->id,
                 'departamento' => $request->departamento,
-                'foto_perfil' => $request->foto_perfil ?? null
+                // 'foto_perfil' => $request->foto_perfil ?? null
             ]);
 
             DB::commit();

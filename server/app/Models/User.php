@@ -29,6 +29,7 @@ class User extends Authenticatable implements RoleCheck
         'email',
         'password',
         'role',
+        'foto_perfil',
     ];
 
     // Relaciones

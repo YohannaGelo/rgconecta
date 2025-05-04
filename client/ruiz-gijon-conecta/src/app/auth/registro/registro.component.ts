@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 
+import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
+
 @Component({
   selector: 'app-registro',
   standalone: false,
@@ -23,7 +25,15 @@ export class RegistroComponent implements OnInit {
   fechaNacimiento: string = '';
   tecnologia: string = '';
   promocion: string = '';
+
   imagenPerfil: File | null = null;
+
+  // Variables para el cropper (IMAGEN)
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  showCropper = false;
+  transform: ImageTransform = {};
+  rotation = 0;
 
   // Array para los títulos disponibles (desde la API)
   titulosDisponibles: any[] = [];
@@ -95,14 +105,6 @@ export class RegistroComponent implements OnInit {
     this.cargarTitulos(); // Llamar al método para cargar los títulos disponibles
     this.cargarEmpresas(); // Llamar al método para cargar las empresas disponibles
     this.cargarTecnologias(); // Llamar al método para cargar las tecnologías disponibles
-  }
-
-  // Maneja la carga de la imagen
-  onImageChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.imagenPerfil = file;
-    }
   }
 
   cargarTitulos(): void {
@@ -206,23 +208,6 @@ export class RegistroComponent implements OnInit {
     }
   }
 
-  // agregarExperiencia(): void {
-  //   if (this.empresaSeleccionada && this.comienzoExperiencia && this.finExperiencia) {
-  //     this.experiencias.push({
-  //       empresa: this.empresaSeleccionada,
-  //       comienzo: this.comienzoExperiencia,
-  //       fin: this.finExperiencia,
-  //     });
-
-  //     // Limpiar campos
-  //     this.empresaSeleccionada = '';
-  //     this.comienzoExperiencia = '';
-  //     this.finExperiencia = '';
-  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
-  //   } else {
-  //     alert('Por favor, completa todos los campos de experiencia.');
-  //   }
-  // }
   agregarExperiencia(): void {
     let nombreEmpresa: string;
 
@@ -305,8 +290,50 @@ export class RegistroComponent implements OnInit {
     this.titulosSeleccionados.splice(index, 1);
   }
 
+  // IMAGEN
+  // Método para manejar el cambio de imagen
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedImage = event.base64;
+  }
+
+  // Métodos para rotación
+  rotateLeft() {
+    this.rotation -= 90;
+    this.updateTransform();
+  }
+
+  rotateRight() {
+    this.rotation += 90;
+    this.updateTransform();
+  }
+
+  private updateTransform() {
+    this.transform = {
+      ...this.transform,
+      rotate: this.rotation,
+    };
+  }
+
   // Enviar datos de registro
   onSubmit(): void {
+    // Validar formato de promoción y que el segundo año sea mayor
+    const promocionRegex = /^\d{4} \/ \d{4}$/;
+    if (!promocionRegex.test(this.promocion)) {
+      alert('La promoción debe tener el formato "2023 / 2025"');
+      return;
+    }
+
+    const [inicio, fin] = this.promocion.split(' / ').map(Number);
+    if (fin <= inicio) {
+      alert('El año final debe ser mayor que el inicial en la promoción');
+      return;
+    }
+
     const formData = new FormData();
 
     // Agregar los campos del formulario al FormData
@@ -359,8 +386,12 @@ export class RegistroComponent implements OnInit {
     }
 
     // Si el usuario sube una imagen, la agregamos al FormData
-    if (this.imagenPerfil) {
-      formData.append('imagen', this.imagenPerfil, this.imagenPerfil.name);
+    if (this.croppedImage) {
+      // Convertir base64 a File
+      const file = this.base64ToFile(this.croppedImage, 'avatar.jpg');
+      // Agregar la imagen al FormData
+      formData.append('imagen', file, file.name);
+      console.log('Imagen lista para subir:', file);
     }
 
     // Llamada al servicio de registro
@@ -374,5 +405,20 @@ export class RegistroComponent implements OnInit {
         alert('Hubo un error al registrarte. Intenta nuevamente.');
       }
     );
+  }
+
+  // Helper para convertir base64 a File
+  private base64ToFile(dataUrl: string, filename: string): File {
+    const arr = dataUrl.split(',');
+    const mime = arr[0].match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
   }
 }

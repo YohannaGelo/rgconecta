@@ -18,7 +18,7 @@ class Profesor extends Model
     protected $fillable = [
         'user_id',
         'departamento',
-        'foto_perfil'
+        // 'foto_perfil'
     ];
 
     // Relación 1:1 inversa con User

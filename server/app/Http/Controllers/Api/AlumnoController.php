@@ -61,7 +61,8 @@ class AlumnoController extends Controller
             'fecha_nacimiento' => 'required|date',
             'situacion_laboral' => 'required|string',
             'promocion' => 'nullable|string',
-            'foto_perfil' => 'nullable|string',
+            // 'foto_perfil' => 'nullable|string',
+            'user.foto_perfil' => 'nullable|string',
 
             'titulos' => 'array',
             'titulos.*.nombre' => 'required|string',
@@ -91,7 +92,9 @@ class AlumnoController extends Controller
                 'name' => $request->user['name'],
                 'email' => $request->user['email'],
                 'password' => Hash::make($request->user['password']),
-                'role' => 'alumno'
+                'role' => 'alumno',
+                'user.foto_perfil' => $request->user['foto_perfil'] ?? null,
+
             ]);
 
             // 2. Crear alumno
@@ -99,7 +102,7 @@ class AlumnoController extends Controller
                 'user_id' => $user->id,
                 'fecha_nacimiento' => $request->fecha_nacimiento,
                 'situacion_laboral' => $request->situacion_laboral,
-                'foto_perfil' => $request->foto_perfil ?? null,
+                // 'foto_perfil' => $request->foto_perfil ?? null,
                 'is_verified' => $request->is_verified ?? false,
                 'promocion' => $request->promocion ?? null,
             ]);

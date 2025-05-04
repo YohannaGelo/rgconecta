@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('fecha_nacimiento');
             $table->enum('situacion_laboral', ['trabajando', 'buscando_empleo', 'desempleado']);
-            $table->string('foto_perfil')->nullable();
+            // $table->string('foto_perfil')->nullable();
             $table->boolean('is_verified')->default(false); // Validación admin
             $table->string('promocion')->nullable(false);
             $table->timestamps();
