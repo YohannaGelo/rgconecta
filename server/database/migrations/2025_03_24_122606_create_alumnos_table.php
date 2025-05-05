@@ -20,6 +20,7 @@ return new class extends Migration
             // $table->string('foto_perfil')->nullable();
             $table->boolean('is_verified')->default(false); // Validación admin
             $table->string('promocion')->nullable(false);
+            $table->string('titulo_profesional')->nullable();
             $table->timestamps();
         });
         

@@ -61,6 +61,7 @@ class UserSeeder extends Seeder
                 'situacion_laboral' => 'trabajando',
                 'is_verified' => true,
                 'promocion' => '2018/2020',
+                'titulo_profesional' => 'Técnico en Desarrollo de Aplicaciones Web',
             ],
             [
                 'name' => 'Carlos Martínez',
@@ -71,6 +72,7 @@ class UserSeeder extends Seeder
                 'situacion_laboral' => 'buscando_empleo',
                 'is_verified' => true,
                 'promocion' => '2020/2022',
+                'titulo_profesional' => 'Técnico en Sistemas Microinformáticos y Redes',
             ],
         ];
 
@@ -90,6 +92,7 @@ class UserSeeder extends Seeder
                 'situacion_laboral' => $alumnoData['situacion_laboral'],
                 'is_verified' => $alumnoData['is_verified'],
                 'promocion' => $alumnoData['promocion'],
+                'titulo_profesional' => $alumnoData['titulo_profesional'],
             ]);
         }
     }

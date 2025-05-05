@@ -15,8 +15,8 @@ class Alumno extends Model
         'situacion_laboral',
         'is_verified',
         // 'foto_perfil',
-        'titulo_profesional',
-        'promocion'
+        'promocion',
+        'titulo_profesional'
     ];
 
     // Relación con usuarios

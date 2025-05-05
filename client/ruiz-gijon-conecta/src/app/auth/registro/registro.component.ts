@@ -27,6 +27,7 @@ export class RegistroComponent implements OnInit {
   fechaNacimiento: string = '';
   tecnologia: string = '';
   promocion: string = '';
+  tituloProfesional: string = '';
 
   imagenPerfil: File | null = null;
 
@@ -91,9 +92,16 @@ export class RegistroComponent implements OnInit {
     descripcion: '',
   };
   sectoresEmpresa: string[] = [
-    'tecnología',
-    'educación',
+    'tecnologia',
+    'educacion',
     'salud',
+    'construccion',
+    'comercio',
+    'hosteleria',
+    'finanzas',
+    'logistica',
+    'marketing',
+    'industria',
     'diseno',
     'otros',
   ];
@@ -483,6 +491,7 @@ export class RegistroComponent implements OnInit {
       situacion_laboral: this.situacionLaboral,
       is_verified: false,
       promocion: `${inicio}/${fin}`,
+      titulo_profesional: this.tituloProfesional || null,
       titulos: this.titulosSeleccionados.map((t) => ({
         nombre: t.titulo.nombre,
         tipo: t.titulo.tipo_raw, // <-- usa el original
@@ -518,6 +527,7 @@ export class RegistroComponent implements OnInit {
     };
 
     console.log('Datos del alumno a enviar:', alumno);
+    console.log('ALUMNO QUE SE ENVÍA', JSON.stringify(alumno, null, 2));
 
     this.authService.register(alumno).subscribe(
       (res) => {
