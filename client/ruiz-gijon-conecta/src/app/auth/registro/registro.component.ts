@@ -108,15 +108,37 @@ export class RegistroComponent implements OnInit {
 
   // Mapeo para mostrar etiquetas más legibles
   sectoresEmpresaMap: { [key: string]: string } = {
-    tecnología: 'Tecnología',
-    educación: 'Educación',
+    tecnologia: 'Tecnología',
+    educacion: 'Educación',
     salud: 'Salud',
+    construccion: 'Construcción',
+    comercio: 'Comercio',
+    hosteleria: 'Hostelería',
+    finanzas: 'Finanzas',
+    logistica: 'Logística',
+    marketing: 'Marketing',
+    industria: 'Industria',
     diseno: 'Diseño',
     otros: 'Otros',
   };
 
   experiencias: any[] = []; // Guardará la lista de experiencias añadidas
   empresasNuevas: any[] = []; // Guardará las nuevas empresas añadidas
+
+  // CONTRASEÑA
+  confirmPassword: string = '';
+  passwordsCoinciden: boolean = true;
+  passwordValida: boolean = false;
+
+  validarPassword() {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    this.passwordValida = regex.test(this.password);
+    this.validarConfirmPassword(); // fuerza a revisar coincidencia al mismo tiempo
+  }
+
+  validarConfirmPassword() {
+    this.passwordsCoinciden = this.password === this.confirmPassword;
+  }
 
   constructor(
     private authService: AuthService,
@@ -313,34 +335,6 @@ export class RegistroComponent implements OnInit {
     );
   }
 
-  // cargarEmpresas(): void {
-  //   this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
-  //     (response) => {
-  //       // Asegúrate de que la respuesta tiene la propiedad 'data'
-  //       if (response && Array.isArray(response.data)) {
-  //         // this.empresasDisponibles = [
-  //         //   ...response.data.map((e: { nombre: string }) => e.nombre),
-  //         //   'Otras',
-  //         // ];
-  //         this.empresasDisponibles = [
-  //           ...response.data, // guarda objetos completos { nombre, sector, web }
-  //           { nombre: 'Otras' }, // usa un objeto, no solo texto
-  //         ];
-  //       } else {
-  //         console.error(
-  //           'Formato inesperado en la respuesta de empresas',
-  //           response
-  //         );
-  //         this.empresasDisponibles = ['Otras'];
-  //       }
-  //     },
-  //     (error) => {
-  //       console.error('Error al cargar empresas', error);
-  //       this.empresasDisponibles = ['Otras'];
-  //     }
-  //   );
-  // }
-
   onEmpresaChange(): void {
     if (this.empresaSeleccionada !== 'Otras') {
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
@@ -518,13 +512,18 @@ export class RegistroComponent implements OnInit {
         fecha_inicio: `${exp.fecha_inicio}-01-01`,
         fecha_fin: `${exp.fecha_fin}-12-31`,
       })),
-
-      // experiencias: this.experiencias.map((exp) => ({
-      //   empresa: exp.empresa,
-      //   fecha_inicio: exp.comienzo,
-      //   fecha_fin: exp.fin,
-      // })),
     };
+
+    if (!this.passwordValida) {
+      alert('La contraseña no cumple con los requisitos mínimos');
+      return;
+    }
+    
+    if (!this.passwordsCoinciden) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+    
 
     console.log('Datos del alumno a enviar:', alumno);
     console.log('ALUMNO QUE SE ENVÍA', JSON.stringify(alumno, null, 2));
@@ -535,11 +534,9 @@ export class RegistroComponent implements OnInit {
         this.router.navigate(['/login']);
       },
       (err) => {
-        // console.error('Error al crear alumno', err);
-        // alert('Hubo un error al registrarte. Intenta nuevamente.');
         console.error('Error al crear alumno', err);
         if (err.status === 422) {
-          console.error('Errores de validación:', err.error.errors); // Laravel suele enviar esto
+          console.error('Errores de validación:', err.error.errors);
         }
       }
     );
