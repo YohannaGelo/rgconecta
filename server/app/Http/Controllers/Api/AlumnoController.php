@@ -61,6 +61,7 @@ class AlumnoController extends Controller
             'fecha_nacimiento' => 'required|date',
             'situacion_laboral' => 'required|string',
             'promocion' => 'nullable|string',
+            'titulo_profesional' => 'nullable|string',
             'user.foto_perfil' => 'nullable|string',
 
             'titulos' => 'array',
@@ -90,7 +91,9 @@ class AlumnoController extends Controller
             $fotoUrl = 'default.jpg';
             $fotoPublicId = null;
 
-            if ($request->user['foto_perfil']) {
+            // if ($request->user['foto_perfil']) {
+            if ($request->input('user.foto_perfil')) {
+
                 $cloudinary = new Cloudinary(config('cloudinary'));
                 $uploadedImage = $cloudinary->uploadApi()->upload($request->user['foto_perfil'], [
                     'folder' => 'usuarios'
@@ -101,13 +104,21 @@ class AlumnoController extends Controller
 
             // Crear usuario
             $user = User::create([
-                'name' => $request->user['name'],
-                'email' => $request->user['email'],
-                'password' => Hash::make($request->user['password']),
+                'name' => $request->input('user.name'),
+                'email' => $request->input('user.email'),
+                'password' => Hash::make($request->input('user.password')),
                 'role' => 'alumno',
                 'foto_perfil' => $fotoUrl,
                 'foto_perfil_public_id' => $fotoPublicId,
             ]);
+            // $user = User::create([
+            //     'name' => $request->user['name'],
+            //     'email' => $request->user['email'],
+            //     'password' => Hash::make($request->user['password']),
+            //     'role' => 'alumno',
+            //     'foto_perfil' => $fotoUrl,
+            //     'foto_perfil_public_id' => $fotoPublicId,
+            // ]);
 
             // Crear alumno
             $alumno = Alumno::create([
@@ -116,6 +127,7 @@ class AlumnoController extends Controller
                 'situacion_laboral' => $request->situacion_laboral,
                 'is_verified' => $request->is_verified ?? false,
                 'promocion' => $request->promocion ?? null,
+                'titulo_profesional' => $request->titulo_profesional ?? null,
             ]);
 
             // Títulos

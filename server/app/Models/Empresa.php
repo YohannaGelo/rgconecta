@@ -19,6 +19,7 @@ class Empresa extends Model
         'logistica',
         'marketing',
         'industria',
+        'diseno',
         'otros'
     ];
 
