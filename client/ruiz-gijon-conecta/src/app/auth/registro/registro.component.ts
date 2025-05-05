@@ -16,7 +16,7 @@ export class RegistroComponent implements OnInit {
   name: string = '';
   email: string = '';
   password: string = '';
-  titulo: any = ''; // Aquí será el objeto del título seleccionado
+  titulo: any = null; // Aquí será el objeto del título seleccionado
   ciclo: string = '';
   comienzoEstudios: string = '';
   finEstudios: string = '';
@@ -73,16 +73,17 @@ export class RegistroComponent implements OnInit {
 
   nivelesMap: { [key: string]: string[] } = {
     idioma: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
-    default: ['basico', 'intermedio', 'avanzado']
+    default: ['basico', 'intermedio', 'avanzado'],
   };
-  
+
   // Nivel seleccionado asociado a la nueva tecnología
   nivelSeleccionado: string = '';
-  
 
   // Array para las empresas disponibles (desde la API)
   empresasDisponibles: any[] = [];
-  empresaSeleccionada: string = '';
+  empresaSeleccionada: any = null;
+  puestoExperiencia: string = '';
+
   nuevaEmpresa = {
     nombre: '',
     sector: '',
@@ -125,12 +126,11 @@ export class RegistroComponent implements OnInit {
   cargarTitulos(): void {
     this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe(
       (response) => {
-        this.titulosDisponibles = response.map((titulo) => {
-          return {
-            ...titulo,
-            tipo: this.formatearTipo(titulo.tipo), // Formateamos el tipo
-          };
-        });
+        this.titulosDisponibles = response.map((titulo) => ({
+          ...titulo,
+          tipo_raw: titulo.tipo, // <-- guarda tipo original
+          tipo: this.formatearTipo(titulo.tipo), // <-- guarda tipo formateado para el select
+        }));
       },
       (error) => {
         console.error('Error al cargar los títulos', error);
@@ -220,24 +220,25 @@ export class RegistroComponent implements OnInit {
       this.tecnologiaSeleccionada.nombre !== 'Otros'
     ) {
       if (
-        !this.tecnologiasSeleccionadas.some((tec) => tec.nombre === this.tecnologiaSeleccionada.nombre)
+        !this.tecnologiasSeleccionadas.some(
+          (tec) => tec.nombre === this.tecnologiaSeleccionada.nombre
+        )
       ) {
         const tecnologiaConNivel = {
           ...this.tecnologiaSeleccionada,
-          pivot: { nivel: this.nivelSeleccionado || '' } // Añadir nivel
+          pivot: { nivel: this.nivelSeleccionado || '' }, // Añadir nivel
         };
         this.tecnologiasSeleccionadas.push(tecnologiaConNivel);
       }
-  
+
       this.tecnologiaSeleccionada = null;
       this.nivelSeleccionado = '';
     }
   }
-  
 
   agregarNuevaTecnologiaLocal(): void {
     console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
-  
+
     if (
       this.nuevaTecnologia.nombre &&
       this.nuevaTecnologia.tipo &&
@@ -246,139 +247,91 @@ export class RegistroComponent implements OnInit {
       const nuevaTecnologia = {
         nombre: this.nuevaTecnologia.nombre,
         tipo: this.nuevaTecnologia.tipo,
-        pivot: { nivel: this.nuevaTecnologia.pivot.nivel }
+        pivot: { nivel: this.nuevaTecnologia.pivot.nivel },
       };
-  
-      if (!this.tecnologiasSeleccionadas.some(t => t.nombre === nuevaTecnologia.nombre)) {
+
+      if (
+        !this.tecnologiasSeleccionadas.some(
+          (t) => t.nombre === nuevaTecnologia.nombre
+        )
+      ) {
         this.tecnologiasSeleccionadas.push(nuevaTecnologia);
       }
-  
+
       if (!this.tecnologiasDisponibles.includes(nuevaTecnologia.nombre)) {
         this.tecnologiasDisponibles.push(nuevaTecnologia.nombre);
       }
-  
+
       this.tecnologiaSeleccionada = null;
       this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
     } else {
       console.warn('Faltan datos al agregar tecnología', this.nuevaTecnologia);
     }
   }
-  
-  
-  // agregarNuevaTecnologiaLocal(): void {
-  //   if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
-  //     const nuevaTecnologia = {
-  //       nombre: this.nuevaTecnologia.nombre,
-  //       tipo: this.nuevaTecnologia.tipo,
-  //       pivot: { nivel: this.nuevaTecnologia.pivot.nivel || '' }, // Añadimos el campo pivot
-  //     };
-
-  //     // Agregar a tecnologías seleccionadas
-  //     if (
-  //       !this.tecnologiasSeleccionadas.some(
-  //         (tec) => tec.nombre === nuevaTecnologia.nombre
-  //       )
-  //     ) {
-  //       this.tecnologiasSeleccionadas.push(nuevaTecnologia);
-  //     }
-
-  //     // Agregar a tecnologías disponibles (localmente)
-  //     if (
-  //       !this.tecnologiasDisponibles.some(
-  //         (tec) => tec.nombre === nuevaTecnologia.nombre
-  //       )
-  //     ) {
-  //       this.tecnologiasDisponibles.push(nuevaTecnologia);
-  //     }
-
-  //     // Resetear campos
-  //     this.tecnologiaSeleccionada = null;
-  //     this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
-  //   }
-  // }
 
   eliminarTecnologia(index: number): void {
     this.tecnologiasSeleccionadas.splice(index, 1);
   }
-  // cargarTecnologias(): void {
-  //   this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
-  //     (data) =>
-  //       // (this.tecnologiasDisponibles = [...data.map((t) => t.nombre), 'Otros']),
-  //     (this.tecnologiasDisponibles = [...data.map((t) => t.nombre), 'Otros']),
-  //     (error) => console.error('Error al cargar tecnologías', error)
-  //   );
-  // }
-
-  // // Método para manejar el cambio de selección de tecnología
-  // onTecnologiaChange(): void {
-  //   if (this.tecnologiaSeleccionada !== 'Otros') {
-  //     this.nuevaTecnologia = { nombre: '', tipo: '' };
-  //   }
-  // }
-
-  // agregarTecnologia(): void {
-  //   if (
-  //     this.tecnologiaSeleccionada &&
-  //     this.tecnologiaSeleccionada !== 'Otros'
-  //   ) {
-  //     if (
-  //       !this.tecnologiasSeleccionadas.includes(this.tecnologiaSeleccionada)
-  //     ) {
-  //       this.tecnologiasSeleccionadas.push(this.tecnologiaSeleccionada);
-  //     }
-  //     this.tecnologiaSeleccionada = '';
-  //   }
-  // }
-
-  // agregarNuevaTecnologiaLocal(): void {
-  //   if (this.nuevaTecnologia.nombre && this.nuevaTecnologia.tipo) {
-  //     const nombreTecnologia = this.nuevaTecnologia.nombre;
-
-  //     // Agregar a tecnologías seleccionadas
-  //     if (!this.tecnologiasSeleccionadas.includes(nombreTecnologia)) {
-  //       this.tecnologiasSeleccionadas.push(nombreTecnologia);
-  //     }
-
-  //     // Agregar a tecnologías disponibles (localmente)
-  //     if (!this.tecnologiasDisponibles.includes(nombreTecnologia)) {
-  //       this.tecnologiasDisponibles.push(nombreTecnologia);
-  //     }
-
-  //     // Resetear campos
-  //     this.tecnologiaSeleccionada = '';
-  //     this.nuevaTecnologia = { nombre: '', tipo: '' };
-  //   }
-  // }
-
-  // eliminarTecnologia(index: number): void {
-  //   this.tecnologiasSeleccionadas.splice(index, 1);
-  // }
 
   // #region 🧑🏻‍💻 EXPERIENCIA
   // empresas
+  compareEmpresa = (e1: any, e2: any) =>
+    e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
+
   cargarEmpresas(): void {
     this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
       (response) => {
-        // Asegúrate de que la respuesta tiene la propiedad 'data'
         if (response && Array.isArray(response.data)) {
           this.empresasDisponibles = [
-            ...response.data.map((e: { nombre: string }) => e.nombre),
-            'Otras',
+            ...response.data.map((e: any) => ({
+              nombre: e.nombre,
+              sector: e.sector || 'otros', // si falta sector, pone 'otros'
+              web: e.web || '', // si falta web, pone vacío
+            })),
+            { nombre: 'Otras' }, // opción para crear nueva empresa
           ];
         } else {
           console.error(
             'Formato inesperado en la respuesta de empresas',
             response
           );
-          this.empresasDisponibles = ['Otras'];
+          this.empresasDisponibles = [{ nombre: 'Otras' }];
         }
       },
       (error) => {
         console.error('Error al cargar empresas', error);
-        this.empresasDisponibles = ['Otras'];
+        this.empresasDisponibles = [{ nombre: 'Otras' }];
       }
     );
   }
+
+  // cargarEmpresas(): void {
+  //   this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
+  //     (response) => {
+  //       // Asegúrate de que la respuesta tiene la propiedad 'data'
+  //       if (response && Array.isArray(response.data)) {
+  //         // this.empresasDisponibles = [
+  //         //   ...response.data.map((e: { nombre: string }) => e.nombre),
+  //         //   'Otras',
+  //         // ];
+  //         this.empresasDisponibles = [
+  //           ...response.data, // guarda objetos completos { nombre, sector, web }
+  //           { nombre: 'Otras' }, // usa un objeto, no solo texto
+  //         ];
+  //       } else {
+  //         console.error(
+  //           'Formato inesperado en la respuesta de empresas',
+  //           response
+  //         );
+  //         this.empresasDisponibles = ['Otras'];
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('Error al cargar empresas', error);
+  //       this.empresasDisponibles = ['Otras'];
+  //     }
+  //   );
+  // }
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada !== 'Otras') {
@@ -387,37 +340,89 @@ export class RegistroComponent implements OnInit {
   }
 
   agregarExperiencia(): void {
-    let nombreEmpresa: string;
+    let empresaData;
 
-    if (this.empresaSeleccionada === 'Otras') {
-      if (!this.nuevaEmpresa.nombre) {
-        alert('Debes introducir el nombre de la nueva empresa.');
+    if (this.empresaSeleccionada?.nombre === 'Otras') {
+      if (
+        !this.nuevaEmpresa.nombre ||
+        !this.nuevaEmpresa.sector ||
+        !this.nuevaEmpresa.web
+      ) {
+        alert('Debes introducir el nombre, sector y web de la nueva empresa.');
         return;
       }
-      nombreEmpresa = this.nuevaEmpresa.nombre;
-
-      // Si quieres guardar también el resto de datos para el backend
+      empresaData = {
+        nombre: this.nuevaEmpresa.nombre,
+        sector: this.nuevaEmpresa.sector,
+        web: this.nuevaEmpresa.web,
+      };
       this.empresasNuevas.push({ ...this.nuevaEmpresa });
+    } else if (this.empresaSeleccionada && this.empresaSeleccionada.nombre) {
+      empresaData = {
+        nombre: this.empresaSeleccionada.nombre,
+        sector: this.empresaSeleccionada.sector,
+        web: this.empresaSeleccionada.web,
+      };
     } else {
-      nombreEmpresa = this.empresaSeleccionada;
+      alert('Por favor, selecciona o introduce una empresa.');
+      return;
     }
 
-    if (nombreEmpresa && this.comienzoExperiencia && this.finExperiencia) {
+    if (
+      this.comienzoExperiencia &&
+      this.finExperiencia &&
+      this.puestoExperiencia
+    ) {
       this.experiencias.push({
-        empresa: nombreEmpresa,
-        comienzo: this.comienzoExperiencia,
-        fin: this.finExperiencia,
+        empresa: empresaData,
+        puesto: this.puestoExperiencia,
+        fecha_inicio: this.comienzoExperiencia,
+        fecha_fin: this.finExperiencia,
       });
 
       // Limpiar campos
-      this.empresaSeleccionada = '';
+      this.empresaSeleccionada = null;
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
+      this.puestoExperiencia = '';
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
     } else {
-      alert('Por favor, completa todos los campos.');
+      alert('Por favor, completa todos los campos de la experiencia.');
     }
   }
+
+  // agregarExperiencia(): void {
+  //   let nombreEmpresa: string;
+
+  //   if (this.empresaSeleccionada === 'Otras') {
+  //     if (!this.nuevaEmpresa.nombre) {
+  //       alert('Debes introducir el nombre de la nueva empresa.');
+  //       return;
+  //     }
+  //     nombreEmpresa = this.nuevaEmpresa.nombre;
+
+  //     // Si quieres guardar también el resto de datos para el backend
+  //     this.empresasNuevas.push({ ...this.nuevaEmpresa });
+  //   } else {
+  //     nombreEmpresa = this.empresaSeleccionada;
+  //   }
+
+  //   if (nombreEmpresa && this.comienzoExperiencia && this.finExperiencia) {
+  //     this.experiencias.push({
+  //       empresa: nombreEmpresa,
+  //       comienzo: this.comienzoExperiencia,
+  //       fin: this.finExperiencia,
+  //     });
+
+  //     // Limpiar campos
+  //     this.empresaSeleccionada = '';
+  //     this.comienzoExperiencia = '';
+  //     this.finExperiencia = '';
+  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+  //   } else {
+  //     alert('Por favor, completa todos los campos.');
+  //   }
+  // }
 
   eliminarExperiencia(index: number): void {
     this.experiencias.splice(index, 1);
@@ -455,13 +460,13 @@ export class RegistroComponent implements OnInit {
   // #region ✅ onSubmit()
   // Enviar datos de registro
   onSubmit(): void {
-    const promocionRegex = /^\d{4} \/ \d{4}$/;
+    const promocionRegex = /^\d{4}\/\d{4}$/;
     if (!promocionRegex.test(this.promocion)) {
-      alert('La promoción debe tener el formato "2023 / 2025"');
+      alert('La promoción debe tener el formato "2023/2025"');
       return;
     }
 
-    const [inicio, fin] = this.promocion.split(' / ').map(Number);
+    const [inicio, fin] = this.promocion.split('/').map(Number);
     if (fin <= inicio) {
       alert('El año final debe ser mayor que el inicial en la promoción');
       return;
@@ -479,20 +484,37 @@ export class RegistroComponent implements OnInit {
       is_verified: false,
       promocion: `${inicio}/${fin}`,
       titulos: this.titulosSeleccionados.map((t) => ({
-        nombre: t.titulo.nombre, // suponiendo que "titulo" es un objeto con nombre y tipo
-        tipo: t.titulo.tipo,
+        nombre: t.titulo.nombre,
+        tipo: t.titulo.tipo_raw, // <-- usa el original
         pivot: {
           año_inicio: t.comienzoEstudios,
           año_fin: t.finEstudios,
           institucion: t.empresa,
         },
       })),
-      tecnologias: this.tecnologiasSeleccionadas, 
+      tecnologias: this.tecnologiasSeleccionadas,
       experiencias: this.experiencias.map((exp) => ({
-        empresa: exp.empresa,
-        fecha_inicio: exp.comienzo,
-        fecha_fin: exp.fin,
+        empresa: {
+          nombre: exp.empresa.nombre || exp.empresa, // si es nueva, será string
+          // sector: exp.empresa.sector || '', // rellena vacío si no viene
+          sector: exp.empresa.sector
+            ? exp.empresa.sector
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            : '',
+          web: exp.empresa.web || '', // igual aquí
+        },
+        puesto: exp.puesto,
+        fecha_inicio: `${exp.fecha_inicio}-01-01`,
+        fecha_fin: `${exp.fecha_fin}-12-31`,
       })),
+
+      // experiencias: this.experiencias.map((exp) => ({
+      //   empresa: exp.empresa,
+      //   fecha_inicio: exp.comienzo,
+      //   fecha_fin: exp.fin,
+      // })),
     };
 
     console.log('Datos del alumno a enviar:', alumno);

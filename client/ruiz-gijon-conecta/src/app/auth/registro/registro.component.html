@@ -53,7 +53,7 @@
         <div class="col-md-6">
           <label for="select_titulo" class="form-label text-uppercase text-secondary">Ciclo y especialidad</label>
           <select id="select_titulo" class="form-select" [(ngModel)]="titulo" name="titulo" required>
-            <option [ngValue]="null" disabled selected>Selecciona un título</option>
+            <option [ngValue]="null" disabled selected>Selecciona</option>
             <option *ngFor="let titulo of titulosDisponibles" [ngValue]="titulo">
               {{ titulo.tipo | titlecase }} - {{ titulo.nombre }}
             </option>
@@ -109,14 +109,26 @@
       <div class="row mt-3 align-items-end">
         <div class="col-md-12">
           <label class="form-label text-uppercase text-secondary">(Experiencia) Compañía</label>
-          <ng-select [items]="empresasDisponibles" bindLabel="nombre" [(ngModel)]="empresaSeleccionada"
+          <!-- <ng-select [items]="empresasDisponibles" bindLabel="nombre" [(ngModel)]="empresaSeleccionada"
             name="empresaSeleccionada" placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()">
+          </ng-select> -->
+          <!-- <ng-select [items]="empresasDisponibles" bindLabel="nombre" [(ngModel)]="empresaSeleccionada"
+            name="empresaSeleccionada" placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()">
+          </ng-select> -->
+
+          <ng-select [items]="empresasDisponibles" bindLabel="nombre" [(ngModel)]="empresaSeleccionada"
+            [compareWith]="compareEmpresa" name="empresaSeleccionada" placeholder="Selecciona o escribe una empresa"
+            (change)="onEmpresaChange()">
           </ng-select>
+
+
         </div>
       </div>
 
       <!-- Campos para nueva empresa (si selecciona "Otras") -->
-      <div class="row mt-3" *ngIf="empresaSeleccionada === 'Otras'">
+      <!-- <div class="row mt-3" *ngIf="empresaSeleccionada === 'Otras'"> -->
+      <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre === 'Otras'">
+
         <div class="col-md-4">
           <label class="form-label text-uppercase text-secondary">Nombre</label>
           <input class="form-control" [(ngModel)]="nuevaEmpresa.nombre" name="nombreEmpresa"
@@ -150,6 +162,13 @@
           <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
             [(ngModel)]="finExperiencia" name="finExperiencia" required />
         </div>
+
+        <div class="col-md-4">
+          <label class="form-label text-uppercase text-secondary">Puesto</label>
+          <input class="form-control" [(ngModel)]="puestoExperiencia" name="puestoExperiencia"
+            placeholder="Ej: Desarrollador Frontend" required />
+        </div>
+
         <div class="col-4  d-flex justify-content-end align-items-end">
           <button type="button" class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2 shadow-sm"
             (click)="agregarExperiencia()">
@@ -164,7 +183,8 @@
           <h6 class="text-secondary">Experiencias añadidas:</h6>
           <ul class="list-group">
             <li *ngFor="let exp of experiencias; let i = index" class="list-group-item d-flex justify-content-between">
-              {{ exp.empresa }} ({{ exp.comienzo }} - {{ exp.fin }})
+              {{ exp.empresa.nombre }} [{{ exp.empresa.sector }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
+              exp.fecha_fin }})
               <button type="button" class="btn btn-sm btn-danger" (click)="eliminarExperiencia(i)">
                 <i class="bi bi-x"></i>
               </button>
@@ -203,32 +223,20 @@
       <div class="row bg-white rounded-1 shadow p-4 px-2">
 
         <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
-        <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
         <div class="row d-flex align-items-end">
           <div class="col-12 col-md-9">
             <label for="input-tec" class="form-label text-uppercase text-secondary">Habilidades</label>
             <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" [(ngModel)]="tecnologiaSeleccionada"
-              name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe una tecnología"
+              name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
               (change)="onTecnologiaChange()">
             </ng-select>
 
-            <!-- Selector de nivel si NO se selecciona 'Otros' -->
-            <!-- <div class="row mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
-              <div class="col-md-4">
-                <label class="form-label text-uppercase text-secondary">Nivel</label>
-                <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
-                  <option value="" disabled selected>Selecciona un nivel</option>
-                  <option *ngFor="let nivel of niveles" [value]="nivel">{{ nivel | titlecase }}</option>
-                </select>
-              </div>
-            </div>
-          </div> -->
-            <!-- Selector de nivel solo cuando no se selecciona 'Otros' -->
+            <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
             <div class="row mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
-              <div class="col-md-4">
+              <div class="col-md-9">
                 <label class="form-label text-uppercase text-secondary">Nivel</label>
                 <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
-                  <option value="" disabled selected>Selecciona un nivel</option>
+                  <option value="" disabled selected>Selecciona</option>
                   <option *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
                     [value]="nivel">
                     {{ nivel | titlecase }}
@@ -252,49 +260,51 @@
             <label class="form-label text-uppercase text-secondary">Tipo</label>
             <select class="form-select" [(ngModel)]="nuevaTecnologia.tipo" name="tipoTecnologia" required>
               <option value="" disabled selected>Selecciona un tipo</option>
-              <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">{{ tiposTecnologiaMap[tipo] | titlecase }}</option>
+              <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">{{ tiposTecnologiaMap[tipo] | titlecase }}
+              </option>
             </select>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-6">
             <label class="form-label text-uppercase text-secondary">Nombre</label>
             <input class="form-control" [(ngModel)]="nuevaTecnologia.nombre" name="nombreTecnologia"
               placeholder="Ej: Figma" required>
           </div>
           <!-- Select de Nivel -->
-          <div class="col-md-3">
+          <div class="col-md-8">
             <label class="form-label text-uppercase text-secondary">Nivel</label>
             <select class="form-select" [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia" required>
               <option value="" disabled selected>Selecciona un nivel</option>
               <option *ngFor="let nivel of nivelesMap[nuevaTecnologia.tipo] || nivelesMap['default']" [value]="nivel">
-                {{ nivel  | titlecase}}
+                {{ nivel | titlecase}}
               </option>
             </select>
           </div>
-          <div class="col-md-3 d-flex align-items-end justify-content-end">
+          <div class="col-md-4 d-flex align-items-end justify-content-end">
             <button type="button" class="btn btn-success" (click)="agregarNuevaTecnologiaLocal()">Agregar</button>
           </div>
         </div>
 
-<!-- Lista de tecnologías añadidas -->
-<div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
-  <div class="col-12">
-    <h6 class="text-secondary">Tecnologías añadidas:</h6>
-    <ul class="list-group">
-      <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index" class="list-group-item d-flex justify-content-between">
-        <!-- Mostrar el tipo, nombre y nivel -->
-        <span class="text-secondary">
-          {{ tiposTecnologiaMap[tec.tipo] }}: <span class="text-black">{{ tec.nombre | titlecase }}</span>
-          <span *ngIf="tec.pivot?.nivel">
-            ({{ tec.pivot.nivel | titlecase }})
-          </span>
-        </span>
-        <button type="button" class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)">
-          <i class="bi bi-x"></i>
-        </button>
-      </li>
-    </ul>
-  </div>
-</div>
+        <!-- Lista de tecnologías añadidas -->
+        <div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
+          <div class="col-12">
+            <h6 class="text-secondary">Tecnologías añadidas:</h6>
+            <ul class="list-group">
+              <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
+                class="list-group-item d-flex justify-content-between">
+                <!-- Mostrar el tipo, nombre y nivel -->
+                <span class="text-secondary">
+                  {{ tiposTecnologiaMap[tec.tipo] }}: <span class="text-black">{{ tec.nombre | titlecase }}</span>
+                  <span *ngIf="tec.pivot?.nivel">
+                    ({{ tec.pivot.nivel | titlecase }})
+                  </span>
+                </span>
+                <button type="button" class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)">
+                  <i class="bi bi-x"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
 
 
 
@@ -306,7 +316,7 @@
           <!-- <input type="text" class="form-control text-secondary" id="input_exp" placeholder="2023 / 2025" required
             [(ngModel)]="promocion" name="promocion" /> -->
           <input type="text" class="form-control text-secondary" id="input_exp" placeholder="2023 / 2025" required
-            [(ngModel)]="promocion" name="promocion" pattern="^\d{4} \/ \d{4}$" />
+            [(ngModel)]="promocion" name="promocion" pattern="^\d{4}/\d{4}$" />
           <div class="valid-feedback">Correcto</div>
           <div class="invalid-feedback">Debes completar la promoción en la que estuviste en el centro</div>
         </div>
