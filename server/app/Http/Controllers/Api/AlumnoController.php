@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-
+use Cloudinary\Cloudinary;
 
 class AlumnoController extends Controller
 {
@@ -61,7 +61,6 @@ class AlumnoController extends Controller
             'fecha_nacimiento' => 'required|date',
             'situacion_laboral' => 'required|string',
             'promocion' => 'nullable|string',
-            // 'foto_perfil' => 'nullable|string',
             'user.foto_perfil' => 'nullable|string',
 
             'titulos' => 'array',
@@ -87,27 +86,39 @@ class AlumnoController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Crear usuario
+            // Subir foto a Cloudinary si viene en base64
+            $fotoUrl = 'default.jpg';
+            $fotoPublicId = null;
+
+            if ($request->user['foto_perfil']) {
+                $cloudinary = new Cloudinary(config('cloudinary'));
+                $uploadedImage = $cloudinary->uploadApi()->upload($request->user['foto_perfil'], [
+                    'folder' => 'usuarios'
+                ]);
+                $fotoUrl = $uploadedImage['secure_url'];
+                $fotoPublicId = $uploadedImage['public_id'];
+            }
+
+            // Crear usuario
             $user = User::create([
                 'name' => $request->user['name'],
                 'email' => $request->user['email'],
                 'password' => Hash::make($request->user['password']),
                 'role' => 'alumno',
-                'user.foto_perfil' => $request->user['foto_perfil'] ?? null,
-
+                'foto_perfil' => $fotoUrl,
+                'foto_perfil_public_id' => $fotoPublicId,
             ]);
 
-            // 2. Crear alumno
+            // Crear alumno
             $alumno = Alumno::create([
                 'user_id' => $user->id,
                 'fecha_nacimiento' => $request->fecha_nacimiento,
                 'situacion_laboral' => $request->situacion_laboral,
-                // 'foto_perfil' => $request->foto_perfil ?? null,
                 'is_verified' => $request->is_verified ?? false,
                 'promocion' => $request->promocion ?? null,
             ]);
 
-            // 3. Títulos
+            // Títulos
             foreach ($request->titulos as $titulo) {
                 $tituloModel = Titulo::firstOrCreate([
                     'nombre' => $titulo['nombre'],
@@ -121,7 +132,7 @@ class AlumnoController extends Controller
                 ]);
             }
 
-            // 4. Tecnologías
+            // Tecnologías
             foreach ($request->tecnologias as $tecno) {
                 $tecnologia = Tecnologia::firstOrCreate([
                     'nombre' => $tecno['nombre'],
@@ -130,7 +141,6 @@ class AlumnoController extends Controller
 
                 $nivel = $tecno['pivot']['nivel'];
 
-                // Validar nivel según tipo
                 if ($tecnologia->tipo === 'idioma') {
                     $nivelesValidos = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
                 } else {
@@ -146,7 +156,7 @@ class AlumnoController extends Controller
                 ]);
             }
 
-            // 5. Experiencias
+            // Experiencias
             foreach ($request->experiencias as $exp) {
                 $empresa = Empresa::firstOrCreate(
                     ['nombre' => $exp['empresa']['nombre']],
@@ -177,6 +187,7 @@ class AlumnoController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -186,7 +197,7 @@ class AlumnoController extends Controller
         // Detalle solo para autenticados
         return response()->json(
             $alumno->load([
-                'user:id,name,email',
+                'user:id,name,email,foto_perfil',
                 'titulos',
                 'tecnologias',
                 'opiniones.empresa:id,nombre',
@@ -254,19 +265,26 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno)
     {
-        // Eliminar relaciones relacionadas
-        $alumno->tecnologias()->detach();         // Eliminar tecnologías de la tabla pivote
-        $alumno->experiencias()->delete();        // Eliminar experiencias asociadas
+        $user = $alumno->user;
 
-        // Eliminar el usuario relacionado
-        $alumno->user()->delete();
+        // Si tiene public_id, eliminamos la foto de Cloudinary
+        if ($user->foto_perfil_public_id) {
+            $cloudinary = new Cloudinary(config('cloudinary'));
+            try {
+                $cloudinary->uploadApi()->destroy($user->foto_perfil_public_id);
+            } catch (\Exception $e) {
+                \Log::error('Error al eliminar foto de Cloudinary: ' . $e->getMessage());
+            }
+        }
 
-        // Eliminar el alumno
+        $alumno->tecnologias()->detach();
+        $alumno->experiencias()->delete();
+        $user->delete();
         $alumno->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Alumno y usuario asociado eliminados correctamente.'
+            'message' => 'Alumno, usuario y foto eliminados correctamente.'
         ], 204);
     }
 
