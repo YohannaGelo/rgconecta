@@ -30,6 +30,7 @@ class User extends Authenticatable implements RoleCheck
         'password',
         'role',
         'foto_perfil',
+        'foto_perfil_public_id',
     ];
 
     // Relaciones

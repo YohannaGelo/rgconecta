@@ -11,6 +11,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
+use Cloudinary\Cloudinary;
+
+
 class ProfesorController extends Controller
 {
     /**
@@ -52,29 +55,36 @@ class ProfesorController extends Controller
             'user.password' => 'required|string|min:6',
 
             'departamento' => 'required|string|max:255',
-            // 'foto_perfil' => 'nullable|string',
-            'user.foto_perfil' => 'nullable|string',
-
+            'user.foto_perfil' => 'nullable|string', // base64 desde frontend
         ]);
 
         DB::beginTransaction();
 
         try {
-            // 1. Crear el usuario
+            $fotoUrl = 'default.jpg';
+            $fotoPublicId = null;
+
+            if ($request->user['foto_perfil']) {
+                $cloudinary = new Cloudinary(config('cloudinary'));
+                $uploadedImage = $cloudinary->uploadApi()->upload($request->user['foto_perfil'], [
+                    'folder' => 'usuarios'
+                ]);
+                $fotoUrl = $uploadedImage['secure_url'];
+                $fotoPublicId = $uploadedImage['public_id'];
+            }
+
             $user = User::create([
                 'name' => $request->user['name'],
                 'email' => $request->user['email'],
                 'password' => Hash::make($request->user['password']),
                 'role' => 'profesor',
-                'foto_perfil' => $request->user['foto_perfil'] ?? null,
-
+                'foto_perfil' => $fotoUrl,
+                'foto_perfil_public_id' => $fotoPublicId,
             ]);
 
-            // 2. Crear el profesor
             $profesor = Profesor::create([
                 'user_id' => $user->id,
                 'departamento' => $request->departamento,
-                // 'foto_perfil' => $request->foto_perfil ?? null
             ]);
 
             DB::commit();
@@ -82,14 +92,13 @@ class ProfesorController extends Controller
             return response()->json($profesor->load('user'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([ 
+            return response()->json([
                 'success' => false,
                 'message' => 'Error al crear el profesor.',
                 'error_details' => $e->getMessage()
             ], 500);
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -110,7 +119,7 @@ class ProfesorController extends Controller
 
         $profesor->update($validated);
 
-        return response()->json([ 
+        return response()->json([
             'success' => true,
             'message' => 'Profesor actualizado correctamente.',
             'data' => $profesor->load('user')
@@ -120,17 +129,29 @@ class ProfesorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    // Eliminar un profesor y su usuario asociado
     public function destroy(Profesor $profesor)
     {
-        DB::transaction(function () use ($profesor) {
-            $profesor->user()->delete();
+        $user = $profesor->user;
+
+        // Si tiene public_id, eliminamos la foto de Cloudinary
+        if ($user->foto_perfil_public_id) {
+            $cloudinary = new Cloudinary(config('cloudinary'));
+            try {
+                $cloudinary->uploadApi()->destroy($user->foto_perfil_public_id);
+            } catch (\Exception $e) {
+                \Log::error('Error al eliminar foto de Cloudinary: ' . $e->getMessage());
+            }
+        }
+
+        DB::transaction(function () use ($profesor, $user) {
+            $user->delete();
             $profesor->delete();
         });
 
-        return response()->json([ 
+        return response()->json([
             'success' => true,
-            'message' => 'Profesor y usuario asociado eliminados correctamente.'
+            'message' => 'Profesor, usuario y foto eliminados correctamente.'
         ], 204);
     }
+
 }
