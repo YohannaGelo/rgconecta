@@ -35,13 +35,17 @@ export class AuthService {
   }
 
   // Realizar el registro
-  // register(userData: FormData): Observable<any> {
-  //   return this.http.post(`${this.apiUrl}/alumnos`, userData);
+  // register(userData: any): Observable<any> {
+  //   return this.http.post(`${this.apiUrl}/alumnos`, userData, {
+  //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  //   });
   // }
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/alumnos`, userData, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     });
+    return this.http.post(`${this.apiUrl}/alumnos`, userData, { headers });
   }
   
 
