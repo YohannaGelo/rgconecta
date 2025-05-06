@@ -46,6 +46,18 @@ tail -n 50 storage/logs/laravel.log
 [stacktrace]
 ```
 
+## ACTUALIZAR ANGULAR
+
+```bash
+ng update @angular/core @angular/cli
+
+# necesario para el modal
+ng add @ng-bootstrap/ng-bootstrap
+
+rm -rf node_modules package-lock.json
+npm install
+```
+
 ## Para pedir ejemplos de nuevos alumnos
 
 dame un ejemplo como este de un nuevo alumno con experiencia en una nueva empresa de hosteleria:

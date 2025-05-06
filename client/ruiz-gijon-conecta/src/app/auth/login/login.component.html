@@ -40,12 +40,30 @@
           <div class="text-center mt-3">
             <!-- <p class="mb-0">¿No tienes una cuenta? <a routerLink="/registro" class="text-primary">Regístrate aquí</a></p> -->
             <p class="mb-0">
-              ¿No tienes una cuenta? 
-              <a href="#" (click)="abrirSelectorRegistro()" class="text-primary">Regístrate aquí</a>
-            </p>
+              ¿No tienes una cuenta?
+              <a href="#" class="text-primary" (click)="abrirSelectorRegistro($event)">Regístrate aquí</a>
+            </p>            
           </div>
         </form>
       </div>
+
+      <!-- MODAL -->
+      <ng-template #selectorRegistro let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title">¿Qué tipo de cuenta quieres crear?</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <button class="btn btn-outline-primary m-2" [routerLink]="'/registro'" (click)="modal.close()">
+            👨‍🎓 Antiguo Alumno
+          </button>
+          <button class="btn btn-outline-success m-2" [routerLink]="'/registro-profes'" (click)="modal.close()">
+            👩‍🏫 Profesor
+          </button>
+        </div>
+      </ng-template>
+
+      
     </section>
   </div>
 </div>

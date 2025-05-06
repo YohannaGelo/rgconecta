@@ -47,6 +47,14 @@ export class AuthService {
     });
     return this.http.post(`${this.apiUrl}/alumnos`, userData, { headers });
   }
+
+  registerProfesor(userData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    return this.http.post(`${this.apiUrl}/profesores`, userData, { headers });
+  }
   
 
   // Cerrar sesión
