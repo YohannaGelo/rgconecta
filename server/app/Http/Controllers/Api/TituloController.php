@@ -22,8 +22,8 @@ class TituloController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|unique:titulo,nombre',
             'tipo' => 'required|in:ciclo_medio,ciclo_superior,grado_universitario,master,doctorado',
-            'año_inicio' => 'required|date_format:Y',
-            'año_fin' => 'nullable|date_format:Y',
+            'fecha_inicio' => 'required|date_format:Y',
+            'fecha_fin' => 'nullable|date_format:Y',
             'institucion' => 'required|string',
         ]);
 
@@ -35,8 +35,8 @@ class TituloController extends Controller
 
         // Relacionar el título con el alumno y la tabla pivot
         $alumno->titulos()->attach($titulo->id, [
-            'año_inicio' => $validated['año_inicio'],
-            'año_fin' => $validated['año_fin'],
+            'fecha_inicio' => $validated['fecha_inicio'],
+            'fecha_fin' => $validated['fecha_fin'],
             'institucion' => $validated['institucion'],
         ]);
 

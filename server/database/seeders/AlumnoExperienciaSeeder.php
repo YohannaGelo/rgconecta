@@ -20,21 +20,30 @@ class AlumnoExperienciaSeeder extends Seeder
         foreach ($alumnos as $alumno) {
             $numExperiencias = rand(1, 3);
 
+            $anioActual = date('Y');
+            $anioInicio = rand(2010, $anioActual - 2); // dejamos margen de al menos 2 anios para la fecha_fin
+
             for ($i = 0; $i < $numExperiencias; $i++) {
                 $empresa = $empresas->random();
-                $mesInicio = rand(1, 12);
-                $añoInicio = rand(2018, 2023);
+                $anioFin = $anioInicio + rand(1, 3);
+
+                if ($anioFin > $anioActual) {
+                    $anioFin = null; // experiencia actual
+                }
 
                 $alumno->experiencias()->create([
                     'empresa_id' => $empresa->id,
                     'puesto' => $this->getPuestoAleatorio(),
                     'descripcion' => 'Desarrollo de aplicaciones web y mantenimiento de sistemas.',
-                    'fecha_inicio' => "$añoInicio-$mesInicio-01",
-                    'fecha_fin' => ($i === $numExperiencias - 1) ? null : date('Y-m-d', strtotime("+" . rand(6, 24) . " months", strtotime("$añoInicio-$mesInicio-01"))),
-                    'es_actual' => ($i === $numExperiencias - 1),
+                    'fecha_inicio' => $anioInicio,
+                    'fecha_fin' => $anioFin,
+                    'es_actual' => is_null($anioFin),
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
+
+                // Preparar el próximo inicio (si hay otra experiencia)
+                $anioInicio = $anioFin ? $anioFin + 1 : $anioInicio + 1;
             }
         }
     }
@@ -54,3 +63,4 @@ class AlumnoExperienciaSeeder extends Seeder
         return $puestos[array_rand($puestos)];
     }
 }
+

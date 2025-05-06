@@ -490,8 +490,8 @@ export class RegistroComponent implements OnInit {
         nombre: t.titulo.nombre,
         tipo: t.titulo.tipo_raw, // <-- usa el original
         pivot: {
-          año_inicio: t.comienzoEstudios,
-          año_fin: t.finEstudios,
+          fecha_inicio: t.comienzoEstudios,
+          fecha_fin: t.finEstudios,
           institucion: t.empresa,
         },
       })),
@@ -509,8 +509,8 @@ export class RegistroComponent implements OnInit {
           web: exp.empresa.web || '', // igual aquí
         },
         puesto: exp.puesto,
-        fecha_inicio: `${exp.fecha_inicio}-01-01`,
-        fecha_fin: `${exp.fecha_fin}-12-31`,
+        fecha_inicio: `${exp.fecha_inicio}`,
+        fecha_fin: `${exp.fecha_fin}`,
       })),
     };
 
@@ -531,7 +531,19 @@ export class RegistroComponent implements OnInit {
     this.authService.register(alumno).subscribe(
       (res) => {
         console.log('Alumno creado', res);
-        this.router.navigate(['/login']);
+        // Llamar al login automático
+        this.authService.login(this.email, this.password).subscribe(
+          (loginRes) => {
+            console.log('Login automático exitoso', loginRes);
+            alert('¡Registro completado con éxito!');
+            this.router.navigate(['/ofertas']);
+          },
+          (loginErr) => {
+            console.error('Error en login automático', loginErr);
+            alert('Registro completado, pero hubo un error al iniciar sesión automáticamente. Por favor, haz login manual.');
+            this.router.navigate(['/login']);
+          }
+        );
       },
       (err) => {
         console.error('Error al crear alumno', err);
@@ -540,6 +552,19 @@ export class RegistroComponent implements OnInit {
         }
       }
     );
+    
+    // this.authService.register(alumno).subscribe(
+    //   (res) => {
+    //     console.log('Alumno creado', res);
+    //     this.router.navigate(['/login']);
+    //   },
+    //   (err) => {
+    //     console.error('Error al crear alumno', err);
+    //     if (err.status === 422) {
+    //       console.error('Errores de validación:', err.error.errors);
+    //     }
+    //   }
+    // );
   }
 
   // Helper para convertir base64 a File

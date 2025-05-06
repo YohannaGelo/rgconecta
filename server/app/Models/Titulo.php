@@ -18,7 +18,7 @@ class Titulo extends Model
     // Relación N:M con Alumno (a través de la tabla pivot 'alumno_titulo')
     public function alumnos() {
         return $this->belongsToMany(Alumno::class)
-                    ->withPivot(['año_inicio', 'año_fin', 'institucion'])
+                    ->withPivot(['fecha_inicio', 'fecha_fin', 'institucion'])
                     ->withTimestamps();
     }
 }

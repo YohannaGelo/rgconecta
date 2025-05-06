@@ -30,7 +30,7 @@ class Alumno extends Model
     public function titulos()
     {
         return $this->belongsToMany(Titulo::class, 'alumno_titulo')
-            ->withPivot(['año_inicio', 'año_fin', 'institucion']);
+            ->withPivot(['fecha_inicio', 'fecha_fin', 'institucion']);
     }
 
     // Relación con experiencias

@@ -112,8 +112,8 @@ class AlumnoController extends Controller
             'titulos' => 'array',
             'titulos.*.nombre' => 'required|string',
             'titulos.*.tipo' => 'required|string',
-            'titulos.*.pivot.año_inicio' => 'required|string',
-            'titulos.*.pivot.año_fin' => 'required|string',
+            'titulos.*.pivot.fecha_inicio' => 'required|string',
+            'titulos.*.pivot.fecha_fin' => 'required|string',
             'titulos.*.pivot.institucion' => 'required|string',
 
             'tecnologias' => 'array',
@@ -125,8 +125,8 @@ class AlumnoController extends Controller
             'experiencias.*.empresa.nombre' => 'required|string',
             'experiencias.*.empresa.sector' => ['nullable', 'string', Rule::in(Empresa::SECTORES)],
             'experiencias.*.puesto' => 'required|string',
-            'experiencias.*.fecha_inicio' => 'required|date',
-            'experiencias.*.fecha_fin' => 'nullable|date',
+            'experiencias.*.fecha_inicio' => 'required|string',
+            'experiencias.*.fecha_fin' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -183,8 +183,8 @@ class AlumnoController extends Controller
                 ]);
 
                 $alumno->titulos()->attach($tituloModel->id, [
-                    'año_inicio' => $titulo['pivot']['año_inicio'],
-                    'año_fin' => $titulo['pivot']['año_fin'],
+                    'fecha_inicio' => $titulo['pivot']['fecha_inicio'],
+                    'fecha_fin' => $titulo['pivot']['fecha_fin'],
                     'institucion' => $titulo['pivot']['institucion'],
                 ]);
             }

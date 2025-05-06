@@ -38,23 +38,38 @@
         </a>
     </div>
 
-    <!-- Perfil de Usuario -->
     <section class="col-xl-2 d-flex align-items-center justify-content-center gap-2 mt-3 mt-xl-0">
-
         <!-- NO autenticado -->
         <ng-container *ngIf="!(isAuthenticated$ | async); else loggedIn">
-            <p class="mb-0 fw-semibold">Inicia sesión</p>
-            <a routerLink="/login" class="d-flex align-items-center">
-                <img src="assets/img/perfil.png" alt="Imagen de usuario" class="img-fluid rounded-circle"
-                    style="width: 55px;">
-            </a>
+          <p class="mb-0 fw-semibold">Inicia sesión</p>
+          <a routerLink="/login" class="d-flex align-items-center">
+            <img src="assets/img/perfil.png" alt="Imagen de usuario" class="img-fluid rounded-circle" style="width: 55px;">
+          </a>
         </ng-container>
-
+      
         <!-- SÍ autenticado -->
         <ng-template #loggedIn>
-            <button (click)="logout()" class="btn btn-danger">
-                Logout
-            </button>
+          <div ngbDropdown class="d-flex align-items-center">
+            <div class="me-2 text-end">
+              <p class="mb-0 fw-semibold">{{ currentUser?.name }}</p>
+              <small class="text-uppercase text-muted">{{ currentUser?.role }}</small>
+            </div>
+            <img ngbDropdownToggle [src]="getFotoPerfil(currentUser?.foto_perfil)" alt="Imagen de usuario"
+              class="img-fluid rounded-circle border border-2  shadow-sm" style="width: 55px; cursor: pointer;">
+            <div ngbDropdownMenu>
+              <a class="dropdown-item" routerLink="/mi-perfil">👤 Ver perfil</a>
+              <a *ngIf="currentUser?.role === 'profesor'" class="dropdown-item" routerLink="/verificar-alumnos">
+                ✅ Verificar alumnos
+              </a>
+              <a *ngIf="currentUser?.role === 'admin'" class="dropdown-item" routerLink="/admin">
+                ⚙️ Gestión de cuentas
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" (click)="logout()">🚪 Cerrar sesión</button>
+            </div>
+          </div>
         </ng-template>
-    </section>
+      </section>
+      
+
 </header>
