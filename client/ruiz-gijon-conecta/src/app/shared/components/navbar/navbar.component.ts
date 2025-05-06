@@ -10,12 +10,25 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
   isAuthenticated$: Observable<boolean>;
+  currentUser: any = null;
 
   constructor(private authService: AuthService, private router: Router) {
     this.isAuthenticated$ = this.authService.isAuthenticated;
+  }
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  getFotoPerfil(foto_perfil: string | null): string {
+    if (!foto_perfil) return 'assets/img/perfil.png';
+    if (foto_perfil.startsWith('http')) return foto_perfil;
+    return `assets/img/perfil.png`;
   }
 
   // Para cambiar los estilos del switch del header

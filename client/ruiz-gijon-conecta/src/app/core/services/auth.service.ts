@@ -9,37 +9,52 @@ import { Router } from '@angular/router';
 export class AuthService {
 
   private apiUrl = 'http://localhost:8000/api';
-  private token: string | null = localStorage.getItem('token'); // Intentamos recuperar el token del localStorage
+  private token: string | null = localStorage.getItem('token');
   private isAuthenticatedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!this.token);
+  private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+    if (this.token) {
+      // Si hay token al iniciar, intenta cargar el usuario actual
+      this.loadCurrentUser().subscribe();
+    }
+  }
 
-  // Obtener el estado de autenticación
+  get currentUser(): any {
+    return this.currentUserSubject.value;
+  }
+
+  get currentUser$(): Observable<any> {
+    return this.currentUserSubject.asObservable();
+  }
+
   get isAuthenticated(): Observable<boolean> {
     return this.isAuthenticatedSubject.asObservable();
   }
 
-  // Realizar el login
-  login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password })
-      .pipe(
-        tap(response => {
-          if (response.token) {
-            // Guardamos el token en localStorage y actualizamos el estado
-            localStorage.setItem('token', response.token);
-            this.token = response.token;
-            this.isAuthenticatedSubject.next(true);
-          }
-        })
-      );
+  // Cargar usuario actual desde el backend
+  loadCurrentUser(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
+      tap(user => {
+        this.currentUserSubject.next(user);
+      })
+    );
   }
 
-  // Realizar el registro
-  // register(userData: any): Observable<any> {
-  //   return this.http.post(`${this.apiUrl}/alumnos`, userData, {
-  //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  //   });
-  // }
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(response => {
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          this.token = response.token;
+          this.isAuthenticatedSubject.next(true);
+          this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
+        }
+      })
+    );
+  }
+
   register(userData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -55,18 +70,15 @@ export class AuthService {
     });
     return this.http.post(`${this.apiUrl}/profesores`, userData, { headers });
   }
-  
 
-  // Cerrar sesión
   logout() {
-    // Borramos el token y actualizamos el estado
     localStorage.removeItem('token');
     this.token = null;
     this.isAuthenticatedSubject.next(false);
-    this.router.navigate(['/login']); // Redirigir a login
+    this.currentUserSubject.next(null); // 👈 Limpiamos el usuario al hacer logout
+    this.router.navigate(['/login']);
   }
 
-  // Agregar el token al header de cada solicitud
   getHeaders() {
     return new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
   }

@@ -57,6 +57,11 @@ npm install
 ```
 
 
+## NUEVA MIGRACIÓN + SEEDERS
+```bash
+php artisan migrate:fresh --seed
+```
+
 
 ## VER LOG ERRORES
 
@@ -99,8 +104,8 @@ dame un ejemplo como este de un nuevo alumno con experiencia en una nueva empres
             "nombre": "Técnico en Sistemas Microinformáticos y Redes",
             "tipo": "ciclo_medio",
             "pivot": {
-                "año_inicio": "2018",
-                "año_fin": "2020",
+                "fecha_inicio": "2018",
+                "fecha_fin": "2020",
                 "institucion": "IES Ruiz Gijón"
             }
         },
@@ -108,8 +113,8 @@ dame un ejemplo como este de un nuevo alumno con experiencia en una nueva empres
             "nombre": "Técnico Superior en Desarrollo de Aplicaciones Web",
             "tipo": "ciclo_superior",
             "pivot": {
-                "año_inicio": "2020",
-                "año_fin": "2024",
+                "fecha_inicio": "2020",
+                "fecha_fin": "2024",
                 "institucion": "Universidad de Sevilla"
             }
         }
@@ -162,8 +167,8 @@ posibles titulos:     public function up(): void
         Schema::create('alumno_titulo', function (Blueprint $table) {
             $table->foreignId('alumno_id')->constrained()->onDelete('cascade');
             $table->foreignId('titulo_id')->constrained()->onDelete('cascade');
-            $table->year('año_inicio'); // Año de inicio del estudio
-            $table->year('año_fin')->nullable(); // Año de finalización (nullable si está en curso)
+            $table->year('fecha_inicio'); // Año de inicio del estudio
+            $table->year('fecha_fin')->nullable(); // Año de finalización (nullable si está en curso)
             $table->string('institucion')->default('IES Ruiz Gijón'); // Ej: "Universidad de Sevilla"
             $table->timestamps();
         });

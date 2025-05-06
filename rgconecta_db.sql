@@ -64,8 +64,8 @@ DROP TABLE IF EXISTS `alumno_titulo`;
 CREATE TABLE `alumno_titulo` (
   `alumno_id` bigint(20) unsigned NOT NULL,
   `titulo_id` bigint(20) unsigned NOT NULL,
-  `año_inicio` year(4) NOT NULL,
-  `año_fin` year(4) DEFAULT NULL,
+  `fecha_inicio` year(4) NOT NULL,
+  `fecha_fin` year(4) DEFAULT NULL,
   `institucion` varchar(255) NOT NULL DEFAULT 'IES Ruiz Gijón',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,

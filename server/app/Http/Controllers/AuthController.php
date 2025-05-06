@@ -17,7 +17,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            /** @var User $user */ 
+            /** @var User $user */
             $user = Auth::user();
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -29,6 +29,17 @@ class AuthController extends Controller
 
         return response()->json(['error' => 'Credenciales inválidas'], 401);
     }
+
+    public function me(Request $request)
+    {
+        $user = $request->user(); // Obtiene el usuario autenticado
+
+        // Puedes cargar relaciones si quieres, por ejemplo si el user tiene relación con profesor o alumno
+        // $user->load('alumno', 'profesor');
+
+        return response()->json($user);
+    }
+
 
     public function logout(Request $request)
     {

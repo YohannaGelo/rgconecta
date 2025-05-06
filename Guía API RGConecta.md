@@ -151,8 +151,8 @@ Content-Type: application/json
             "nombre": "Técnico en Sistemas de Información",
             "tipo": "ciclo_medio",
             "pivot": {
-                "año_inicio": "2011",
-                "año_fin": "2013",
+                "fecha_inicio": "2011",
+                "fecha_fin": "2013",
                 "institucion": "IES La Albuera"
             }
         }
