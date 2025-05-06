@@ -16,6 +16,7 @@ import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ImageCropperModule } from 'ngx-image-cropper';
+import { RegistroProfesComponent } from './auth/registro-profes/registro-profes.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     AlumnosComponent,
     OpinionesComponent,
     NuevaOfertaComponent,
-    RegistroComponent
+    RegistroComponent,
+    RegistroProfesComponent
   ],
   imports: [
     BrowserModule,
