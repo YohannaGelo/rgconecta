@@ -18,6 +18,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { RegistroProfesorComponent } from './auth/registro-profes/registro-profes.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     OpinionesComponent,
     NuevaOfertaComponent,
     RegistroComponent,
-    RegistroProfesorComponent
+    RegistroProfesorComponent,
+    DetallesAlumnoComponent
   ],
   imports: [
     BrowserModule,
