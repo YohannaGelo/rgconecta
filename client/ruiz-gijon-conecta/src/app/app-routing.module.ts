@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { OfertasComponent } from './ofertas/ofertas.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
+import { RegistroProfesorComponent } from './auth/registro-profes/registro-profes.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
+  { path: 'registro-profes', component: RegistroProfesorComponent },
   { path: 'ofertas', component: OfertasComponent },
   { path: 'alumnos', component: AlumnosComponent },
   { path: 'opiniones', component: OpinionesComponent },

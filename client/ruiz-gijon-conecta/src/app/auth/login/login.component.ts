@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-login',
@@ -9,11 +10,18 @@ import { Router } from '@angular/router';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  
+  @ViewChild('selectorRegistro') selectorRegistro: any;
 
   email: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private modalService: NgbModal) { }
+
+  abrirSelectorRegistro(event: Event) {
+    event.preventDefault(); // evita que recargue la página
+    this.modalService.open(this.selectorRegistro, { centered: true });
+  }
 
   onSubmit() {
     this.authService.login(this.email, this.password).subscribe(
