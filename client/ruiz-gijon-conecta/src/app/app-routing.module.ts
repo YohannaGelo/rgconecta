@@ -9,6 +9,7 @@ import { RegistroProfesorComponent } from './auth/registro-profes/registro-profe
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
+import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -24,6 +25,11 @@ const routes: Routes = [
     component: NuevaOfertaComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: 'alumnos/:id',
+    component: DetallesAlumnoComponent,
+  },
+  
 ];
 
 @NgModule({

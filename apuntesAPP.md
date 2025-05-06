@@ -36,6 +36,28 @@
 ---
 ---
 
+## ACTUALIZAR PROYECTOS AL CLONAR O SYNC DESDE GITHUB
+
+* **Angular (Client):**
+```bash
+npm install
+```
+
+* **Laravel (Server):**
+```bash
+composer install
+```
+
+---
+
+Si en Laravel además tienes paquetes npm (por ejemplo, para `vite` o frontend con Blade), también haz en la carpeta `server`:
+
+```bash
+npm install
+```
+
+
+
 ## VER LOG ERRORES
 
 ```bash
