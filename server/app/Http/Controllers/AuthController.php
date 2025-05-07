@@ -32,13 +32,40 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $user = $request->user(); // Obtiene el usuario autenticado
+        $user = $request->user();
 
-        // Puedes cargar relaciones si quieres, por ejemplo si el user tiene relación con profesor o alumno
-        // $user->load('alumno', 'profesor');
+        if ($user->role === 'alumno') {
+            $alumno = $user->alumno()->with([
+                'user:id,name,email,foto_perfil,role',
+                'titulos',
+                'tecnologias',
+                'opiniones.empresa:id,nombre',
+                'experiencias.empresa:id,nombre'
+            ])->first();
 
-        return response()->json($user);
+            return response()->json($alumno);
+        }
+
+        if ($user->role === 'profesor') {
+            $profesor = $user->profesor()->with([
+                'user:id,name,email,foto_perfil,role'
+            ])->first();
+
+            return response()->json($profesor);
+        }
+
+        return response()->json($user); // fallback: solo los datos básicos
     }
+
+    // public function me(Request $request)
+    // {
+    //     $user = $request->user(); // Obtiene el usuario autenticado
+
+    //     // Puedes cargar relaciones si quieres, por ejemplo si el user tiene relación con profesor o alumno
+    //     // $user->load('alumno', 'profesor');
+
+    //     return response()->json($user);
+    // }
 
 
     public function logout(Request $request)

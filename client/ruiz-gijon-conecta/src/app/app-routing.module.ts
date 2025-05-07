@@ -10,6 +10,7 @@ import { AlumnosComponent } from './alumnos/alumnos.component';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
+import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -29,6 +30,7 @@ const routes: Routes = [
     path: 'alumnos/:id',
     component: DetallesAlumnoComponent,
   },
+  { path: 'perfil', component: PerfilAlumnoComponent },
   
 ];
 

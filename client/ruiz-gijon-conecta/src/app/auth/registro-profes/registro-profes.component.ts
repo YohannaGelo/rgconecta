@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 
+import { NotificationService } from '../../core/services/notification.service';
+
 @Component({
   selector: 'app-registro-profes',
   standalone: false,
@@ -25,7 +27,7 @@ export class RegistroProfesorComponent {
   passwordsCoinciden: boolean = true;
   passwordValida: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private notificationService: NotificationService) {}
 
   validarPassword() {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -62,12 +64,12 @@ export class RegistroProfesorComponent {
 
   onSubmit(): void {
     if (!this.passwordValida) {
-      alert('La contraseña debe tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.');
+      this.notificationService.warning('La contraseña debe tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.');
       return;
     }
 
     if (!this.passwordsCoinciden) {
-      alert('Las contraseñas no coinciden.');
+      this.notificationService.warning('Las contraseñas no coinciden.');
       return;
     }
 
@@ -82,12 +84,12 @@ export class RegistroProfesorComponent {
     };
 
     if (!this.passwordValida) {
-      alert('La contraseña no cumple con los requisitos mínimos');
+      this.notificationService.warning('La contraseña no cumple con los requisitos mínimos');
       return;
     }
     
     if (!this.passwordsCoinciden) {
-      alert('Las contraseñas no coinciden');
+      this.notificationService.warning('Las contraseñas no coinciden');
       return;
     }
     console.log('Datos del profesor a enviar:', profesor);

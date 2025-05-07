@@ -51,13 +51,15 @@
         <ng-template #loggedIn>
           <div ngbDropdown class="d-flex align-items-center">
             <div class="me-2 text-end">
-              <p class="mb-0 fw-semibold">{{ currentUser?.name }}</p>
-              <small class="text-uppercase text-muted">{{ currentUser?.role }}</small>
+              <p class="mb-0 fw-semibold">{{ currentUser?.user.name }}</p>
+              <small class="text-uppercase text-muted">{{ currentUser?.user.role }}</small>
             </div>
-            <img ngbDropdownToggle [src]="getFotoPerfil(currentUser?.foto_perfil)" alt="Imagen de usuario"
-              class="img-fluid rounded-circle border border-2  shadow-sm" style="width: 55px; cursor: pointer;">
+            <div ngbDropdownToggle class="d-flex align-items-center" style="cursor: pointer;">
+              <img [src]="getFotoPerfil(currentUser?.user.foto_perfil)" alt="Imagen de usuario"
+                class="img-fluid rounded-circle border border-2 shadow-sm me-1" style="width: 55px;">
+            </div>
             <div ngbDropdownMenu>
-              <a class="dropdown-item" routerLink="/mi-perfil">👤 Ver perfil</a>
+              <a class="dropdown-item" routerLink="/perfil">👤 Ver perfil</a>
               <a *ngIf="currentUser?.role === 'profesor'" class="dropdown-item" routerLink="/verificar-alumnos">
                 ✅ Verificar alumnos
               </a>
