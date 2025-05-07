@@ -30,7 +30,6 @@ export class DetallesAlumnoComponent implements OnInit {
       this.notificationService.error(
         'Debes iniciar sesión para ver los detalles del alumno.'
       );
-      // alert('Debes iniciar sesión para ver los detalles del alumno.');
       this.router.navigate(['/login']);
       return;
     }
@@ -48,7 +47,7 @@ export class DetallesAlumnoComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al cargar alumno:', error);
-          alert('No se pudo cargar la información del alumno.');
+          this.notificationService.error('No se pudo cargar la información del alumno.');
         },
       });
   }

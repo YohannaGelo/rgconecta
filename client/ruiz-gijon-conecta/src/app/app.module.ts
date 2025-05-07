@@ -21,6 +21,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     NuevaOfertaComponent,
     RegistroComponent,
     RegistroProfesorComponent,
-    DetallesAlumnoComponent
+    DetallesAlumnoComponent,
+    PerfilAlumnoComponent
   ],
   imports: [
     BrowserModule,

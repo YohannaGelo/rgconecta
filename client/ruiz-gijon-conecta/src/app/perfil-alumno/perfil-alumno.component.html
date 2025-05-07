@@ -1,0 +1,256 @@
+<div class="container py-4">
+
+    <!-- Card 1: Imagen + Datos personales -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">👤 Datos personales</h5>
+        </div>
+        <div class="card-body d-flex">
+            <!-- Imagen -->
+            <!-- <div class="me-4 text-center">
+                <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
+                    style="width: 150px; height: 150px; object-fit: cover;">
+
+                <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
+                <div *ngIf="showCropper" class="mt-2">
+                    <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                        [aspectRatio]="1" [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)"
+                        style="max-height: 200px;"></image-cropper>
+                    <div class="mt-2 d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateLeft()">Rotar izquierda</button>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateRight()">Rotar derecha</button>
+                    </div>
+                </div>
+            </div> -->
+            <div class="me-4 text-center">
+                <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
+                    style="width: 150px; height: 150px; object-fit: cover;">
+            
+                <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
+            
+                <div *ngIf="showCropper" class="mt-2">
+                    <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                        [aspectRatio]="1" [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)"
+                        style="max-height: 200px;">
+                    </image-cropper>
+            
+                    <div class="mt-2 d-flex gap-2 justify-content-center">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateLeft()">Rotar izquierda</button>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateRight()">Rotar derecha</button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="cancelarImagen()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- Datos personales -->
+            <div class="flex-grow-1">
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" [(ngModel)]="user.name" name="name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Correo electrónico</label>
+                    <input type="email" class="form-control" [(ngModel)]="user.email" name="email" readonly>
+                </div>
+                <div class="mb-3 d-flex align-items-center gap-2">
+                    <span class="fw-bold">Contraseña</span>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#changePasswordModal">
+                        Cambiar contraseña
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Título profesional</label>
+                    <input type="text" class="form-control" [(ngModel)]="alumno.titulo_profesional"
+                        name="tituloProfesional">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha de nacimiento</label>
+                    <input type="date" class="form-control" [(ngModel)]="alumno.fecha_nacimiento"
+                        name="fechaNacimiento">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Situación laboral</label>
+                    <select class="form-select" [(ngModel)]="alumno.situacion_laboral" name="situacionLaboral">
+                        <option value="trabajando">Trabajando</option>
+                        <option value="buscando_empleo">Buscando empleo</option>
+                        <option value="desempleado">Desempleado</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Promoción (IES Ruiz Gijón)</label>
+                    <input type="text" class="form-control" [(ngModel)]="alumno.promocion" name="promocion">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Títulos -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🎓 Títulos</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group mb-3">
+                <li *ngFor="let t of titulosSeleccionados; let i = index"
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ t.nombre }} ({{ t.tipo }}) - {{ t.pivot.fecha_inicio }} a {{ t.pivot.fecha_fin }} - {{
+                    t.pivot.institucion }}
+                    <button class="btn btn-sm btn-danger" (click)="eliminarTitulo(i)"><i
+                            class="bi bi-trash"></i></button>
+                </li>
+
+            </ul>
+            <!-- Formulario añadir título -->
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <select class="form-select" [(ngModel)]="titulo" name="titulo">
+                        <option [ngValue]="null" disabled selected>Selecciona título</option>
+                        <option *ngFor="let t of titulosDisponibles" [ngValue]="t">
+                            {{ t.tipo }} - {{ t.nombre }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Inicio" [(ngModel)]="comienzoEstudios"
+                        name="comienzoEstudios">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Fin" [(ngModel)]="finEstudios"
+                        name="finEstudios">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Institución" [(ngModel)]="empresa"
+                        name="empresa">
+                </div>
+                <div class="col-md-1 d-flex align-items-center">
+                    <button class="btn btn-success" (click)="agregarTitulo()"><i class="bi bi-plus"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Card 3: Experiencias -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🏢 Experiencias</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group mb-3">
+                <li *ngFor="let exp of experiencias; let i = index"
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ exp.empresa.nombre }} [{{ exp.empresa.sector }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
+                    exp.fecha_fin }})
+                    <button class="btn btn-sm btn-danger" (click)="eliminarExperiencia(i)"><i
+                            class="bi bi-trash"></i></button>
+                </li>
+            </ul>
+            <!-- Formulario añadir experiencia -->
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Empresa" [(ngModel)]="nuevaEmpresa.nombre"
+                        name="nombreEmpresa">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Sector" [(ngModel)]="nuevaEmpresa.sector"
+                        name="sectorEmpresa">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Inicio" [(ngModel)]="comienzoExperiencia"
+                        name="comienzoExperiencia">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Fin" [(ngModel)]="finExperiencia"
+                        name="finExperiencia">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Puesto" [(ngModel)]="puestoExperiencia"
+                        name="puestoExperiencia">
+                </div>
+                <div class="col-md-1 d-flex align-items-center">
+                    <button class="btn btn-success" (click)="agregarExperiencia()"><i class="bi bi-plus"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Card 4: Tecnologías -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">💻 Tecnologías</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group mb-3">
+                <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
+                    class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ tiposTecnologiaMap[tec.tipo] }}: {{ tec.nombre }} ({{ tec.pivot.nivel }})
+                    <button class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)"><i
+                            class="bi bi-trash"></i></button>
+                </li>
+            </ul>
+            <!-- Formulario añadir tecnología -->
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <select class="form-select" [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada"
+                        (change)="onTecnologiaChange()">
+                        <option [ngValue]="null" disabled selected>Selecciona tecnología</option>
+                        <option *ngFor="let t of tecnologiasDisponibles" [ngValue]="t">{{ t.nombre }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
+                    <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
+                        <option [ngValue]="null" disabled selected>Selecciona nivel</option>
+                        <option *ngFor="let n of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
+                            [value]="n">
+                            {{ n }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
+                    <input type="text" class="form-control" placeholder="Nombre nueva tecnología"
+                        [(ngModel)]="nuevaTecnologia.nombre" name="nombreNuevaTecnologia">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success"
+                        (click)="tecnologiaSeleccionada?.nombre === 'Otros' ? agregarNuevaTecnologiaLocal() : agregarTecnologia()">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Card 5: Botón Guardar -->
+    <div class="text-center mt-4">
+        <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
+            <i class="bi bi-save"></i> Guardar perfil
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Cambiar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Aquí puedes implementar el formulario para cambiar contraseña.</p>
+                <!-- Formulario real por implementar -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar nueva contraseña</button>
+            </div>
+        </div>
+    </div>
+</div>

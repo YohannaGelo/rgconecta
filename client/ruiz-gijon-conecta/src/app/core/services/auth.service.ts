@@ -4,14 +4,16 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   private apiUrl = 'http://localhost:8000/api';
   private token: string | null = localStorage.getItem('token');
-  private isAuthenticatedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!this.token);
-  private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private isAuthenticatedSubject: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(!!this.token);
+  private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
+    null
+  );
 
   constructor(private http: HttpClient, private router: Router) {
     if (this.token) {
@@ -36,29 +38,31 @@ export class AuthService {
   loadCurrentUser(): Observable<any> {
     const headers = this.getHeaders();
     return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
-      tap(user => {
+      tap((user) => {
         this.currentUserSubject.next(user);
       })
     );
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
-      tap(response => {
-        if (response.token) {
-          localStorage.setItem('token', response.token);
-          this.token = response.token;
-          this.isAuthenticatedSubject.next(true);
-          this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
-        }
-      })
-    );
+    return this.http
+      .post<any>(`${this.apiUrl}/login`, { email, password })
+      .pipe(
+        tap((response) => {
+          if (response.token) {
+            localStorage.setItem('token', response.token);
+            this.token = response.token;
+            this.isAuthenticatedSubject.next(true);
+            this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
+          }
+        })
+      );
   }
 
   register(userData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      Accept: 'application/json',
     });
     return this.http.post(`${this.apiUrl}/alumnos`, userData, { headers });
   }
@@ -66,9 +70,14 @@ export class AuthService {
   registerProfesor(userData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      Accept: 'application/json',
     });
     return this.http.post(`${this.apiUrl}/profesores`, userData, { headers });
+  }
+
+  // Método para actualizar el perfil del alumno
+  updateProfile(alumno: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno);
   }
 
   logout() {
