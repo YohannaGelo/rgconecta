@@ -19,6 +19,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { RegistroProfesorComponent } from './auth/registro-profes/registro-profes.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,13 @@ import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.compo
     HttpClientModule,
     NgSelectModule,
     ImageCropperModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      timeOut: 3000, // 3 segundos
+      positionClass: 'toast-top-right', // arriba a la derecha
+      preventDuplicates: true, // evita mensajes repetidos
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,3 +1,21 @@
+# IMPLEMENTADAS
+
+## cloudinay en laravel para imagenes
+
+sube imagenes y recupera la url
+
+## toastr en angular 
+
+para mostrar alert personalizados
+
+
+
+
+---
+
+# POSIBILIDADES
+
+
 ## Crear app android e iOS
 
 Perfecto, ¡vas con ventaja entonces! 👏 Si ya tienes el diseño hecho en Bootstrap + Sass, eso te permite avanzar muy rápido en Angular sin preocuparte demasiado por el estilado.
