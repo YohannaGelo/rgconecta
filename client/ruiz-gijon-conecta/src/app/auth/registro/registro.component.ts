@@ -5,6 +5,9 @@ import { HttpClient } from '@angular/common/http';
 
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 
+import { NotificationService } from '../../core/services/notification.service';
+
+
 @Component({
   selector: 'app-registro',
   standalone: false,
@@ -143,7 +146,8 @@ export class RegistroComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -164,7 +168,7 @@ export class RegistroComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar los títulos', error);
-        alert('Hubo un error al cargar los títulos. Intenta nuevamente.');
+        this.notificationService.error('Hubo un error al cargar los títulos. Intenta nuevamente.');
       }
     );
   }
@@ -205,7 +209,7 @@ export class RegistroComponent implements OnInit {
       this.finEstudios = '';
       this.empresa = '';
     } else {
-      alert('Por favor, completa todos los campos.');
+      this.notificationService.warning('Por favor, completa todos los campos.');
     }
   }
 
@@ -350,7 +354,7 @@ export class RegistroComponent implements OnInit {
         !this.nuevaEmpresa.sector ||
         !this.nuevaEmpresa.web
       ) {
-        alert('Debes introducir el nombre, sector y web de la nueva empresa.');
+        this.notificationService.warning('Debes introducir el nombre, sector y web de la nueva empresa.');
         return;
       }
       empresaData = {
@@ -366,7 +370,7 @@ export class RegistroComponent implements OnInit {
         web: this.empresaSeleccionada.web,
       };
     } else {
-      alert('Por favor, selecciona o introduce una empresa.');
+      this.notificationService.warning('Por favor, selecciona o introduce una empresa.');
       return;
     }
 
@@ -389,42 +393,9 @@ export class RegistroComponent implements OnInit {
       this.puestoExperiencia = '';
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
     } else {
-      alert('Por favor, completa todos los campos de la experiencia.');
+      this.notificationService.warning('Por favor, completa todos los campos de la experiencia.');
     }
   }
-
-  // agregarExperiencia(): void {
-  //   let nombreEmpresa: string;
-
-  //   if (this.empresaSeleccionada === 'Otras') {
-  //     if (!this.nuevaEmpresa.nombre) {
-  //       alert('Debes introducir el nombre de la nueva empresa.');
-  //       return;
-  //     }
-  //     nombreEmpresa = this.nuevaEmpresa.nombre;
-
-  //     // Si quieres guardar también el resto de datos para el backend
-  //     this.empresasNuevas.push({ ...this.nuevaEmpresa });
-  //   } else {
-  //     nombreEmpresa = this.empresaSeleccionada;
-  //   }
-
-  //   if (nombreEmpresa && this.comienzoExperiencia && this.finExperiencia) {
-  //     this.experiencias.push({
-  //       empresa: nombreEmpresa,
-  //       comienzo: this.comienzoExperiencia,
-  //       fin: this.finExperiencia,
-  //     });
-
-  //     // Limpiar campos
-  //     this.empresaSeleccionada = '';
-  //     this.comienzoExperiencia = '';
-  //     this.finExperiencia = '';
-  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
-  //   } else {
-  //     alert('Por favor, completa todos los campos.');
-  //   }
-  // }
 
   eliminarExperiencia(index: number): void {
     this.experiencias.splice(index, 1);
@@ -464,13 +435,13 @@ export class RegistroComponent implements OnInit {
   onSubmit(): void {
     const promocionRegex = /^\d{4}\/\d{4}$/;
     if (!promocionRegex.test(this.promocion)) {
-      alert('La promoción debe tener el formato "2023/2025"');
+      this.notificationService.warning('La promoción debe tener el formato "2023/2025"');
       return;
     }
 
     const [inicio, fin] = this.promocion.split('/').map(Number);
     if (fin <= inicio) {
-      alert('El año final debe ser mayor que el inicial en la promoción');
+      this.notificationService.warning('El año final debe ser mayor que el inicial en la promoción');
       return;
     }
 
@@ -515,12 +486,12 @@ export class RegistroComponent implements OnInit {
     };
 
     if (!this.passwordValida) {
-      alert('La contraseña no cumple con los requisitos mínimos');
+      this.notificationService.error('La contraseña no cumple con los requisitos mínimos');
       return;
     }
     
     if (!this.passwordsCoinciden) {
-      alert('Las contraseñas no coinciden');
+      this.notificationService.error('Las contraseñas no coinciden');
       return;
     }
     
@@ -535,12 +506,12 @@ export class RegistroComponent implements OnInit {
         this.authService.login(this.email, this.password).subscribe(
           (loginRes) => {
             console.log('Login automático exitoso', loginRes);
-            alert('¡Registro completado con éxito!');
+            this.notificationService.success('¡Registro completado con éxito!');
             this.router.navigate(['/ofertas']);
           },
           (loginErr) => {
             console.error('Error en login automático', loginErr);
-            alert('Registro completado, pero hubo un error al iniciar sesión automáticamente. Por favor, haz login manual.');
+            this.notificationService.info('Registro completado, pero hubo un error al iniciar sesión automáticamente. Por favor, haz login manual.');
             this.router.navigate(['/login']);
           }
         );

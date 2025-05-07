@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { NotificationService } from '../core/services/notification.service';
+
+
+
 @Component({
   selector: 'app-detalles-alumno',
   standalone: false,
@@ -14,7 +18,8 @@ export class DetallesAlumnoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -22,7 +27,10 @@ export class DetallesAlumnoComponent implements OnInit {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      alert('Debes iniciar sesión para ver los detalles del alumno.');
+      this.notificationService.error(
+        'Debes iniciar sesión para ver los detalles del alumno.'
+      );
+      // alert('Debes iniciar sesión para ver los detalles del alumno.');
       this.router.navigate(['/login']);
       return;
     }
