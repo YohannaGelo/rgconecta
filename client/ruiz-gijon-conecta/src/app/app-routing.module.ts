@@ -11,6 +11,7 @@ import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.component';
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
+import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -31,6 +32,7 @@ const routes: Routes = [
     component: DetallesAlumnoComponent,
   },
   { path: 'perfil', component: PerfilAlumnoComponent },
+  { path: 'perfil-profesor', component: PerfilProfesorComponent },
   
 ];
 

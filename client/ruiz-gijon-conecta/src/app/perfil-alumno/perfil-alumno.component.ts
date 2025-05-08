@@ -145,6 +145,10 @@ export class PerfilAlumnoComponent implements OnInit {
   }
 
   submitNewPassword(modal: any): void {
+    // console.log('👉 Contraseña actual ingresada:', this.currentPassword);
+    // console.log('👉 Nueva contraseña ingresada:', this.newPassword);
+    // console.log('👉 Confirmación nueva contraseña:', this.confirmNewPassword);
+
     if (!this.passwordValid) {
       this.notificationService.error(
         'La nueva contraseña no cumple los requisitos.'
@@ -227,12 +231,6 @@ export class PerfilAlumnoComponent implements OnInit {
     return this.authService;
   }
 
-  // getUserImage(): string {
-  //   if (!this.user?.foto_perfil || this.user.foto_perfil === 'default.jpg') {
-  //     return 'assets/img/perfil.png';
-  //   }
-  //   return this.croppedImage || this.user.foto_perfil;
-  // }
 
   getUserImage(fotoPerfil: string | null): string {
     if (!fotoPerfil || fotoPerfil === 'default.jpg') {

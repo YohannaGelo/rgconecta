@@ -112,19 +112,60 @@ class ProfesorController extends Controller
     // Actualizar la información de un profesor
     public function update(Request $request, Profesor $profesor)
     {
-        $validated = $request->validate([
-            'departamento' => 'required|string',
-            'foto_perfil' => 'nullable|url',
+        $request->validate([
+            'user.name' => 'sometimes|string|max:255',
+            'user.email' => 'sometimes|email|unique:users,email,' . $profesor->user_id,
+            'user.foto_perfil' => 'nullable|string', // base64
+            'departamento' => 'sometimes|string|max:255',
         ]);
 
-        $profesor->update($validated);
+        \DB::beginTransaction();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profesor actualizado correctamente.',
-            'data' => $profesor->load('user')
-        ], 200);
+        try {
+            $userUpdates = [];
+
+            if ($request->filled('user.name')) {
+                $userUpdates['name'] = $request->input('user.name');
+            }
+            if ($request->filled('user.email')) {
+                $userUpdates['email'] = $request->input('user.email');
+            }
+
+            if ($request->filled('user.foto_perfil')) {
+                $cloudinary = new \Cloudinary\Cloudinary(config('cloudinary'));
+                $uploadedImage = $cloudinary->uploadApi()->upload($request->input('user.foto_perfil'), [
+                    'folder' => 'usuarios'
+                ]);
+                $userUpdates['foto_perfil'] = $uploadedImage['secure_url'];
+                $userUpdates['foto_perfil_public_id'] = $uploadedImage['public_id'];
+            }
+
+            if (!empty($userUpdates)) {
+                $profesor->user->update($userUpdates);
+            }
+
+            if ($request->filled('departamento')) {
+                $profesor->update([
+                    'departamento' => $request->input('departamento')
+                ]);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'message' => 'Profesor actualizado correctamente.',
+                'data' => $profesor->fresh()->load('user'),
+            ], 200);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el profesor.',
+                'error_details' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -153,5 +194,4 @@ class ProfesorController extends Controller
             'message' => 'Profesor, usuario y foto eliminados correctamente.'
         ], 204);
     }
-
 }
