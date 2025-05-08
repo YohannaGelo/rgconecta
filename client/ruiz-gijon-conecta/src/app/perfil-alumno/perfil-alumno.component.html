@@ -8,8 +8,11 @@
         <div class="card-body d-flex">
             <!-- Imagen -->
             <div class="me-4 text-center col-md-4">
-                <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
-                    style="width: 150px; height: 150px; object-fit: cover;">
+                <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
+                    style="width: 150px; height: 150px; object-fit: cover;"> -->
+                <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
+                    class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+
 
                 <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
 
@@ -42,10 +45,10 @@
                 <div class="mb-3 d-flex align-items-center gap-2">
                     <span class="fw-bold">Contraseña</span>
                     <button class="btn btn-sm btn-outline-primary" (click)="openChangePasswordModal()">
-                      Cambiar contraseña
+                        Cambiar contraseña
                     </button>
-                  </div>
-                  
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label">Título profesional</label>
                     <input type="text" class="form-control" [(ngModel)]="alumno.titulo_profesional"
@@ -305,37 +308,38 @@
 <!-- Modal Cambiar Contraseña -->
 <ng-template #changePasswordModal let-modal>
     <div class="modal-header">
-      <h5 class="modal-title">Cambiar contraseña</h5>
-      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        <h5 class="modal-title">Cambiar contraseña</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
     <div class="modal-body">
-      <form #changePasswordForm="ngForm">
-        <div class="mb-3">
-          <label class="form-label">Contraseña actual</label>
-          <input type="password" class="form-control" [(ngModel)]="currentPassword" name="currentPassword" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Nueva contraseña</label>
-          <input type="password" class="form-control" [(ngModel)]="newPassword" name="newPassword" required
-            (ngModelChange)="validatePassword()">
-          <div *ngIf="!passwordValid && newPassword" class="text-danger small mt-1">
-            La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Confirmar nueva contraseña</label>
-          <input type="password" class="form-control" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" required>
-          <div *ngIf="newPassword !== confirmNewPassword && confirmNewPassword" class="text-danger small mt-1">
-            Las contraseñas no coinciden.
-          </div>
-        </div>
-      </form>
+        <form #changePasswordForm="ngForm">
+            <div class="mb-3">
+                <label class="form-label">Contraseña actual</label>
+                <input type="password" class="form-control" [(ngModel)]="currentPassword" name="currentPassword"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input type="password" class="form-control" [(ngModel)]="newPassword" name="newPassword" required
+                    (ngModelChange)="validatePassword()">
+                <div *ngIf="!passwordValid && newPassword" class="text-danger small mt-1">
+                    La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" class="form-control" [(ngModel)]="confirmNewPassword" name="confirmNewPassword"
+                    required>
+                <div *ngIf="newPassword !== confirmNewPassword && confirmNewPassword" class="text-danger small mt-1">
+                    Las contraseñas no coinciden.
+                </div>
+            </div>
+        </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
-      <button type="button" class="btn btn-primary"
-        [disabled]="!passwordValid || newPassword !== confirmNewPassword || !currentPassword"
-        (click)="submitNewPassword(modal)">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button type="button" class="btn btn-primary"
+            [disabled]="!passwordValid || newPassword !== confirmNewPassword || !currentPassword"
+            (click)="submitNewPassword(modal)">Guardar</button>
     </div>
-  </ng-template>
-  
+</ng-template>

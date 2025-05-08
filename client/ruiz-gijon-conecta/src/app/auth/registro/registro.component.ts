@@ -523,19 +523,7 @@ export class RegistroComponent implements OnInit {
         }
       }
     );
-    
-    // this.authService.register(alumno).subscribe(
-    //   (res) => {
-    //     console.log('Alumno creado', res);
-    //     this.router.navigate(['/login']);
-    //   },
-    //   (err) => {
-    //     console.error('Error al crear alumno', err);
-    //     if (err.status === 422) {
-    //       console.error('Errores de validación:', err.error.errors);
-    //     }
-    //   }
-    // );
+
   }
 
   // Helper para convertir base64 a File

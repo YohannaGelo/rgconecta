@@ -29,7 +29,7 @@ export class LoginComponent {
   onSubmit() {
     this.authService.login(this.email, this.password).subscribe(
       response => {
-        console.log('Login exitoso', response);
+        // console.log('Login exitoso', response); // Debug
         this.notificationService.success('¡Bienvenido de nuevo!');
         this.router.navigate(['/home']);
       },

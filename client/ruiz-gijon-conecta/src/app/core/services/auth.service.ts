@@ -61,7 +61,7 @@ export class AuthService {
 
   updatePassword(currentPassword: string, newPassword: string): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(`${this.apiUrl}/password`, {
+    return this.http.patch(`${this.apiUrl}/profile/password`, {
       current_password: currentPassword,
       new_password: newPassword,
       new_password_confirmation: newPassword // 👈 mandamos la confirmación igual
@@ -102,8 +102,11 @@ export class AuthService {
 
   // Método para actualizar el perfil del alumno
   updateProfile(alumno: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno);
+    const headers = this.getHeaders();
+    const alumnoId = this.currentUser?.id || alumno.id; 
+    return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno, { headers });
   }
+  
 
   logout() {
     localStorage.removeItem('token');
@@ -113,7 +116,14 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  getHeaders() {
-    return new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+  getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Accept': 'application/json'
+    });
   }
+
+  // getHeaders() {
+  //   return new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+  // }
 }
