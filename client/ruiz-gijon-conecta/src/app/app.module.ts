@@ -22,6 +22,7 @@ import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.compo
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
+import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
     RegistroComponent,
     RegistroProfesorComponent,
     DetallesAlumnoComponent,
-    PerfilAlumnoComponent
+    PerfilAlumnoComponent,
+    PerfilProfesorComponent
   ],
   imports: [
     BrowserModule,

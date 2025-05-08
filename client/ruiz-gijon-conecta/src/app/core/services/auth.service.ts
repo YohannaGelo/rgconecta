@@ -106,6 +106,11 @@ export class AuthService {
     const alumnoId = this.currentUser?.id || alumno.id; 
     return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno, { headers });
   }
+
+  updateProfesorProfile(profesorId: number, data: any): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.put<any>(`${this.apiUrl}/profesores/${profesorId}`, data, { headers });
+  }
   
 
   logout() {
