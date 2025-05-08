@@ -59,6 +59,31 @@ export class AuthService {
       );
   }
 
+  updatePassword(currentPassword: string, newPassword: string): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.post(`${this.apiUrl}/password`, {
+      current_password: currentPassword,
+      new_password: newPassword,
+      new_password_confirmation: newPassword // 👈 mandamos la confirmación igual
+    }, { headers });
+  }
+
+
+  setToken(newToken: string): void {
+    localStorage.setItem('token', newToken);
+    this.token = newToken;
+  }
+  
+  setCurrentUser(user: any): void {
+    this.currentUserSubject.next(user);
+    this.isAuthenticatedSubject.next(true);
+  }
+
+  setAuthenticated(status: boolean): void {
+    this.isAuthenticatedSubject.next(status);
+  }
+  
+
   register(userData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::patch('/profile/password', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
 
     // Empresas
     // Route::get('/empresas', [EmpresaController::class, 'index']);

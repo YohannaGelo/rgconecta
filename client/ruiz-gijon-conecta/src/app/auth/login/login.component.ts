@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { NotificationService } from '../../core/services/notification.service';
+
+
 @Component({
   selector: 'app-login',
   standalone: false,
@@ -16,7 +19,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService, private router: Router, private modalService: NgbModal) { }
+  constructor(private authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) { }
 
   abrirSelectorRegistro(event: Event) {
     event.preventDefault(); // evita que recargue la página
@@ -27,11 +30,21 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe(
       response => {
         console.log('Login exitoso', response);
-        this.router.navigate(['/home']); // Redirige a la página principal
+        this.notificationService.success('¡Bienvenido de nuevo!');
+        this.router.navigate(['/home']);
       },
       error => {
         console.error('Error de autenticación', error);
+  
+        if (error.status === 404) {
+          this.notificationService.warning('Usuario no encontrado.');
+        } else if (error.status === 401) {
+          this.notificationService.error('Correo o contraseña incorrectos.');
+        } else {
+          this.notificationService.error('Error al iniciar sesión. Intenta nuevamente.');
+        }
       }
     );
   }
+  
 }
