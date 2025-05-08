@@ -73,6 +73,19 @@ tail -n 50 storage/logs/laravel.log
 [stacktrace]
 ```
 
+---
+## ACTUALIZAR CONTRASEÑA DESDE TINKER
+```bash
+php artisan tinker
+>>> $user = User::find(1);
+>>> $user->password = Hash::make('NuevaContraseñaSegura1!');
+>>> $user->save();
+```
+
+
+---
+
+
 ## ACTUALIZAR ANGULAR
 
 ```bash

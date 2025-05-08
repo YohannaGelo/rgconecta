@@ -156,14 +156,6 @@ class AlumnoController extends Controller
                 'foto_perfil' => $fotoUrl,
                 'foto_perfil_public_id' => $fotoPublicId,
             ]);
-            // $user = User::create([
-            //     'name' => $request->user['name'],
-            //     'email' => $request->user['email'],
-            //     'password' => Hash::make($request->user['password']),
-            //     'role' => 'alumno',
-            //     'foto_perfil' => $fotoUrl,
-            //     'foto_perfil_public_id' => $fotoPublicId,
-            // ]);
 
             // Crear alumno
             $alumno = Alumno::create([
@@ -269,53 +261,201 @@ class AlumnoController extends Controller
     // Actualizar perfil de alumno (ej: tecnologías o situación laboral)
     public function update(Request $request, Alumno $alumno)
     {
-        // 1. Validación con todos los campos posibles
-        $validated = $request->validate([
+        $request->validate([
+            'user.name' => 'sometimes|string|max:255',
+            'user.email' => 'sometimes|email|unique:users,email,' . $alumno->user_id,
+            'user.foto_perfil' => 'nullable|string',
+
             'fecha_nacimiento' => 'sometimes|date',
-            'situacion_laboral' => 'sometimes|in:trabajando,buscando_empleo,desempleado',
-            'promocion' => 'sometimes|string|max:9',
-            'titulo_profesional' => 'sometimes|string|max:100',
-            'tecnologias' => 'sometimes|array',
-            'experiencias' => 'sometimes|array'
+            'situacion_laboral' => 'sometimes|string',
+            'promocion' => 'nullable|string',
+            'titulo_profesional' => 'nullable|string',
+
+            'titulos' => 'array',
+            'titulos.*.nombre' => 'required|string',
+            'titulos.*.tipo' => 'required|string',
+            'titulos.*.pivot.fecha_inicio' => 'required|string',
+            'titulos.*.pivot.fecha_fin' => 'required|string',
+            'titulos.*.pivot.institucion' => 'required|string',
+
+            'tecnologias' => 'array',
+            'tecnologias.*.nombre' => 'required|string',
+            'tecnologias.*.tipo' => 'required|string',
+            'tecnologias.*.pivot.nivel' => 'required|string',
+
+            'experiencias' => 'array',
+            'experiencias.*.empresa.nombre' => 'required|string',
+            'experiencias.*.empresa.sector' => 'nullable|string',
+            'experiencias.*.puesto' => 'required|string',
+            'experiencias.*.fecha_inicio' => 'required|string',
+            'experiencias.*.fecha_fin' => 'nullable|string',
         ]);
 
-        // 2. Debug: Ver datos recibidos
-        // \Log::info('Datos recibidos para actualización:', $validated);
+        \DB::beginTransaction();
 
-        // 3. Actualizar relaciones si existen
-        if (isset($validated['tecnologias'])) {
-            $syncData = collect($validated['tecnologias'])
-                ->mapWithKeys(fn($tech) => [$tech['id'] => ['nivel' => $tech['nivel']]])
-                ->toArray();
-            $alumno->tecnologias()->sync($syncData);
-            unset($validated['tecnologias']);
-        }
-
-        if (isset($validated['experiencias'])) {
-            $alumno->experiencias()->delete();
-            $alumno->experiencias()->createMany($validated['experiencias']);
-            unset($validated['experiencias']);
-        }
-
-        // 4. Actualizar campos directos (SOLUCIÓN CLAVE)
-        if (!empty($validated)) {
-            $alumno->fill($validated);
-
-            // Debug: Ver cambios detectados
-            // \Log::info('Cambios detectados:', $alumno->getDirty());
-
-            if ($alumno->isDirty()) {
-                $alumno->save();
+        try {
+            // Actualizar datos del usuario
+            if ($request->has('user')) {
+                $userUpdates = [];
+            
+                if ($request->filled('user.name')) {
+                    $userUpdates['name'] = $request->input('user.name');
+                }
+                if ($request->filled('user.email')) {
+                    $userUpdates['email'] = $request->input('user.email');
+                }
+                if ($request->filled('user.foto_perfil')) {
+                    $fotoPerfil = $request->input('user.foto_perfil');
+    
+                    if (str_starts_with($fotoPerfil, 'data:image')) {
+                        // Si viene base64, sube a Cloudinary
+                        $cloudinary = new Cloudinary(config('cloudinary'));
+                        $uploadedImage = $cloudinary->uploadApi()->upload($fotoPerfil, [
+                            'folder' => 'usuarios'
+                        ]);
+                        $fotoUrl = $uploadedImage['secure_url'];
+                        $fotoPublicId = $uploadedImage['public_id'];
+    
+                        $userUpdates['foto_perfil'] = $fotoUrl;
+                        $userUpdates['foto_perfil_public_id'] = $fotoPublicId;
+                    } else {
+                        // Si ya es URL, mantenla
+                        $userUpdates['foto_perfil'] = $fotoPerfil;
+                    }
+                }
+            
+                if (!empty($userUpdates)) {
+                    $alumno->user->update($userUpdates);
+                }
             }
-        }
 
-        // 5. Respuesta con datos frescos
-        return response()->json([
-            'message' => 'Alumno actualizado correctamente',
-            'changes' => $alumno->getChanges(),
-            'data' => $alumno->fresh()->load(['user', 'tecnologias', 'experiencias'])
-        ]);
+
+            // Actualizar datos del alumno
+            $alumno->update([
+                'fecha_nacimiento' => $request->fecha_nacimiento,
+                'situacion_laboral' => $request->situacion_laboral,
+                'promocion' => $request->promocion,
+                'titulo_profesional' => $request->titulo_profesional,
+            ]);
+
+            // Sincronizar títulos
+            if ($request->has('titulos')) {
+                $alumno->titulos()->detach();
+                foreach ($request->titulos as $titulo) {
+                    $tituloModel = \App\Models\Titulo::firstOrCreate([
+                        'nombre' => $titulo['nombre'],
+                        'tipo' => $titulo['tipo'],
+                    ]);
+
+                    $alumno->titulos()->attach($tituloModel->id, [
+                        'fecha_inicio' => $titulo['pivot']['fecha_inicio'],
+                        'fecha_fin' => $titulo['pivot']['fecha_fin'],
+                        'institucion' => $titulo['pivot']['institucion'],
+                    ]);
+                }
+            }
+
+            // Sincronizar tecnologías
+            if ($request->has('tecnologias')) {
+                $alumno->tecnologias()->detach();
+                foreach ($request->tecnologias as $tecno) {
+                    $tec = \App\Models\Tecnologia::firstOrCreate([
+                        'nombre' => $tecno['nombre'],
+                        'tipo' => $tecno['tipo'],
+                    ]);
+
+                    $alumno->tecnologias()->attach($tec->id, [
+                        'nivel' => $tecno['pivot']['nivel'],
+                    ]);
+                }
+            }
+
+            // Sincronizar experiencias
+            if ($request->has('experiencias')) {
+                $alumno->experiencias()->delete();
+                foreach ($request->experiencias as $exp) {
+                    $empresa = \App\Models\Empresa::firstOrCreate(
+                        ['nombre' => $exp['empresa']['nombre']],
+                        [
+                            'sector' => $exp['empresa']['sector'] ?? null,
+                            'web' => $exp['empresa']['web'] ?? null,
+                        ]
+                    );
+
+                    $alumno->experiencias()->create([
+                        'empresa_id' => $empresa->id,
+                        'puesto' => $exp['puesto'],
+                        'fecha_inicio' => $exp['fecha_inicio'],
+                        'fecha_fin' => $exp['fecha_fin'] ?? null,
+                    ]);
+                }
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'message' => 'Alumno actualizado correctamente',
+                'data' => $alumno->fresh()->load(['user', 'titulos', 'tecnologias', 'experiencias']),
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el alumno.',
+                'error_details' => $e->getMessage()
+            ], 500);
+        }
     }
+
+    // public function update(Request $request, Alumno $alumno)
+    // {
+    //     // 1. Validación con todos los campos posibles
+    //     $validated = $request->validate([
+    //         'fecha_nacimiento' => 'sometimes|date',
+    //         'situacion_laboral' => 'sometimes|in:trabajando,buscando_empleo,desempleado',
+    //         'promocion' => 'sometimes|string|max:9',
+    //         'titulo_profesional' => 'sometimes|string|max:100',
+    //         'tecnologias' => 'sometimes|array',
+    //         'experiencias' => 'sometimes|array'
+    //     ]);
+
+    //     // 2. Debug: Ver datos recibidos
+    //     // \Log::info('Datos recibidos para actualización:', $validated);
+
+    //     // 3. Actualizar relaciones si existen
+    //     if (isset($validated['tecnologias'])) {
+    //         $syncData = collect($validated['tecnologias'])
+    //             ->mapWithKeys(fn($tech) => [$tech['id'] => ['nivel' => $tech['nivel']]])
+    //             ->toArray();
+    //         $alumno->tecnologias()->sync($syncData);
+    //         unset($validated['tecnologias']);
+    //     }
+
+    //     if (isset($validated['experiencias'])) {
+    //         $alumno->experiencias()->delete();
+    //         $alumno->experiencias()->createMany($validated['experiencias']);
+    //         unset($validated['experiencias']);
+    //     }
+
+    //     // 4. Actualizar campos directos (SOLUCIÓN CLAVE)
+    //     if (!empty($validated)) {
+    //         $alumno->fill($validated);
+
+    //         // Debug: Ver cambios detectados
+    //         // \Log::info('Cambios detectados:', $alumno->getDirty());
+
+    //         if ($alumno->isDirty()) {
+    //             $alumno->save();
+    //         }
+    //     }
+
+    //     // 5. Respuesta con datos frescos
+    //     return response()->json([
+    //         'message' => 'Alumno actualizado correctamente',
+    //         'changes' => $alumno->getChanges(),
+    //         'data' => $alumno->fresh()->load(['user', 'tecnologias', 'experiencias'])
+    //     ]);
+    // }
 
     /**
      * Remove the specified resource from storage.

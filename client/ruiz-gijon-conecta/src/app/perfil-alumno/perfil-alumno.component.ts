@@ -49,6 +49,15 @@ export class PerfilAlumnoComponent implements OnInit {
   rotation = 0;
 
   // Para nuevo título
+  tiposMapInverso = {
+    'Ciclo Medio': 'ciclo_medio',
+    'Ciclo Superior': 'ciclo_superior',
+    'Grado Universitario': 'grado_universitario',
+    Máster: 'master',
+    Doctorado: 'doctorado',
+    Otros: 'otros',
+  };
+
   titulosDisponibles: any[] = [];
   titulo: any = null;
   comienzoEstudios: string = '';
@@ -134,56 +143,70 @@ export class PerfilAlumnoComponent implements OnInit {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     this.passwordValid = regex.test(this.newPassword);
   }
-  
+
   submitNewPassword(modal: any): void {
     if (!this.passwordValid) {
-      this.notificationService.error('La nueva contraseña no cumple los requisitos.');
+      this.notificationService.error(
+        'La nueva contraseña no cumple los requisitos.'
+      );
       return;
     }
     if (this.newPassword !== this.confirmNewPassword) {
       this.notificationService.error('Las contraseñas no coinciden.');
       return;
     }
-  
-    this.authService.updatePassword(this.currentPassword, this.newPassword).subscribe(
-      (res) => {
-        const newToken = res.token;
-        const updatedUser = res.user;
-  
-        if (newToken && updatedUser) {
-          // ✅ Guardar el nuevo token
-          localStorage.setItem('token', newToken);
-          this.authService.setToken = newToken;
-  
-          // ✅ Actualizar el usuario en el AuthService
-          this.authService.setCurrentUser({ user: updatedUser, role: updatedUser.role });
-          this.authService.setAuthenticated(true);
 
-          this.notificationService.success('¡Contraseña actualizada y sesión renovada!');
-        } else {
-          this.notificationService.warning('Contraseña cambiada, pero no se recibió nuevo token. Inicia sesión manualmente.');
-          this.authService.logout();
+    this.authService
+      .updatePassword(this.currentPassword, this.newPassword)
+      .subscribe(
+        (res) => {
+          const newToken = res.token;
+          const updatedUser = res.user;
+
+          if (newToken && updatedUser) {
+            // ✅ Guardar el nuevo token
+            localStorage.setItem('token', newToken);
+            this.authService.setToken(newToken);
+
+            // ✅ Actualizar el usuario en el AuthService
+            this.authService.setCurrentUser({
+              user: updatedUser,
+              role: updatedUser.role,
+            });
+            this.authService.setAuthenticated(true);
+
+            this.notificationService.success(
+              '¡Contraseña actualizada y sesión renovada!'
+            );
+          } else {
+            this.notificationService.warning(
+              'Contraseña cambiada, pero no se recibió nuevo token. Inicia sesión manualmente.'
+            );
+            this.authService.logout();
+          }
+
+          modal.close();
+
+          // Limpiar los campos del formulario
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmNewPassword = '';
+        },
+        (error) => {
+          console.error('Error al actualizar la contraseña', error);
+          const msg =
+            error.error?.error ||
+            error.error?.message ||
+            'Error al actualizar la contraseña.';
+          this.notificationService.error(msg);
         }
-  
-        modal.close();
-        // Limpiar los campos del formulario
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmNewPassword = '';
-      },
-      (error) => {
-        console.error('Error al actualizar la contraseña', error);
-        const msg = error.error?.error || error.error?.message || 'Error al actualizar la contraseña.';
-        this.notificationService.error(msg);
-      }
-    );
+      );
   }
-  
 
   loadCurrentAlumno(): void {
     this.authService.loadCurrentUser().subscribe(
       (res) => {
-        console.log('✅ Datos completos desde /me:', res);
+        // console.log('✅ Datos completos desde /me:', res);
         this.alumno = res;
         this.user = res.user || {};
         this.titulosSeleccionados = res.titulos || [];
@@ -200,11 +223,22 @@ export class PerfilAlumnoComponent implements OnInit {
     );
   }
 
-  getUserImage(): string {
-    if (!this.user?.foto_perfil || this.user.foto_perfil === 'default.jpg') {
-      return 'assets/img/perfil.png';
+  public get auth() {
+    return this.authService;
+  }
+
+  // getUserImage(): string {
+  //   if (!this.user?.foto_perfil || this.user.foto_perfil === 'default.jpg') {
+  //     return 'assets/img/perfil.png';
+  //   }
+  //   return this.croppedImage || this.user.foto_perfil;
+  // }
+
+  getUserImage(fotoPerfil: string | null): string {
+    if (!fotoPerfil || fotoPerfil === 'default.jpg') {
+      return 'assets/img/perfil.png'; // tu imagen por defecto local
     }
-    return this.croppedImage || this.user.foto_perfil;
+    return fotoPerfil;
   }
 
   cancelarImagen(): void {
@@ -288,24 +322,64 @@ export class PerfilAlumnoComponent implements OnInit {
   }
 
   updateProfile(): void {
+    if (!this.alumno || !this.alumno.id) {
+      console.error('❌ No se encontró el ID del alumno para actualizar.');
+      this.notificationService.error(
+        'No se pudo identificar el perfil del alumno.'
+      );
+      return;
+    }
+
+    const titulosParaEnviar = this.titulosSeleccionados.map((t) => ({
+      nombre: t.nombre,
+      tipo:
+        this.tiposMapInverso[t.tipo as keyof typeof this.tiposMapInverso] ||
+        t.tipo_raw ||
+        t.tipo,
+
+      pivot: {
+        fecha_inicio: t.pivot.fecha_inicio,
+        fecha_fin: t.pivot.fecha_fin,
+        institucion: t.pivot.institucion,
+      },
+    }));
+
+    console.log(' titulosParaEnviar', titulosParaEnviar);
+
     const alumnoActualizado = {
-      ...this.alumno,
+      id: this.alumno.id, // 👈 aseguramos enviar el ID correcto
       user: {
-        ...this.user,
+        name: this.user.name,
+        email: this.user.email,
         foto_perfil: this.croppedImage || this.user.foto_perfil,
       },
-      titulos: this.titulosSeleccionados,
+      fecha_nacimiento: this.alumno.fecha_nacimiento,
+      situacion_laboral: this.alumno.situacion_laboral,
+      promocion: this.alumno.promocion,
+      titulo_profesional: this.alumno.titulo_profesional,
+      titulos: titulosParaEnviar,
       tecnologias: this.tecnologiasSeleccionadas,
       experiencias: this.experiencias,
     };
 
+    console.log('📤 Enviando datos para actualizar:', alumnoActualizado);
+
     this.authService.updateProfile(alumnoActualizado).subscribe(
       (res) => {
+        console.log('✅ Perfil actualizado con respuesta:', res);
         this.notificationService.success('Perfil actualizado correctamente');
+
+        // Recargar datos del usuario para reflejar cambios
+        this.authService.setCurrentUser(res.data);
+
+        // Cerrar cropper y limpiar imagen temporal
+    this.cancelarImagen();
+
       },
       (err) => {
         console.error('❌ Error al actualizar perfil:', err);
-        this.notificationService.error('Error al actualizar el perfil');
+        const msg = err.error?.message || 'Error al actualizar el perfil';
+        this.notificationService.error(msg);
       }
     );
   }
@@ -440,36 +514,6 @@ export class PerfilAlumnoComponent implements OnInit {
       );
     }
   }
-
-  // agregarExperiencia(): void {
-  //   if (
-  //     this.nuevaEmpresa.nombre &&
-  //     this.nuevaEmpresa.sector &&
-  //     this.comienzoExperiencia &&
-  //     this.finExperiencia &&
-  //     this.puestoExperiencia
-  //   ) {
-  //     this.experiencias.push({
-  //       empresa: {
-  //         nombre: this.nuevaEmpresa.nombre,
-  //         sector: this.nuevaEmpresa.sector,
-  //       },
-  //       puesto: this.puestoExperiencia,
-  //       fecha_inicio: this.comienzoExperiencia,
-  //       fecha_fin: this.finExperiencia,
-  //     });
-
-  //     // Limpiar campos
-  //     this.nuevaEmpresa = { nombre: '', sector: '' };
-  //     this.comienzoExperiencia = '';
-  //     this.finExperiencia = '';
-  //     this.puestoExperiencia = '';
-  //   } else {
-  //     this.notificationService.warning(
-  //       'Por favor, completa todos los campos de la experiencia.'
-  //     );
-  //   }
-  // }
 
   agregarTecnologia(): void {
     if (this.tecnologiaSeleccionada && this.nivelSeleccionado) {
