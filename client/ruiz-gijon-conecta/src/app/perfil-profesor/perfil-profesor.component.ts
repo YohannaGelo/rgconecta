@@ -8,7 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   selector: 'app-perfil-profesor',
   standalone: false,
   templateUrl: './perfil-profesor.component.html',
-  styleUrl: './perfil-profesor.component.scss'
+  styleUrl: './perfil-profesor.component.scss',
 })
 export class PerfilProfesorComponent implements OnInit {
   @ViewChild('changePasswordModal') changePasswordModal: any;
@@ -57,7 +57,6 @@ export class PerfilProfesorComponent implements OnInit {
     return this.authService;
   }
 
-
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
     this.showCropper = true;
@@ -77,7 +76,6 @@ export class PerfilProfesorComponent implements OnInit {
     this.updateTransform();
   }
 
-
   cancelarImagen(): void {
     this.croppedImage = ''; // limpia la imagen recortada
     this.imageChangedEvent = '';
@@ -93,43 +91,105 @@ export class PerfilProfesorComponent implements OnInit {
     };
   }
 
-
   validatePassword() {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     this.passwordValid = regex.test(this.newPassword);
   }
 
   submitNewPassword(modal: any): void {
-    if (!this.passwordValid || this.newPassword !== this.confirmNewPassword) {
-      this.notificationService.error('Revisa los requisitos de la nueva contraseña.');
+    // console.log('👉 Contraseña actual ingresada:', this.currentPassword);
+    // console.log('👉 Nueva contraseña ingresada:', this.newPassword);
+    // console.log('👉 Confirmación nueva contraseña:', this.confirmNewPassword);
+
+    if (!this.passwordValid) {
+      this.notificationService.error(
+        'La nueva contraseña no cumple los requisitos.'
+      );
+      return;
+    }
+    if (this.newPassword !== this.confirmNewPassword) {
+      this.notificationService.error('Las contraseñas no coinciden.');
       return;
     }
 
-    this.authService.updatePassword(this.currentPassword, this.newPassword).subscribe(
-      (res) => {
-        const newToken = res.token;
-        const updatedUser = res.user;
+    this.authService
+      .updatePassword(this.currentPassword, this.newPassword)
+      .subscribe(
+        (res) => {
+          const newToken = res.token;
+          const updatedUser = res.user;
 
-        if (newToken && updatedUser) {
-          this.authService.setToken(newToken);
-          this.authService.setCurrentUser(updatedUser);
-          this.notificationService.success('Contraseña actualizada y sesión renovada.');
-        } else {
-          this.notificationService.warning('Contraseña cambiada, pero necesitas volver a iniciar sesión.');
-          this.authService.logout();
+          if (newToken && updatedUser) {
+            // ✅ Guardar el nuevo token
+            localStorage.setItem('token', newToken);
+            this.authService.setToken(newToken);
+
+            // ✅ Actualizar el usuario en el AuthService
+            this.authService.setCurrentUser({
+              user: updatedUser,
+              role: updatedUser.role,
+            });
+            this.authService.setAuthenticated(true);
+
+            this.notificationService.success(
+              '¡Contraseña actualizada y sesión renovada!'
+            );
+          } else {
+            this.notificationService.warning(
+              'Contraseña cambiada, pero no se recibió nuevo token. Inicia sesión manualmente.'
+            );
+            this.authService.logout();
+          }
+
+          modal.close();
+
+          // Limpiar los campos del formulario
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmNewPassword = '';
+        },
+        (error) => {
+          console.error('Error al actualizar la contraseña', error);
+          const msg =
+            error.error?.error ||
+            error.error?.message ||
+            'Error al actualizar la contraseña.';
+          this.notificationService.error(msg);
         }
-
-        modal.close();
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmNewPassword = '';
-      },
-      (error) => {
-        const msg = error.error?.error || error.error?.message || 'Error al actualizar la contraseña.';
-        this.notificationService.error(msg);
-      }
-    );
+      );
   }
+
+  // submitNewPassword(modal: any): void {
+  //   if (!this.passwordValid || this.newPassword !== this.confirmNewPassword) {
+  //     this.notificationService.error('Revisa los requisitos de la nueva contraseña.');
+  //     return;
+  //   }
+
+  //   this.authService.updatePassword(this.currentPassword, this.newPassword).subscribe(
+  //     (res) => {
+  //       const newToken = res.token;
+  //       const updatedUser = res.user;
+
+  //       if (newToken && updatedUser) {
+  //         this.authService.setToken(newToken);
+  //         this.authService.setCurrentUser(updatedUser);
+  //         this.notificationService.success('Contraseña actualizada y sesión renovada.');
+  //       } else {
+  //         this.notificationService.warning('Contraseña cambiada, pero necesitas volver a iniciar sesión.');
+  //         this.authService.logout();
+  //       }
+
+  //       modal.close();
+  //       this.currentPassword = '';
+  //       this.newPassword = '';
+  //       this.confirmNewPassword = '';
+  //     },
+  //     (error) => {
+  //       const msg = error.error?.error || error.error?.message || 'Error al actualizar la contraseña.';
+  //       this.notificationService.error(msg);
+  //     }
+  //   );
+  // }
 
   updateProfile(): void {
     if (!this.profesor || !this.profesor.id) {
@@ -142,34 +202,35 @@ export class PerfilProfesorComponent implements OnInit {
 
     const userUpdates: any = {
       name: this.user.name,
-      email: this.user.email
+      email: this.user.email,
     };
-    
+
     if (this.croppedImage) {
       userUpdates.foto_perfil = this.croppedImage;
     }
-    
+
     const profesorActualizado = {
       user: userUpdates,
-      departamento: this.profesor.departamento
+      departamento: this.profesor.departamento,
     };
 
     console.log('Actualizando perfil del profesor:', profesorActualizado);
-    this.authService.updateProfesorProfile(this.profesor.id, profesorActualizado).subscribe(
-      (res) => {
-        this.notificationService.success('Perfil actualizado correctamente');
-        this.authService.setCurrentUser(res.data);
-        this.cancelarImagen();
-      },
-      (err) => {
-        console.error('❌ Error al actualizar perfil:', err);
-        this.notificationService.error('Error al actualizar el perfil');
-      }
-    );
+    this.authService
+      .updateProfesorProfile(this.profesor.id, profesorActualizado)
+      .subscribe(
+        (res) => {
+          this.notificationService.success('Perfil actualizado correctamente');
+          this.authService.setCurrentUser(res.data);
+          this.cancelarImagen();
+        },
+        (err) => {
+          console.error('❌ Error al actualizar perfil:', err);
+          this.notificationService.error('Error al actualizar el perfil');
+        }
+      );
   }
 
   openChangePasswordModal() {
     this.modalService.open(this.changePasswordModal, { centered: true });
   }
 }
-

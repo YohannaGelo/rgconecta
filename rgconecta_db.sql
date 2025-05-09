@@ -419,7 +419,7 @@ CREATE TABLE `opiniones` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `alumno_id` bigint(20) unsigned NOT NULL,
   `empresa_id` bigint(20) unsigned NOT NULL,
-  `años_en_empresa` int(11) NOT NULL,
+  `anios_en_empresa` int(11) NOT NULL,
   `contenido` text NOT NULL,
   `valoracion` tinyint(3) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,

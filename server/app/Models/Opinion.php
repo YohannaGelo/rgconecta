@@ -8,10 +8,10 @@ class Opinion extends Model
 {
     protected $table = 'opiniones';
 
-    // protected $fillable = ['empresa_id', 'años_en_empresa', 'contenido', 'valoracion'];
+    // protected $fillable = ['empresa_id', 'anios_en_empresa', 'contenido', 'valoracion'];
 
     protected $fillable = [
-        'alumno_id', 'empresa_id', 'contenido', 'valoracion', 'años_en_empresa'
+        'alumno_id', 'empresa_id', 'contenido', 'valoracion', 'anios_en_empresa'
     ];
 
     public function alumno() {
