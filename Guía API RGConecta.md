@@ -341,7 +341,7 @@ Content-Type: application/json
     "empresa_id": 3,
     "contenido": "Buen salario pero horarios largos",
     "valoracion": 4,
-    "años_en_empresa": 2
+    "anios_en_empresa": 2
 }
 ```
 

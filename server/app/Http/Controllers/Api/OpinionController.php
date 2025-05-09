@@ -41,7 +41,7 @@ class OpinionController extends Controller
             'empresa_id' => 'required|exists:empresas,id',
             'contenido' => 'required|string|max:500',
             'valoracion' => 'required|integer|between:1,5',
-            'años_en_empresa' => 'nullable|numeric|min:0'
+            'anios_en_empresa' => 'nullable|numeric|min:0'
         ]);
 
         $alumno = Auth::user()->alumno;

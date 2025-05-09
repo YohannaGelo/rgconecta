@@ -120,7 +120,7 @@ namespace App\Models{
  * @property int $id
  * @property int $alumno_id
  * @property int $empresa_id
- * @property int $años_en_empresa
+ * @property int $anios_en_empresa
  * @property string $contenido
  * @property int $valoracion
  * @property \Illuminate\Support\Carbon|null $created_at

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('alumno_id')->constrained()->onDelete('cascade');
             $table->foreignId('empresa_id')->constrained()->onDelete('cascade'); 
-            $table->integer('años_en_empresa');
+            $table->integer('anios_en_empresa');
             $table->text('contenido'); 
             $table->unsignedTinyInteger('valoracion')->between(1, 5); // Opcional: puntuación
             $table->timestamps();
