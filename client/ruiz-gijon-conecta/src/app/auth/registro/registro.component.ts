@@ -496,8 +496,8 @@ export class RegistroComponent implements OnInit {
     }
     
 
-    console.log('Datos del alumno a enviar:', alumno);
-    console.log('ALUMNO QUE SE ENVÍA', JSON.stringify(alumno, null, 2));
+    // console.log('Datos del alumno a enviar:', alumno);
+    // console.log('ALUMNO QUE SE ENVÍA', JSON.stringify(alumno, null, 2));
 
     this.authService.register(alumno).subscribe(
       (res) => {

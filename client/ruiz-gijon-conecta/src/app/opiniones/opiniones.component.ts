@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-opiniones',
@@ -66,12 +67,28 @@ export class OpinionesComponent implements OnInit {
   opinionesFiltradas: any[] = []; // las que se mostrarán en el HTML tras aplicar filtros
   empresasUnicas: any[] = []; // lista única de empresas para el selector
 
+
+  resaltarFormulario = false;
+
+
   constructor(
+    private router: Router,
+    private authService: AuthService,
     private http: HttpClient,
     private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
+  const state = window.history.state as { resaltarFormulario?: boolean };
+
+  if (state?.resaltarFormulario) {
+    this.resaltarFormulario = true;
+
+    setTimeout(() => {
+      this.resaltarFormulario = false;
+    }, 2000);
+  }
+
     this.cargarOpiniones();
     this.cargarEmpresas();
     this.empresasUnicas = [
@@ -88,7 +105,11 @@ export class OpinionesComponent implements OnInit {
         this.opinionesFiltradas = [...this.opiniones];
 
         // Extraer empresas únicas
-        this.empresasUnicas = [...new Map(this.opiniones.map(op => [op.empresa.id, op.empresa])).values()];
+        this.empresasUnicas = [
+          ...new Map(
+            this.opiniones.map((op) => [op.empresa.id, op.empresa])
+          ).values(),
+        ];
         console.log('Empresas únicas:', this.empresasUnicas);
       },
       (error) => {
@@ -131,6 +152,7 @@ export class OpinionesComponent implements OnInit {
         if (response && Array.isArray(response.data)) {
           this.empresasDisponibles = [
             ...response.data.map((e: any) => ({
+              id: e.id,
               nombre: e.nombre,
               sector: e.sector || 'otros', // si falta sector, pone 'otros'
               web: e.web || '', // si falta web, pone vacío
@@ -168,8 +190,13 @@ export class OpinionesComponent implements OnInit {
   }
 
   enviarOpinion(): void {
+    const empresaValida =
+      this.empresaSeleccionada &&
+      (this.empresaSeleccionada.nombre !== 'Otras' ||
+        (this.nuevaEmpresa.nombre && this.nuevaEmpresa.sector));
+
     if (
-      !this.nuevaOpinion.empresa_id ||
+      !empresaValida ||
       !this.nuevaOpinion.anios_en_empresa ||
       !this.nuevaOpinion.contenido ||
       !this.nuevaOpinion.valoracion
@@ -180,12 +207,38 @@ export class OpinionesComponent implements OnInit {
       return;
     }
 
+    // Asigna empresa_id si es válida y no es nueva
+    if (
+      this.empresaSeleccionada &&
+      this.empresaSeleccionada.nombre !== 'Otras'
+    ) {
+      this.nuevaOpinion.empresa_id = this.empresaSeleccionada.id;
+    }
+
+    // ✅ Incluir cabeceras con el token
+    const headers = this.authService.getHeaders();
+
+    const payload: any = {
+      contenido: this.nuevaOpinion.contenido,
+      valoracion: this.nuevaOpinion.valoracion,
+      anios_en_empresa: this.nuevaOpinion.anios_en_empresa,
+    };
+
+    if (this.empresaSeleccionada.nombre === 'Otras') {
+      payload.empresa = this.nuevaEmpresa;
+    } else {
+      payload.empresa_id = +this.empresaSeleccionada.id;
+    }
+
+    console.log(payload);
+
     this.http
-      .post('http://localhost:8000/api/opiniones', this.nuevaOpinion)
+      .post('http://localhost:8000/api/opiniones', payload, { headers })
       .subscribe(
         (res) => {
           this.notificationService.success('Opinión enviada correctamente');
           this.cargarOpiniones();
+          this.cargarEmpresas();
           this.resetearFormulario();
         },
         (error) => {
@@ -207,15 +260,19 @@ export class OpinionesComponent implements OnInit {
   filtrarOpiniones(): void {
     if (this.filtroSeleccionado === 'reciente') {
       this.opinionesFiltradas = [...this.opiniones].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     } else if (this.filtroSeleccionado === 'antiguo') {
       this.opinionesFiltradas = [...this.opiniones].sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (this.filtroSeleccionado.startsWith('empresa_')) {
       const empresaId = +this.filtroSeleccionado.split('_')[1];
-      this.opinionesFiltradas = this.opiniones.filter(op => op.empresa.id === empresaId);
+      this.opinionesFiltradas = this.opiniones.filter(
+        (op) => op.empresa.id === empresaId
+      );
     } else {
       this.opinionesFiltradas = [...this.opiniones];
     }

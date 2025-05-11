@@ -1,0 +1,36 @@
+<div class="container my-4">
+    <h2 class="mb-3">Mis opiniones</h2>
+
+    <button class="btn btn-success mt-3" (click)="irANuevaOpinion()">
+        <i class="bi bi-pencil-square me-2"></i> Dejar nueva opinión
+    </button>
+
+    <div *ngIf="opiniones.length === 0" class="text-muted">
+        Aún no has publicado ninguna opinión.
+    </div>
+
+    <div *ngFor="let opinion of opiniones" class="card my-3 p-3">
+        <div *ngIf="opinionEditando?.id !== opinion.id">
+            <h5 class="mb-1">{{ opinion.empresa?.nombre }}</h5>
+            <p class="mb-1">{{ opinion.contenido }}</p>
+            <small class="text-muted">Valoración: {{ opinion.valoracion }}/5</small>
+
+            <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="activarEdicion(opinion)">Editar</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarOpinion(opinion.id)">Eliminar</button>
+            </div>
+        </div>
+
+        <!-- Modo edición -->
+        <div *ngIf="opinionEditando?.id === opinion.id">
+            <h5 class="mb-1">{{ opinion.empresa?.nombre }}</h5>
+            <textarea class="form-control mb-2" [(ngModel)]="opinionEditando.contenido"></textarea>
+            <input type="number" class="form-control mb-2" [(ngModel)]="opinionEditando.valoracion" min="1" max="5" />
+
+            <div>
+                <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">Guardar</button>
+                <button class="btn btn-sm btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,3 +1,5 @@
+Buen compañerismo aunque poca flexibilidad en los horarios y jornadas largas.
+
 ## Apartado ver empresa
 
 - Quitaré el componente negro de 'Front-end'
