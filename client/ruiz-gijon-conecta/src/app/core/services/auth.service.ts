@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8000/api';
-  private token: string | null = localStorage.getItem('token');
+  private token: string | null = sessionStorage.getItem('token');
   private isAuthenticatedSubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(!!this.token);
   private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
@@ -50,7 +50,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if (response.token) {
-            localStorage.setItem('token', response.token);
+            sessionStorage.setItem('token', response.token);
             this.token = response.token;
             this.isAuthenticatedSubject.next(true);
             this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
@@ -70,7 +70,7 @@ export class AuthService {
 
 
   setToken(newToken: string): void {
-    localStorage.setItem('token', newToken);
+    sessionStorage.setItem('token', newToken);
     this.token = newToken;
   }
   
@@ -114,7 +114,7 @@ export class AuthService {
   
 
   logout() {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this.token = null;
     this.isAuthenticatedSubject.next(false);
     this.currentUserSubject.next(null); // 👈 Limpiamos el usuario al hacer logout
