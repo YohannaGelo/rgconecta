@@ -23,6 +23,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
+import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.compo
     RegistroProfesorComponent,
     DetallesAlumnoComponent,
     PerfilAlumnoComponent,
-    PerfilProfesorComponent
+    PerfilProfesorComponent,
+    OpinionesUsuarioComponent
   ],
   imports: [
     BrowserModule,

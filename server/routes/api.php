@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy']);
 
     // Opiniones
+    Route::get('/mis-opiniones', [OpinionController::class, 'misOpiniones']);
     Route::post('/opiniones', [OpinionController::class, 'store']);
     Route::put('/opiniones/{opinion}', [OpinionController::class, 'update']);
     Route::delete('/opiniones/{opinion}', [OpinionController::class, 'destroy']);
