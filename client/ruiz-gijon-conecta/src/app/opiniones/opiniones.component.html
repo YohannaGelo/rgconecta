@@ -5,7 +5,7 @@
 
         <!-- Lista de opiniones -->
         <section class="col bg-white rounded-1 shadow p-4">
-            <h3 class="card-title mt-2">Opiniones sobre empresas de antiguos alumnos</h3>
+            <h3 class="card-title mt-2">Opiniones sobre empresas</h3>
 
             <div *ngIf="opinionesFiltradas.length === 0" class="text-muted mt-4">
                 No hay opiniones para mostrar.
@@ -16,8 +16,10 @@
                     class="d-flex flex-column flex-sm-row justify-content-between align-items-center text-center text-sm-start">
                     <div>
                         <h5 class="fw-light text-secondary">
-                            Alumno: <span class="fw-semibold">{{ opinion.alumno?.user?.name }}</span>
+                            {{ opinion.user?.role === 'profesor' ? 'Profesor:' : 'Alumno:' }}
+                            <span class="fw-semibold">{{ opinion.user?.name }}</span>
                         </h5>
+
                         <h6 class="fw-light text-secondary">
                             Experiencia en la empresa:
                             <span class="fw-semibold">
@@ -53,8 +55,6 @@
                     <select class="form-select bg-white rounded-1" [(ngModel)]="filtroSeleccionado"
                         (change)="filtrarOpiniones()">
                         <option value="">-- Mostrar todos --</option>
-                        <!-- <option value="reciente">Más reciente</option>
-                        <option value="antiguo">Más antiguo</option> -->
                         <option *ngFor="let empresa of empresasUnicas" [value]="'empresa_' + empresa.id">
                             {{ empresa.nombre }}
                         </option>
@@ -108,14 +108,25 @@
 
 
                     <!-- anios experiencia -->
-                    <div class="mt-3">
+                    <!-- <div class="mt-3">
                         <label for="anios" class="form-label text-uppercase text-secondary">años en la empresa</label>
-                        <!-- <input type="number" class="form-control text-secondary" id="anios" required
-                            [(ngModel)]="nuevaOpinion.anios_en_empresa" name="anios_en_empresa"> -->
                         <input type="number" class="form-control text-secondary" id="anios" min="0"
                             [(ngModel)]="nuevaOpinion.anios_en_empresa" name="anios_en_empresa" required>
+                    </div> -->
+                    <div class="mt-3">
+                        <label
+                            class="form-label text-uppercase text-secondary d-flex justify-content-between align-items-center">
+                            <span>Años en la empresa</span>
+                            <span class="badge bg-primary rounded-pill ms-2 p-1 ps-2">
+                                {{ nuevaOpinion.anios_en_empresa || 0 }}
+                            </span>
+                        </label>
 
+                        <input type="range" class="form-range" id="anios" min="0" max="50" step="1"
+                            [(ngModel)]="nuevaOpinion.anios_en_empresa" name="anios_en_empresa" required>
                     </div>
+
+
 
                     <!-- Contenido -->
                     <div class="mt-3">
@@ -125,11 +136,25 @@
                     </div>
 
                     <!-- Valoración -->
-                    <div class="mt-3">
+                    <!-- <div class="mt-3">
                         <label class="form-label text-uppercase text-secondary">Valoración (1 a 5)</label>
                         <input type="number" class="form-control" min="1" max="5" required
                             [(ngModel)]="nuevaOpinion.valoracion" name="valoracion">
+                    </div> -->
+                    <div class="mt-3">
+                        <label class="form-label text-uppercase text-secondary">Valoración</label>
+                        <div class="d-flex align-items-center">
+                            <ng-container *ngFor="let idx of [1,2,3,4,5]">
+                                <i class="bi" [ngClass]="{
+                                    'bi-star-fill text-warning': idx <= nuevaOpinion.valoracion,
+                                    'bi-star text-secondary': idx > nuevaOpinion.valoracion
+                                        }" (click)="nuevaOpinion.valoracion = idx"
+                                    style="cursor: pointer; font-size: 1.5rem; margin-right: 4px;">
+                                </i>
+                            </ng-container>
+                        </div>
                     </div>
+
                 </div>
 
                 <!-- Envío -->

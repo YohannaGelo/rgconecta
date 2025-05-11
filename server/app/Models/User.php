@@ -49,6 +49,12 @@ class User extends Authenticatable implements RoleCheck
         return $this->hasMany(Oferta::class); // Un usuario puede publicar muchas ofertas
     }
 
+    public function opiniones()
+    {
+        return $this->hasMany(Opinion::class);
+    }
+
+
     // Verifica la foto de perfil
     public function getFotoPerfilAttribute($value)
     {

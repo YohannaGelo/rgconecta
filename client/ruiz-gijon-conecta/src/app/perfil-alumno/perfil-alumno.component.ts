@@ -169,7 +169,7 @@ export class PerfilAlumnoComponent implements OnInit {
 
           if (newToken && updatedUser) {
             // ✅ Guardar el nuevo token
-            localStorage.setItem('token', newToken);
+            sessionStorage.setItem('token', newToken);
             this.authService.setToken(newToken);
 
             // ✅ Actualizar el usuario en el AuthService
