@@ -4,6 +4,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { Router } from '@angular/router';
 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ViewChild } from '@angular/core';
+
 @Component({
   selector: 'app-opiniones-usuario',
   standalone: false,
@@ -14,10 +17,21 @@ export class OpinionesUsuarioComponent implements OnInit {
   opiniones: any[] = [];
   opinionEditando: any = null;
 
+  opinionesPorPagina = 4;
+  paginaActual = 1;
+
+  opinionesFiltradas: any[] = [];
+  filtroSeleccionado = ''; // valor por defecto
+
+  @ViewChild('modalConfirmarEliminacion') modalConfirmarEliminacion: any;
+
+  opinionAEliminarId: number | null = null;
+
   constructor(
     private router: Router,
     private http: HttpClient,
     private authService: AuthService,
+    private modalService: NgbModal,
     private notificationService: NotificationService
   ) {}
 
@@ -32,6 +46,8 @@ export class OpinionesUsuarioComponent implements OnInit {
       .subscribe(
         (res) => {
           this.opiniones = res.data || [];
+          this.opinionesFiltradas = [...this.opiniones];
+          this.paginaActual = 1;
         },
         (error) => {
           console.error('Error al cargar opiniones del usuario', error);
@@ -71,10 +87,37 @@ export class OpinionesUsuarioComponent implements OnInit {
       );
   }
 
+    abrirModalEliminar(id: number, event: Event): void {
+    event.preventDefault();
+    this.opinionAEliminarId = id;
+    this.modalService.open(this.modalConfirmarEliminacion, { centered: true });
+  }
+
+  confirmarEliminar(modal: any): void {
+    if (!this.opinionAEliminarId) return;
+
+    const headers = this.authService.getHeaders();
+
+    this.http.delete(`http://localhost:8000/api/opiniones/${this.opinionAEliminarId}`, { headers }).subscribe(
+      () => {
+        this.notificationService.success('Opinión eliminada');
+        this.cargarMisOpiniones();
+        this.opinionAEliminarId = null;
+        modal.close();
+      },
+      (error) => {
+        console.error('Error al eliminar opinión', error);
+        this.notificationService.error('No se pudo eliminar la opinión');
+        modal.dismiss();
+      }
+    );
+  }
+
   eliminarOpinion(id: number): void {
+    const headers = this.authService.getHeaders();
     if (!confirm('¿Estás seguro de que deseas eliminar esta opinión?')) return;
 
-    this.http.delete(`http://localhost:8000/api/opiniones/${id}`).subscribe(
+    this.http.delete(`http://localhost:8000/api/opiniones/${id}`, { headers }).subscribe(
       () => {
         this.notificationService.success('Opinión eliminada');
         this.cargarMisOpiniones();
@@ -90,5 +133,49 @@ export class OpinionesUsuarioComponent implements OnInit {
     this.router.navigate(['/opiniones'], {
       state: { resaltarFormulario: true },
     });
+  }
+
+  filtrarOpiniones(): void {
+    if (this.filtroSeleccionado === 'reciente') {
+      this.opinionesFiltradas = [...this.opiniones].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    } else if (this.filtroSeleccionado === 'antiguo') {
+      this.opinionesFiltradas = [...this.opiniones].sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    } else if (this.filtroSeleccionado.startsWith('empresa_')) {
+      const empresaId = +this.filtroSeleccionado.split('_')[1];
+      this.opinionesFiltradas = this.opiniones.filter(
+        (op) => op.empresa.id === empresaId
+      );
+    } else {
+      this.opinionesFiltradas = [...this.opiniones];
+    }
+    this.paginaActual = 1;
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.opinionesFiltradas.length / this.opinionesPorPagina);
+  }
+
+  get opinionesPaginadas() {
+    const inicio = (this.paginaActual - 1) * this.opinionesPorPagina;
+    const fin = inicio + this.opinionesPorPagina;
+    return this.opinionesFiltradas.slice(inicio, fin);
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+    }
+  }
+
+  paginaSiguiente(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+    }
   }
 }

@@ -67,9 +67,10 @@ export class OpinionesComponent implements OnInit {
   opinionesFiltradas: any[] = []; // las que se mostrarán en el HTML tras aplicar filtros
   empresasUnicas: any[] = []; // lista única de empresas para el selector
 
-
   resaltarFormulario = false;
 
+  opinionesPorPagina = 4;
+  paginaActual = 1;
 
   constructor(
     private router: Router,
@@ -79,15 +80,15 @@ export class OpinionesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  const state = window.history.state as { resaltarFormulario?: boolean };
+    const state = window.history.state as { resaltarFormulario?: boolean };
 
-  if (state?.resaltarFormulario) {
-    this.resaltarFormulario = true;
+    if (state?.resaltarFormulario) {
+      this.resaltarFormulario = true;
 
-    setTimeout(() => {
-      this.resaltarFormulario = false;
-    }, 2000);
-  }
+      setTimeout(() => {
+        this.resaltarFormulario = false;
+      }, 2000);
+    }
 
     this.cargarOpiniones();
     this.cargarEmpresas();
@@ -117,30 +118,6 @@ export class OpinionesComponent implements OnInit {
       }
     );
   }
-
-  // cargarOpiniones(): void {
-  //   this.http.get<any>('http://localhost:8000/api/opiniones').subscribe(
-  //     (response) => {
-  //       this.opiniones = response.data;
-  //       console.log('Opiniones cargadas:', this.opiniones);
-  //     },
-  //     (error) => {
-  //       console.error('Error al cargar opiniones', error);
-  //     }
-  //   );
-  // }
-
-  // cargarEmpresas(): void {
-  //   this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
-  //     (res) => {
-  //       this.empresas = res.data;
-  //     },
-  //     (error) => {
-  //       console.error('Error al cargar empresas:', error);
-  //       this.notificationService.error('Error al cargar empresas');
-  //     }
-  //   );
-  // }
 
   // empresas
   compareEmpresa = (e1: any, e2: any) =>
@@ -243,7 +220,23 @@ export class OpinionesComponent implements OnInit {
         },
         (error) => {
           console.error('Error al enviar opinión:', error);
-          this.notificationService.error('Error al enviar la opinión');
+
+          if (error.status === 401) {
+            this.notificationService.warning(
+              'Debes iniciar sesión para dejar una opinión.'
+            );
+            this.router.navigate(['/login']);
+          }
+          if (error.status === 422) {
+            this.notificationService.warning(
+              'Ya has opinado sobre esta empresa. Selecciona otra para continuar.'
+            );
+            this.resetearFormulario();
+          } else {
+            this.notificationService.error(
+              'Error al enviar la opinión. Inténtalo de nuevo más tarde.'
+            );
+          }
         }
       );
   }
@@ -254,6 +247,14 @@ export class OpinionesComponent implements OnInit {
       anios_en_empresa: '',
       contenido: '',
       valoracion: '',
+    };
+
+    this.empresaSeleccionada = null;
+    this.nuevaEmpresa = {
+      nombre: '',
+      sector: '',
+      web: '',
+      descripcion: '',
     };
   }
 
@@ -281,11 +282,25 @@ export class OpinionesComponent implements OnInit {
     return anios === 1 ? '1 año' : `${anios} años`;
   }
 
+  get totalPaginas(): number {
+    return Math.ceil(this.opinionesFiltradas.length / this.opinionesPorPagina);
+  }
+
+  get opinionesPaginadas() {
+    const inicio = (this.paginaActual - 1) * this.opinionesPorPagina;
+    const fin = inicio + this.opinionesPorPagina;
+    return this.opinionesFiltradas.slice(inicio, fin);
+  }
+
   paginaAnterior(): void {
-    console.log('Página anterior (placeholder)');
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+    }
   }
 
   paginaSiguiente(): void {
-    console.log('Página siguiente (placeholder)');
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+    }
   }
 }

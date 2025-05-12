@@ -60,39 +60,6 @@ class AlumnoController extends Controller
         ]);
     }
 
-    // public function index(Request $request)
-    // {
-    //     // $query = Alumno::with(['user:id,name', 'tecnologias:nombre'])
-    //     //     ->select(['id', 'user_id', 'situacion_laboral']);
-    //     $query = Alumno::with([
-    //         'user:id,name,foto_perfil',
-    //         'tecnologias:nombre',
-    //         'experiencias:id,alumno_id,fecha_inicio,fecha_fin'
-    //     ])
-    //     ->select(['id', 'user_id', 'situacion_laboral', 'fecha_nacimiento', 'titulo_profesional']);
-
-
-    //     if ($request->filled('tecnologia')) {
-    //         $query->whereHas('tecnologias', function ($q) use ($request) {
-    //             $q->where('nombre', 'like', '%' . $request->tecnologia . '%');
-    //         });
-    //     }
-
-    //     // Paginación
-    //     $alumnos = $query->paginate(8);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'data' => $alumnos->items(),
-    //         'pagination' => $alumnos->only(['total', 'current_page', 'per_page', 'last_page']),
-    //         'stats' => [
-    //             'total_alumnos' => Alumno::count(),
-    //             'tecnologias' => Tecnologia::groupBy('nombre')->pluck('nombre')
-    //         ]
-    //     ]);
-    // }
-
-
     /**
      * Store a newly created resource in storage.
      */
