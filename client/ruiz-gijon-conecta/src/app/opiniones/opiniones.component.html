@@ -11,7 +11,7 @@
                 No hay opiniones para mostrar.
             </div>
 
-            <div *ngFor="let opinion of opinionesFiltradas" class="bg-light p-3 pb-2 mt-4 rounded">
+            <div *ngFor="let opinion of opinionesPaginadas" class="bg-light p-3 pb-2 mt-4 rounded">
                 <div
                     class="d-flex flex-column flex-sm-row justify-content-between align-items-center text-center text-sm-start">
                     <div>
@@ -108,11 +108,6 @@
 
 
                     <!-- anios experiencia -->
-                    <!-- <div class="mt-3">
-                        <label for="anios" class="form-label text-uppercase text-secondary">años en la empresa</label>
-                        <input type="number" class="form-control text-secondary" id="anios" min="0"
-                            [(ngModel)]="nuevaOpinion.anios_en_empresa" name="anios_en_empresa" required>
-                    </div> -->
                     <div class="mt-3">
                         <label
                             class="form-label text-uppercase text-secondary d-flex justify-content-between align-items-center">
@@ -136,11 +131,6 @@
                     </div>
 
                     <!-- Valoración -->
-                    <!-- <div class="mt-3">
-                        <label class="form-label text-uppercase text-secondary">Valoración (1 a 5)</label>
-                        <input type="number" class="form-control" min="1" max="5" required
-                            [(ngModel)]="nuevaOpinion.valoracion" name="valoracion">
-                    </div> -->
                     <div class="mt-3">
                         <label class="form-label text-uppercase text-secondary">Valoración</label>
                         <div class="d-flex align-items-center">
@@ -174,11 +164,15 @@
     </div>
 
     <!-- Flechas (podemos conectar a paginación en el futuro) -->
-    <div class="mb-3">
-        <button class="btn btn-primary rounded-1 text-white px-3 py-2" (click)="paginaAnterior()">
+    <div class="mb-3 ">
+        <button class="btn btn-primary rounded-1 text-white px-3 py-2" [disabled]="paginaActual === 1" (click)="paginaAnterior()">
             <i class="bi bi-arrow-left"></i>
         </button>
-        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" (click)="paginaSiguiente()">
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">Página {{ paginaActual }} de {{ totalPaginas }}</small>
+
+        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
+            (click)="paginaSiguiente()">
             <i class="bi bi-arrow-right"></i>
         </button>
     </div>

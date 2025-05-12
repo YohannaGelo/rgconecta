@@ -49,6 +49,6 @@ class Alumno extends Model
     // Relación con opiniones
     public function opiniones()
     {
-        return $this->hasMany(Opinion::class);
+        return $this->hasManyThrough(Opinion::class, User::class, 'id', 'user_id', 'user_id', 'id');
     }
 }
