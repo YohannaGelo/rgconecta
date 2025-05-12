@@ -6,7 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 
 import { NotificationService } from '../../core/services/notification.service';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-registro',
@@ -15,6 +16,21 @@ import { NotificationService } from '../../core/services/notification.service';
   styleUrl: './registro.component.scss',
 })
 export class RegistroComponent implements OnInit {
+  @ViewChild('confirmacionModal') confirmacionModal: any;
+  itemAEliminar: { tipo: string; index: number } | null = null;
+
+  @ViewChild('modalConfirmarOpinion') modalConfirmarOpinion: any;
+  @ViewChild('modalFormularioOpinion') modalFormularioOpinion: any;
+  opinionesPendientes: any[] = [];
+
+  ultimaEmpresaAgregada: any = null;
+
+  opinion = {
+    contenido: '',
+    valoracion: 5,
+    anios_en_empresa: 0,
+  };
+
   // Datos del formulario
   name: string = '';
   email: string = '';
@@ -144,6 +160,7 @@ export class RegistroComponent implements OnInit {
   }
 
   constructor(
+    private modalService: NgbModal,
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
@@ -154,6 +171,30 @@ export class RegistroComponent implements OnInit {
     this.cargarTitulos(); // Llamar al método para cargar los títulos disponibles
     this.cargarEmpresas(); // Llamar al método para cargar las empresas disponibles
     this.cargarTecnologias(); // Llamar al método para cargar las tecnologías disponibles
+
+    // Cargar múltiples opiniones pendientes
+    const stored = sessionStorage.getItem('opinionesPendientes');
+    if (stored) {
+      this.opinionesPendientes = JSON.parse(stored);
+      sessionStorage.removeItem('opinionesPendientes');
+    }
+  }
+
+  abrirConfirmacion(tipo: string, index: number) {
+    this.itemAEliminar = { tipo, index };
+    this.modalService.open(this.confirmacionModal, { centered: true });
+  }
+
+  confirmarEliminacion(modal: any) {
+    if (!this.itemAEliminar) return;
+
+    const { tipo, index } = this.itemAEliminar;
+    if (tipo === 'titulo') this.eliminarTitulo(index);
+    else if (tipo === 'tecnologia') this.eliminarTecnologia(index);
+    else if (tipo === 'experiencia') this.eliminarExperiencia(index);
+
+    this.itemAEliminar = null;
+    modal.close();
   }
 
   // #region 🎓 TÍTULOS
@@ -168,7 +209,9 @@ export class RegistroComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar los títulos', error);
-        this.notificationService.error('Hubo un error al cargar los títulos. Intenta nuevamente.');
+        this.notificationService.error(
+          'Hubo un error al cargar los títulos. Intenta nuevamente.'
+        );
       }
     );
   }
@@ -345,6 +388,65 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  // agregarExperiencia(): void {
+  //   let empresaData;
+
+  //   if (this.empresaSeleccionada?.nombre === 'Otras') {
+  //     if (
+  //       !this.nuevaEmpresa.nombre ||
+  //       !this.nuevaEmpresa.sector ||
+  //       !this.nuevaEmpresa.web
+  //     ) {
+  //       this.notificationService.warning(
+  //         'Debes introducir el nombre, sector y web de la nueva empresa.'
+  //       );
+  //       return;
+  //     }
+  //     empresaData = {
+  //       nombre: this.nuevaEmpresa.nombre,
+  //       sector: this.nuevaEmpresa.sector,
+  //       web: this.nuevaEmpresa.web,
+  //     };
+  //     this.empresasNuevas.push({ ...this.nuevaEmpresa });
+  //   } else if (this.empresaSeleccionada && this.empresaSeleccionada.nombre) {
+  //     empresaData = {
+  //       nombre: this.empresaSeleccionada.nombre,
+  //       sector: this.empresaSeleccionada.sector,
+  //       web: this.empresaSeleccionada.web,
+  //     };
+  //   } else {
+  //     this.notificationService.warning(
+  //       'Por favor, selecciona o introduce una empresa.'
+  //     );
+  //     return;
+  //   }
+
+  //   if (
+  //     this.comienzoExperiencia &&
+  //     this.finExperiencia &&
+  //     this.puestoExperiencia
+  //   ) {
+  //     this.experiencias.push({
+  //       empresa: empresaData,
+  //       puesto: this.puestoExperiencia,
+  //       fecha_inicio: this.comienzoExperiencia,
+  //       fecha_fin: this.finExperiencia,
+  //     });
+
+  //     // Limpiar campos
+  //     this.empresaSeleccionada = null;
+  //     this.comienzoExperiencia = '';
+  //     this.finExperiencia = '';
+  //     this.puestoExperiencia = '';
+  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+
+  //     this.mostrarModalOpinionSobreEmpresa(empresaData);
+  //   } else {
+  //     this.notificationService.warning(
+  //       'Por favor, completa todos los campos de la experiencia.'
+  //     );
+  //   }
+  // }
   agregarExperiencia(): void {
     let empresaData;
 
@@ -354,23 +456,19 @@ export class RegistroComponent implements OnInit {
         !this.nuevaEmpresa.sector ||
         !this.nuevaEmpresa.web
       ) {
-        this.notificationService.warning('Debes introducir el nombre, sector y web de la nueva empresa.');
+        this.notificationService.warning(
+          'Debes introducir el nombre, sector y web de la nueva empresa.'
+        );
         return;
       }
-      empresaData = {
-        nombre: this.nuevaEmpresa.nombre,
-        sector: this.nuevaEmpresa.sector,
-        web: this.nuevaEmpresa.web,
-      };
-      this.empresasNuevas.push({ ...this.nuevaEmpresa });
-    } else if (this.empresaSeleccionada && this.empresaSeleccionada.nombre) {
-      empresaData = {
-        nombre: this.empresaSeleccionada.nombre,
-        sector: this.empresaSeleccionada.sector,
-        web: this.empresaSeleccionada.web,
-      };
+      empresaData = { ...this.nuevaEmpresa };
+      this.empresasNuevas.push(empresaData);
+    } else if (this.empresaSeleccionada?.nombre) {
+      empresaData = { ...this.empresaSeleccionada };
     } else {
-      this.notificationService.warning('Por favor, selecciona o introduce una empresa.');
+      this.notificationService.warning(
+        'Por favor, selecciona o introduce una empresa.'
+      );
       return;
     }
 
@@ -379,27 +477,61 @@ export class RegistroComponent implements OnInit {
       this.finExperiencia &&
       this.puestoExperiencia
     ) {
-      this.experiencias.push({
+      const nuevaExp = {
         empresa: empresaData,
         puesto: this.puestoExperiencia,
         fecha_inicio: this.comienzoExperiencia,
         fecha_fin: this.finExperiencia,
-      });
+      };
 
-      // Limpiar campos
+      this.experiencias.push(nuevaExp);
+
+      // 👉 Guarda años ANTES de limpiar campos
+      this.opinion.anios_en_empresa = this.calcularAnios(
+        this.comienzoExperiencia,
+        this.finExperiencia
+      );
+
+      // Guarda para la futura opinión
+      this.ultimaEmpresaAgregada = empresaData;
+
+      // Limpia campos después de guardar los datos necesarios
       this.empresaSeleccionada = null;
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
       this.puestoExperiencia = '';
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+
+      // 🔔 Lanza modal para dejar opinión
+      this.mostrarModalOpinionSobreEmpresa(empresaData);
     } else {
-      this.notificationService.warning('Por favor, completa todos los campos de la experiencia.');
+      this.notificationService.warning(
+        'Por favor, completa todos los campos de la experiencia.'
+      );
     }
   }
 
   eliminarExperiencia(index: number): void {
+    const exp = this.experiencias[index];
+    const empresaEliminada = exp.empresa?.nombre || exp.empresa;
+
+    // Elimina todas las opiniones asociadas a esa empresa
+    this.opinionesPendientes = this.opinionesPendientes.filter(
+      (op) => op.empresa?.nombre !== empresaEliminada
+    );
+
+    // Actualiza sessionStorage si era necesario
+    sessionStorage.setItem(
+      'opinionesPendientes',
+      JSON.stringify(this.opinionesPendientes)
+    );
+
     this.experiencias.splice(index, 1);
   }
+
+  // eliminarExperiencia(index: number): void {
+  //   this.experiencias.splice(index, 1);
+  // }
 
   // #region 🏞️ IMAGEN DE PERFIL
   // Método para manejar el cambio de imagen
@@ -435,13 +567,17 @@ export class RegistroComponent implements OnInit {
   onSubmit(): void {
     const promocionRegex = /^\d{4}\/\d{4}$/;
     if (!promocionRegex.test(this.promocion)) {
-      this.notificationService.warning('La promoción debe tener el formato "2023/2025"');
+      this.notificationService.warning(
+        'La promoción debe tener el formato "2023/2025"'
+      );
       return;
     }
 
     const [inicio, fin] = this.promocion.split('/').map(Number);
     if (fin <= inicio) {
-      this.notificationService.warning('El año final debe ser mayor que el inicial en la promoción');
+      this.notificationService.warning(
+        'El año final debe ser mayor que el inicial en la promoción'
+      );
       return;
     }
 
@@ -486,15 +622,16 @@ export class RegistroComponent implements OnInit {
     };
 
     if (!this.passwordValida) {
-      this.notificationService.error('La contraseña no cumple con los requisitos mínimos');
+      this.notificationService.error(
+        'La contraseña no cumple con los requisitos mínimos'
+      );
       return;
     }
-    
+
     if (!this.passwordsCoinciden) {
       this.notificationService.error('Las contraseñas no coinciden');
       return;
     }
-    
 
     // console.log('Datos del alumno a enviar:', alumno);
     // console.log('ALUMNO QUE SE ENVÍA', JSON.stringify(alumno, null, 2));
@@ -507,11 +644,19 @@ export class RegistroComponent implements OnInit {
           (loginRes) => {
             console.log('Login automático exitoso', loginRes);
             this.notificationService.success('¡Registro completado con éxito!');
+            // this.router.navigate(['/ofertas']);
+            // 👇 Si hay opinión pendiente, abre el modal
+            if (this.opinionesPendientes.length > 0) {
+              this.enviarOpinionesPendientes();
+            }
+
             this.router.navigate(['/ofertas']);
           },
           (loginErr) => {
             console.error('Error en login automático', loginErr);
-            this.notificationService.info('Registro completado, pero hubo un error al iniciar sesión automáticamente. Por favor, haz login manual.');
+            this.notificationService.info(
+              'Registro completado, pero hubo un error al iniciar sesión automáticamente. Por favor, haz login manual.'
+            );
             this.router.navigate(['/login']);
           }
         );
@@ -523,7 +668,6 @@ export class RegistroComponent implements OnInit {
         }
       }
     );
-
   }
 
   // Helper para convertir base64 a File
@@ -539,5 +683,116 @@ export class RegistroComponent implements OnInit {
     }
 
     return new File([u8arr], filename, { type: mime });
+  }
+
+  // #region Dejar Opinión
+  mostrarModalOpinionSobreEmpresa(empresa: any): void {
+    this.ultimaEmpresaAgregada = empresa;
+    this.modalService.open(this.modalConfirmarOpinion, { centered: true });
+  }
+
+  abrirModalOpinion(modalConfirm: any): void {
+    modalConfirm.close();
+
+    this.guardarOpinionTemporal(); // aquí se calcula y se guarda
+
+    this.modalService.open(this.modalFormularioOpinion, { centered: true });
+  }
+
+  guardarOpinionTemporal(): void {
+    const nuevaOpinion = {
+      empresa: this.ultimaEmpresaAgregada,
+      contenido: this.opinion.contenido,
+      valoracion: this.opinion.valoracion,
+      anios_en_empresa: this.opinion.anios_en_empresa, // ya calculado antes
+    };
+
+    this.opinionesPendientes.push(nuevaOpinion);
+
+    sessionStorage.setItem(
+      'opinionesPendientes',
+      JSON.stringify(this.opinionesPendientes)
+    );
+  }
+
+  enviarOpinionDesdeModal(modal: any): void {
+    this.guardarOpinionTemporal();
+    this.notificationService.info(
+      'Guardaremos tu opinión y la enviaremos al terminar el registro.'
+    );
+    modal.close();
+
+    // Limpia formulario actual
+    this.opinion = { contenido: '', valoracion: 5, anios_en_empresa: 0 };
+  }
+
+  enviarOpinionesPendientes(): void {
+  const token = sessionStorage.getItem('token');
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+  };
+
+  const opinionesAEnviar = [...this.opinionesPendientes];
+
+  opinionesAEnviar.forEach((opinion) => {
+    const payload: any = {
+      contenido: opinion.contenido,
+      valoracion: opinion.valoracion,
+      anios_en_empresa: opinion.anios_en_empresa,
+    };
+
+    // Si la empresa tiene id, usamos empresa_id
+    if (opinion.empresa?.id) {
+      payload.empresa_id = opinion.empresa.id;
+    } else {
+      // Si no, mandamos toda la empresa
+      payload.empresa = {
+        nombre: opinion.empresa?.nombre,
+        sector: opinion.empresa?.sector || 'otros',
+        web: opinion.empresa?.web || '',
+        descripcion: opinion.empresa?.descripcion || null,
+      };
+    }
+
+    console.log('📤 Enviando opinión:', payload);
+
+    this.http
+      .post('http://localhost:8000/api/opiniones', payload, { headers })
+      .subscribe({
+        next: () => {
+          this.notificationService.success(
+            `Opinión sobre ${opinion.empresa.nombre} enviada.`
+          );
+        },
+        error: (err) => {
+          console.error('Error al enviar opinión pendiente', err);
+          this.notificationService.error(
+            `No se pudo enviar la opinión sobre ${opinion.empresa.nombre}`
+          );
+        },
+      });
+  });
+
+  this.opinionesPendientes = [];
+  sessionStorage.removeItem('opinionesPendientes');
+}
+
+
+  calcularAnios(fechaInicio: string, fechaFin: string): number {
+    if (!fechaInicio || !fechaFin) return 0; // protección básica
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) return 0;
+
+    let anios = fin.getFullYear() - inicio.getFullYear();
+    const mes = fin.getMonth() - inicio.getMonth();
+    if (mes < 0 || (mes === 0 && fin.getDate() < inicio.getDate())) {
+      anios--;
+    }
+
+    return anios;
   }
 }

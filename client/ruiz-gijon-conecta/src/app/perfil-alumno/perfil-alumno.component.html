@@ -86,8 +86,12 @@
                     class="list-group-item d-flex justify-content-between align-items-center">
                     {{ t.nombre }} ({{ t.tipo }}) - {{ t.pivot.fecha_inicio }} a {{ t.pivot.fecha_fin }} - {{
                     t.pivot.institucion }}
-                    <button class="btn btn-sm btn-danger" (click)="eliminarTitulo(i)"><i
-                            class="bi bi-trash"></i></button>
+                    <!-- <button class="btn btn-sm btn-danger" (click)="eliminarTitulo(i)"><i
+                            class="bi bi-trash"></i></button> -->
+                    <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('titulo', i)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+
                 </li>
 
             </ul>
@@ -144,8 +148,12 @@
                     class="list-group-item d-flex justify-content-between align-items-center">
                     {{ exp.empresa.nombre }} [{{ exp.empresa.sector }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
                     exp.fecha_fin }})
-                    <button class="btn btn-sm btn-danger" (click)="eliminarExperiencia(i)"><i
-                            class="bi bi-trash"></i></button>
+                    <!-- <button class="btn btn-sm btn-danger" (click)="eliminarExperiencia(i)"><i
+                            class="bi bi-trash"></i></button> -->
+                    <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('experiencia', i)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+
                 </li>
             </ul>
             <!-- Formulario añadir experiencia -->
@@ -223,8 +231,12 @@
                 <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
                     class="list-group-item d-flex justify-content-between align-items-center">
                     {{ tiposTecnologiaMap[tec.tipo] }}: {{ tec.nombre }} ({{ tec.pivot.nivel }})
-                    <button class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)"><i
-                            class="bi bi-trash"></i></button>
+                    <!-- <button class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)"><i
+                            class="bi bi-trash"></i></button> -->
+                    <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('tecnologia', i)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+
                 </li>
             </ul>
             <!-- Formulario añadir tecnología -->
@@ -341,5 +353,72 @@
         <button type="button" class="btn btn-primary"
             [disabled]="!passwordValid || newPassword !== confirmNewPassword || !currentPassword"
             (click)="submitNewPassword(modal)">Guardar</button>
+    </div>
+</ng-template>
+
+<!-- Modal Confirmación -->
+<ng-template #modalConfirmarEliminacion let-modal>
+    <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">¿Estás seguro?</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        Esta acción eliminará el elemento de tu perfil. ¿Deseas continuar?
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminacion(modal)">Eliminar</button>
+    </div>
+</ng-template>
+
+<!-- MODAL: ¿Quieres opinar? -->
+<ng-template #modalConfirmarOpinion let-modal>
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">¿Te gustaría dejar una opinión?</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <p>Has añadido una nueva experiencia en <strong>{{ ultimaEmpresaAgregada?.nombre }}</strong>.</p>
+        <p>¿Quieres compartir tu opinión sobre ella?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">No</button>
+        <button class="btn btn-primary" (click)="abrirModalOpinion(modal)">Sí, opinar</button>
+    </div>
+</ng-template>
+
+<!-- MODAL: Formulario de opinión -->
+<ng-template #modalFormularioOpinion let-modal>
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Tu opinión sobre {{ ultimaEmpresaAgregada?.nombre }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form #opinionForm="ngForm" (ngSubmit)="enviarOpinionDesdeModal(modal)" novalidate>
+            <!-- <div class="mb-3">
+                <label class="form-label">Años en la empresa</label>
+                <input type="range" class="form-range " id="anios" min="0" max="50" step="1"
+                    [(ngModel)]="opinion.anios_en_empresa" name="anios_en_empresa" required>
+            </div> -->
+
+            <div class="mb-3">
+                <label class="form-label">Opinión</label>
+                <textarea class="form-control" [(ngModel)]="opinion.contenido" name="contenido" rows="3"
+                    required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Valoración</label>
+                <div class="d-flex align-items-center">
+                    <i *ngFor="let idx of [1, 2, 3, 4, 5]" class="bi" [ngClass]="{
+                'bi-star-fill text-warning': opinion.valoracion >= idx,
+                'bi-star text-muted': opinion.valoracion < idx
+            }" (click)="opinion.valoracion = idx" style="font-size: 1.5rem; cursor: pointer;"></i>
+                </div>
+            </div>
+
+
+            <button type="submit" class="btn btn-success" [disabled]="!opinionForm.form.valid">Enviar opinión</button>
+        </form>
     </div>
 </ng-template>

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil-alumno',
@@ -14,6 +15,23 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PerfilAlumnoComponent implements OnInit {
   @ViewChild('changePasswordModal') changePasswordModal: any;
+  @ViewChild('modalConfirmarEliminacion') modalConfirmarEliminacion: any;
+
+  @ViewChild('modalConfirmarOpinion') modalConfirmarOpinion: any;
+  @ViewChild('modalFormularioOpinion') modalFormularioOpinion: any;
+
+  ultimaEmpresaAgregada: any = null;
+
+  opinion = {
+    contenido: '',
+    valoracion: 5,
+    anios_en_empresa: 0,
+  };
+
+  elementoAEliminar: {
+    tipo: 'titulo' | 'tecnologia' | 'experiencia';
+    index: number;
+  } | null = null;
 
   currentPassword: string = '';
   newPassword: string = '';
@@ -122,6 +140,7 @@ export class PerfilAlumnoComponent implements OnInit {
   };
 
   constructor(
+    private router: Router,
     private modalService: NgbModal,
     private authService: AuthService,
     private notificationService: NotificationService,
@@ -133,6 +152,35 @@ export class PerfilAlumnoComponent implements OnInit {
     this.cargarTitulos();
     this.cargarTecnologias();
     this.cargarEmpresas();
+  }
+
+  abrirModalEliminar(
+    tipo: 'titulo' | 'tecnologia' | 'experiencia',
+    index: number
+  ): void {
+    this.elementoAEliminar = { tipo, index };
+    this.modalService.open(this.modalConfirmarEliminacion, { centered: true });
+  }
+
+  confirmarEliminacion(modal: any): void {
+    if (!this.elementoAEliminar) return;
+
+    const { tipo, index } = this.elementoAEliminar;
+
+    switch (tipo) {
+      case 'titulo':
+        this.titulosSeleccionados.splice(index, 1);
+        break;
+      case 'tecnologia':
+        this.tecnologiasSeleccionadas.splice(index, 1);
+        break;
+      case 'experiencia':
+        this.experiencias.splice(index, 1);
+        break;
+    }
+
+    this.notificationService.success('Elemento eliminado correctamente');
+    modal.close();
   }
 
   openChangePasswordModal() {
@@ -230,7 +278,6 @@ export class PerfilAlumnoComponent implements OnInit {
   public get auth() {
     return this.authService;
   }
-
 
   getUserImage(fotoPerfil: string | null): string {
     if (!fotoPerfil || fotoPerfil === 'default.jpg') {
@@ -371,8 +418,7 @@ export class PerfilAlumnoComponent implements OnInit {
         this.authService.setCurrentUser(res.data);
 
         // Cerrar cropper y limpiar imagen temporal
-    this.cancelarImagen();
-
+        this.cancelarImagen();
       },
       (err) => {
         console.error('❌ Error al actualizar perfil:', err);
@@ -506,6 +552,8 @@ export class PerfilAlumnoComponent implements OnInit {
       this.finExperiencia = '';
       this.puestoExperiencia = '';
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+
+      this.mostrarModalOpinionSobreEmpresa(empresaData);
     } else {
       this.notificationService.warning(
         'Por favor, completa todos los campos de la experiencia.'
@@ -562,5 +610,82 @@ export class PerfilAlumnoComponent implements OnInit {
       otros: 'Otros',
     };
     return tiposMap[tipo as keyof typeof tiposMap] || tipo;
+  }
+
+  // #region Dejar Opinión
+  // Mostrar modal tras agregar experiencia
+  mostrarModalOpinionSobreEmpresa(empresa: any): void {
+    this.ultimaEmpresaAgregada = empresa;
+    this.modalService.open(this.modalConfirmarOpinion, { centered: true });
+  }
+
+  // Abrir modal con el formulario de opinión
+  abrirModalOpinion(modalConfirm: any): void {
+    modalConfirm.close();
+    this.modalService.open(this.modalFormularioOpinion, { centered: true });
+    this.opinion.anios_en_empresa = this.calcularAnios(
+      this.comienzoExperiencia,
+      this.finExperiencia
+    );
+  }
+
+  // Enviar opinión desde el modal
+  enviarOpinionDesdeModal(modal: any): void {
+    const token = sessionStorage.getItem('token');
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    };
+
+    const payload = {
+      empresa: this.ultimaEmpresaAgregada,
+      ...this.opinion,
+    };
+
+    this.http
+      .post('http://localhost:8000/api/opiniones', payload, { headers })
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Opinión enviada correctamente');
+          modal.close();
+          // Reset
+          this.opinion = { contenido: '', valoracion: 0, anios_en_empresa: 0 };
+        },
+        error: (error) => {
+          console.error('Error al enviar opinión desde modal:', error);
+
+          if (error.status === 401) {
+            this.notificationService.warning(
+              'Debes iniciar sesión para dejar una opinión.'
+            );
+            this.router.navigate(['/login']);
+          } else if (error.status === 422) {
+            this.notificationService.warning(
+              'Ya has opinado sobre esta empresa. Solo puedes opinar una vez.'
+            );
+            modal.close();
+            this.opinion = {
+              contenido: '',
+              valoracion: 0,
+              anios_en_empresa: 0,
+            };
+          } else {
+            this.notificationService.error(
+              'Error al enviar la opinión. Inténtalo de nuevo más tarde.'
+            );
+          }
+        },
+      });
+  }
+
+  calcularAnios(fechaInicio: string, fechaFin: string): number {
+    const inicio = new Date(fechaInicio);
+    const fin = fechaFin ? new Date(fechaFin) : new Date();
+    let anios = fin.getFullYear() - inicio.getFullYear();
+    const mes = fin.getMonth() - inicio.getMonth();
+    if (mes < 0 || (mes === 0 && fin.getDate() < inicio.getDate())) {
+      anios--;
+    }
+    return anios;
   }
 }
