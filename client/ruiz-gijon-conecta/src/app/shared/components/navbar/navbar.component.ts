@@ -3,15 +3,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-navbar',
   standalone: false,
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
-
   isAuthenticated$: Observable<boolean>;
   currentUser: any = null;
 
@@ -20,7 +18,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
   }
@@ -35,6 +33,32 @@ export class NavbarComponent implements OnInit {
   isInOfertasSection(): boolean {
     const ruta = this.router.url;
     return ['/home', '/ofertas', '/nueva-oferta'].includes(ruta);
+  }
+
+  acortarNombre(nombre: string): string {
+    if (!nombre) return '';
+
+    const partes = nombre.trim().split(' ');
+
+    // Capitaliza cada palabra (por si vienen todas en minúscula o mayúscula)
+    const capitalizar = (palabra: string) =>
+      palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+
+    const partesCap = partes.map(capitalizar);
+
+    if (nombre.length <= 15) {
+      return partesCap.join(' ');
+    }
+
+    if (partesCap.length >= 4) {
+      return `${partesCap[0][0]}. ${partesCap[1][0]}. ${partesCap[2]}`;
+    }
+
+    if (partesCap.length === 3) {
+      return `${partesCap[0][0]}. ${partesCap[1]}`;
+    }
+
+    return `${partesCap[0][0]}. ${partesCap.slice(1).join(' ')}`;
   }
 
   logout() {

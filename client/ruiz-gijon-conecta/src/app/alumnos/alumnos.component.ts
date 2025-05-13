@@ -24,18 +24,6 @@ export class AlumnosComponent implements OnInit {
     this.cargarAlumnos();
   }
 
-  // cargarAlumnos(): void {
-  //   this.http.get<any>('http://localhost:8000/api/alumnos').subscribe({
-  //     next: (response) => {
-  //       console.log('Respuesta del servidor:', response);
-  //       this.alumnos = response.data;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al cargar alumnos', error);
-  //     },
-  //   });
-  // }
-
   cargarAlumnos(pagina: number = 1): void {
     const params: any = { page: pagina };
 
@@ -50,8 +38,10 @@ export class AlumnosComponent implements OnInit {
           console.log('Respuesta:', response);
           this.alumnos = response.data;
           this.tecnologias = response.stats.tecnologias;
-          this.currentPage = response.pagination.current_page;
-          this.lastPage = response.pagination.last_page;
+
+          // Asegura valores por defecto si no vienen
+          this.currentPage = response.pagination?.current_page ?? 1;
+          this.lastPage = response.pagination?.last_page ?? 1;
         },
         error: (error) => {
           console.error('Error al cargar alumnos', error);
@@ -123,5 +113,47 @@ export class AlumnosComponent implements OnInit {
 
   getSituacionTexto(situacion: string): string {
     return situacion.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  }
+
+  acortarNombre(nombre: string): string {
+    if (!nombre) return '';
+
+    const partes = nombre.trim().split(' ');
+
+    // Capitaliza cada palabra (por si vienen todas en minúscula o mayúscula)
+    const capitalizar = (palabra: string) =>
+      palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+
+    const partesCap = partes.map(capitalizar);
+
+    if (nombre.length <= 25) {
+      return partesCap.join(' ');
+    }
+
+    if (partesCap.length >= 4) {
+      return `${partesCap[0][0]}. ${partesCap[1][0]}. ${partesCap[2]}`;
+    }
+
+    if (partesCap.length === 3) {
+      return `${partesCap[0][0]}. ${partesCap[1]}`;
+    }
+
+    return `${partesCap[0][0]}. ${partesCap.slice(1).join(' ')}`;
+  }
+
+  acortarTitulo(titulo: string, max = 41): string {
+    return titulo.length > max ? titulo.slice(0, max) + '...' : titulo;
+  }
+
+  paginaAnterior(): void {
+    if (this.currentPage > 1) {
+      this.cambiarPagina(this.currentPage - 1);
+    }
+  }
+
+  paginaSiguiente(): void {
+    if (this.currentPage < this.lastPage) {
+      this.cambiarPagina(this.currentPage + 1);
+    }
   }
 }

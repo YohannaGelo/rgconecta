@@ -700,6 +700,12 @@ export class RegistroComponent implements OnInit {
   }
 
   guardarOpinionTemporal(): void {
+    // Evitar guardar opiniones vacías
+    if (!this.opinion.contenido || !this.opinion.contenido.trim()) {
+      // console.warn('⛔ Opinión no guardada porque el contenido está vacío');
+      return;
+    }
+
     const nuevaOpinion = {
       empresa: this.ultimaEmpresaAgregada,
       contenido: this.opinion.contenido,
@@ -727,57 +733,65 @@ export class RegistroComponent implements OnInit {
   }
 
   enviarOpinionesPendientes(): void {
-  const token = sessionStorage.getItem('token');
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/json',
-  };
-
-  const opinionesAEnviar = [...this.opinionesPendientes];
-
-  opinionesAEnviar.forEach((opinion) => {
-    const payload: any = {
-      contenido: opinion.contenido,
-      valoracion: opinion.valoracion,
-      anios_en_empresa: opinion.anios_en_empresa,
+    const token = sessionStorage.getItem('token');
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
     };
 
-    // Si la empresa tiene id, usamos empresa_id
-    if (opinion.empresa?.id) {
-      payload.empresa_id = opinion.empresa.id;
-    } else {
-      // Si no, mandamos toda la empresa
-      payload.empresa = {
-        nombre: opinion.empresa?.nombre,
-        sector: opinion.empresa?.sector || 'otros',
-        web: opinion.empresa?.web || '',
-        descripcion: opinion.empresa?.descripcion || null,
+    const opinionesAEnviar = [...this.opinionesPendientes];
+
+    opinionesAEnviar.forEach((opinion) => {
+      // Validar contenido y estructura mínima
+      if (
+        !opinion.contenido ||
+        !opinion.valoracion ||
+        typeof opinion.anios_en_empresa !== 'number'
+      ) {
+        console.warn('⛔ Opinión incompleta, no se envía:', opinion);
+        return;
+      }
+
+      const payload: any = {
+        contenido: opinion.contenido.trim(),
+        valoracion: opinion.valoracion,
+        anios_en_empresa: opinion.anios_en_empresa,
       };
-    }
 
-    console.log('📤 Enviando opinión:', payload);
+      if (opinion.empresa?.id) {
+        payload.empresa_id = opinion.empresa.id;
+      } else {
+        payload.empresa = {
+          nombre: opinion.empresa?.nombre,
+          sector: opinion.empresa?.sector || 'otros',
+          web: opinion.empresa?.web || '',
+          descripcion: opinion.empresa?.descripcion || null,
+        };
+      }
 
-    this.http
-      .post('http://localhost:8000/api/opiniones', payload, { headers })
-      .subscribe({
-        next: () => {
-          this.notificationService.success(
-            `Opinión sobre ${opinion.empresa.nombre} enviada.`
-          );
-        },
-        error: (err) => {
-          console.error('Error al enviar opinión pendiente', err);
-          this.notificationService.error(
-            `No se pudo enviar la opinión sobre ${opinion.empresa.nombre}`
-          );
-        },
-      });
-  });
+      console.log('📤 Enviando opinión:', payload);
 
-  this.opinionesPendientes = [];
-  sessionStorage.removeItem('opinionesPendientes');
-}
+      this.http
+        .post('http://localhost:8000/api/opiniones', payload, { headers })
+        .subscribe({
+          next: () => {
+            this.notificationService.success(
+              `Opinión sobre ${opinion.empresa.nombre} enviada.`
+            );
+          },
+          error: (err) => {
+            console.error('❌ Error al enviar opinión pendiente:', err);
+            this.notificationService.error(
+              `No se pudo enviar la opinión sobre ${opinion.empresa.nombre}`
+            );
+          },
+        });
+    });
 
+    // Limpiar después del bucle
+    this.opinionesPendientes = [];
+    sessionStorage.removeItem('opinionesPendientes');
+  }
 
   calcularAnios(fechaInicio: string, fechaFin: string): number {
     if (!fechaInicio || !fechaFin) return 0; // protección básica

@@ -43,7 +43,9 @@ class AlumnoController extends Controller
 
         if ($request->filled('experiencia')) {
             $query->whereHas('experiencias', function ($q) use ($request) {
-                $q->whereRaw('TIMESTAMPDIFF(YEAR, fecha_inicio, fecha_fin) >= ?', [$request->experiencia]);
+                // $q->whereRaw('TIMESTAMPDIFF(YEAR, fecha_inicio, fecha_fin) >= ?', [$request->experiencia]);
+                $q->whereRaw('(IFNULL(fecha_fin, YEAR(CURDATE())) - fecha_inicio) >= ?', [$request->experiencia]);
+
             });
         }
 
@@ -52,7 +54,13 @@ class AlumnoController extends Controller
         return response()->json([
             'success' => true,
             'data' => $alumnos->items(),
-            'pagination' => $alumnos->only(['total', 'current_page', 'per_page', 'last_page']),
+            'pagination' => [
+                'total' => $alumnos->total(),
+                'current_page' => $alumnos->currentPage(),
+                'per_page' => $alumnos->perPage(),
+                'last_page' => $alumnos->lastPage(),
+            ],
+
             'stats' => [
                 'total_alumnos' => Alumno::count(),
                 'tecnologias' => Tecnologia::groupBy('nombre')->pluck('nombre')
@@ -264,7 +272,7 @@ class AlumnoController extends Controller
             // Actualizar datos del usuario
             if ($request->has('user')) {
                 $userUpdates = [];
-            
+
                 if ($request->filled('user.name')) {
                     $userUpdates['name'] = $request->input('user.name');
                 }
@@ -273,7 +281,7 @@ class AlumnoController extends Controller
                 }
                 if ($request->filled('user.foto_perfil')) {
                     $fotoPerfil = $request->input('user.foto_perfil');
-    
+
                     if (str_starts_with($fotoPerfil, 'data:image')) {
                         // Si viene base64, sube a Cloudinary
                         $cloudinary = new Cloudinary(config('cloudinary'));
@@ -282,7 +290,7 @@ class AlumnoController extends Controller
                         ]);
                         $fotoUrl = $uploadedImage['secure_url'];
                         $fotoPublicId = $uploadedImage['public_id'];
-    
+
                         $userUpdates['foto_perfil'] = $fotoUrl;
                         $userUpdates['foto_perfil_public_id'] = $fotoPublicId;
                     } else {
@@ -290,7 +298,7 @@ class AlumnoController extends Controller
                         $userUpdates['foto_perfil'] = $fotoPerfil;
                     }
                 }
-            
+
                 if (!empty($userUpdates)) {
                     $alumno->user->update($userUpdates);
                 }

@@ -20,6 +20,12 @@
                             <h5 class="fw-light text-secondary mb-1">
                                 Empresa: <span class="fw-semibold fs-5">{{ opinion.empresa?.nombre }}</span>
                             </h5>
+                            <h6 class="fw-light text-secondary">
+                                Experiencia en la empresa:
+                                <span class="fw-semibold">
+                                    {{ pluralizarAnios(opinion.anios_en_empresa) }}
+                                </span>
+                            </h6>
                             <p class="mb-2">{{ opinion.contenido }}</p>
 
                             <!-- Estrellas en azul/gris -->
@@ -53,6 +59,13 @@
                     <h5 class="fw-light text-secondary mb-2">
                         Empresa: <span class="fw-semibold">{{ opinion.empresa?.nombre }}</span>
                     </h5>
+                    <h6 class="fw-light text-secondary" title="Los años se calculan a partir de la fecha de inicio y fin de tu experiencia laboral registrada en el perfil.">
+                        Experiencia en la empresa:
+                        <span class="fw-semibold">
+                            {{ pluralizarAnios(opinion.anios_en_empresa) }}
+                        </span>
+                    </h6>
+
                     <textarea class="form-control mb-2" [(ngModel)]="opinionEditando.contenido"></textarea>
 
                     <!-- Estrellas editables en amarillo -->
