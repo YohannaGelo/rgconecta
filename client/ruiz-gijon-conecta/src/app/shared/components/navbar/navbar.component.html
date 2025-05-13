@@ -51,7 +51,9 @@
     <ng-template #loggedIn>
       <div ngbDropdown class="d-flex align-items-center">
         <div class="me-2 text-end">
-          <p class="mb-0 fw-semibold">{{ currentUser?.user.name }}</p>
+          <p class="mb-0 fw-semibold nombre-nav">
+            {{ acortarNombre(currentUser?.user.name) }}
+          </p>
           <small class="text-uppercase text-muted">{{ currentUser?.user.role }}</small>
         </div>
         <div ngbDropdownToggle class="d-flex align-items-center" style="cursor: pointer;">
@@ -59,10 +61,11 @@
             class="img-fluid rounded-circle border border-2 shadow-sm me-1" style="width: 55px;">
         </div>
         <div ngbDropdownMenu>
-          <a class="dropdown-item" [routerLink]="currentUser?.user.role === 'profesor' ? '/perfil-profesor' : '/perfil'">
+          <a class="dropdown-item"
+            [routerLink]="currentUser?.user.role === 'profesor' ? '/perfil-profesor' : '/perfil'">
             👤 Ver perfil
           </a>
-          
+
 
           <!-- Opciones comunes para alumno y profesor -->
           <a *ngIf="currentUser?.user.role === 'alumno' || currentUser?.user.role === 'profesor'" class="dropdown-item"

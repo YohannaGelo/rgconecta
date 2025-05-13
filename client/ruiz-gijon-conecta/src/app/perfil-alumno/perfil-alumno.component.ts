@@ -546,6 +546,9 @@ export class PerfilAlumnoComponent implements OnInit {
         fecha_fin: this.finExperiencia,
       });
 
+      const comienzo = this.comienzoExperiencia;
+      const fin = this.finExperiencia;
+
       // Limpiar campos
       this.empresaSeleccionada = null;
       this.comienzoExperiencia = '';
@@ -553,7 +556,9 @@ export class PerfilAlumnoComponent implements OnInit {
       this.puestoExperiencia = '';
       this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
 
-      this.mostrarModalOpinionSobreEmpresa(empresaData);
+      // this.mostrarModalOpinionSobreEmpresa(empresaData);
+      this.mostrarModalOpinionSobreEmpresa(empresaData, comienzo, fin);
+
     } else {
       this.notificationService.warning(
         'Por favor, completa todos los campos de la experiencia.'
@@ -614,10 +619,13 @@ export class PerfilAlumnoComponent implements OnInit {
 
   // #region Dejar Opinión
   // Mostrar modal tras agregar experiencia
-  mostrarModalOpinionSobreEmpresa(empresa: any): void {
+  mostrarModalOpinionSobreEmpresa(empresa: any, comienzo: string, fin: string): void {
     this.ultimaEmpresaAgregada = empresa;
+    this.comienzoExperiencia = comienzo;
+    this.finExperiencia = fin;
     this.modalService.open(this.modalConfirmarOpinion, { centered: true });
   }
+
 
   // Abrir modal con el formulario de opinión
   abrirModalOpinion(modalConfirm: any): void {

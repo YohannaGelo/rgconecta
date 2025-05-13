@@ -39,6 +39,10 @@ export class OpinionesUsuarioComponent implements OnInit {
     this.cargarMisOpiniones();
   }
 
+  pluralizarAnios(anios: number): string {
+    return anios === 1 ? '1 año' : `${anios} años`;
+  }
+
   cargarMisOpiniones(): void {
     const headers = this.authService.getHeaders();
     this.http
@@ -87,7 +91,7 @@ export class OpinionesUsuarioComponent implements OnInit {
       );
   }
 
-    abrirModalEliminar(id: number, event: Event): void {
+  abrirModalEliminar(id: number, event: Event): void {
     event.preventDefault();
     this.opinionAEliminarId = id;
     this.modalService.open(this.modalConfirmarEliminacion, { centered: true });
@@ -98,35 +102,42 @@ export class OpinionesUsuarioComponent implements OnInit {
 
     const headers = this.authService.getHeaders();
 
-    this.http.delete(`http://localhost:8000/api/opiniones/${this.opinionAEliminarId}`, { headers }).subscribe(
-      () => {
-        this.notificationService.success('Opinión eliminada');
-        this.cargarMisOpiniones();
-        this.opinionAEliminarId = null;
-        modal.close();
-      },
-      (error) => {
-        console.error('Error al eliminar opinión', error);
-        this.notificationService.error('No se pudo eliminar la opinión');
-        modal.dismiss();
-      }
-    );
+    this.http
+      .delete(
+        `http://localhost:8000/api/opiniones/${this.opinionAEliminarId}`,
+        { headers }
+      )
+      .subscribe(
+        () => {
+          this.notificationService.success('Opinión eliminada');
+          this.cargarMisOpiniones();
+          this.opinionAEliminarId = null;
+          modal.close();
+        },
+        (error) => {
+          console.error('Error al eliminar opinión', error);
+          this.notificationService.error('No se pudo eliminar la opinión');
+          modal.dismiss();
+        }
+      );
   }
 
   eliminarOpinion(id: number): void {
     const headers = this.authService.getHeaders();
     if (!confirm('¿Estás seguro de que deseas eliminar esta opinión?')) return;
 
-    this.http.delete(`http://localhost:8000/api/opiniones/${id}`, { headers }).subscribe(
-      () => {
-        this.notificationService.success('Opinión eliminada');
-        this.cargarMisOpiniones();
-      },
-      (error) => {
-        console.error('Error al eliminar opinión', error);
-        this.notificationService.error('No se pudo eliminar la opinión');
-      }
-    );
+    this.http
+      .delete(`http://localhost:8000/api/opiniones/${id}`, { headers })
+      .subscribe(
+        () => {
+          this.notificationService.success('Opinión eliminada');
+          this.cargarMisOpiniones();
+        },
+        (error) => {
+          console.error('Error al eliminar opinión', error);
+          this.notificationService.error('No se pudo eliminar la opinión');
+        }
+      );
   }
 
   irANuevaOpinion(): void {
