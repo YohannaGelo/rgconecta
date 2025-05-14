@@ -13,7 +13,7 @@ import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.compo
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
-import { PendingChangesGuard } from './guards/pending-changes.guard';
+import { PendingChangesGuard } from './core/guards/pending-changes.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
