@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { Subject, firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-perfil-alumno',
@@ -23,9 +23,7 @@ export class PerfilAlumnoComponent implements OnInit {
 
   // Modal para confirmar salida
   @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
-
   cambiosSinGuardar = false;
-  private resolveSalir: ((value: boolean) => void) | null = null;
 
   ultimaEmpresaAgregada: any = null;
 
@@ -500,6 +498,8 @@ export class PerfilAlumnoComponent implements OnInit {
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
     this.showCropper = true;
+
+    this.onFormChange(); // Marca como cambio pendiente
   }
 
   imageCropped(event: ImageCroppedEvent) {
