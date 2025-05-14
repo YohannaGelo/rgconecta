@@ -12,7 +12,7 @@
             <div class="mt-3">
                 <label for="input-name" class="form-label text-uppercase text-secondary">Nombre completo</label>
                 <input type="text" class="form-control text-secondary" id="input-name"
-                    placeholder="Ejemplo: John Doe" required [(ngModel)]="name" name="name" />
+                    placeholder="Ejemplo: John Doe" required (ngModelChange)="onFormChange()" [(ngModel)]="name" name="name" />
                 <div class="valid-feedback">Correcto</div>
                 <div class="invalid-feedback">Debes completar el nombre completo</div>
             </div>
@@ -21,7 +21,7 @@
             <div class="mt-3">
                 <label for="input-email" class="form-label text-uppercase text-secondary">Correo electrónico</label>
                 <input type="email" class="form-control text-secondary" id="input-email"
-                    placeholder="ejemplo@correo.com" required [(ngModel)]="email" name="email" #emailInput="ngModel"
+                    placeholder="ejemplo@correo.com" required (ngModelChange)="onFormChange()" [(ngModel)]="email" name="email" #emailInput="ngModel"
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
                 <div *ngIf="emailInput.invalid && emailInput.touched" class="invalid-feedback d-block">
                     <div *ngIf="emailInput.errors?.['required']">El correo es obligatorio</div>
@@ -33,7 +33,7 @@
             <div class="mt-3">
                 <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña</label>
                 <input type="password" class="form-control text-secondary" id="input-password" placeholder="********"
-                    required [(ngModel)]="password" name="password" #passwordInput="ngModel"
+                    required (ngModelChange)="onFormChange()" [(ngModel)]="password" name="password" #passwordInput="ngModel"
                     (ngModelChange)="validarPassword()" />
                 <div *ngIf="passwordInput.touched && !passwordValida" class="invalid-feedback d-block">
                     La contraseña debe tener:
@@ -52,7 +52,7 @@
                 <label for="input-confirm-password" class="form-label text-uppercase text-secondary">Confirmar
                     contraseña</label>
                 <input type="password" class="form-control text-secondary" id="input-confirm-password"
-                    placeholder="********" required [(ngModel)]="confirmPassword" name="confirmPassword"
+                    placeholder="********" required (ngModelChange)="onFormChange()" [(ngModel)]="confirmPassword" name="confirmPassword"
                     #confirmPasswordInput="ngModel" (ngModelChange)="validarConfirmPassword()" />
                 <div *ngIf="confirmPasswordInput.touched && !passwordsCoinciden" class="invalid-feedback d-block">
                     Las contraseñas no coinciden
@@ -64,7 +64,7 @@
             <div class="mt-3">
                 <label for="input-departamento" class="form-label text-uppercase text-secondary">Departamento</label>
                 <input type="text" class="form-control text-secondary" id="input-departamento"
-                    placeholder="Ejemplo: Informática" required [(ngModel)]="departamento" name="departamento" />
+                    placeholder="Ejemplo: Informática" required (ngModelChange)="onFormChange()" [(ngModel)]="departamento" name="departamento" />
                 <div class="valid-feedback">Correcto</div>
                 <div class="invalid-feedback">Debes completar el departamento</div>
             </div>
@@ -123,3 +123,18 @@
 
     </div>
 </form>
+
+<!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
+<ng-template #modalConfirmarSalida let-modal>
+    <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Cambios sin guardar</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <p>Has realizado cambios que no se han guardado. ¿Seguro que quieres salir?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" (click)="modal.dismiss()">Cancelar</button>
+        <button class="btn btn-danger" (click)="modal.close()">Salir sin guardar</button>
+    </div>
+</ng-template>

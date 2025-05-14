@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -22,6 +22,10 @@ export class RegistroComponent implements OnInit {
   @ViewChild('modalConfirmarOpinion') modalConfirmarOpinion: any;
   @ViewChild('modalFormularioOpinion') modalFormularioOpinion: any;
   opinionesPendientes: any[] = [];
+
+  // Modal para confirmar salida
+  @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
+  cambiosSinGuardar = false;
 
   ultimaEmpresaAgregada: any = null;
 
@@ -179,6 +183,38 @@ export class RegistroComponent implements OnInit {
       sessionStorage.removeItem('opinionesPendientes');
     }
   }
+
+  // #region Cambios Pendientes
+  // Método para confirmar si hay cambios pendientes
+  hayCambiosPendientes(): boolean | Promise<boolean> {
+    console.log(this.cambiosSinGuardar);
+
+    if (!this.cambiosSinGuardar) {
+      return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
+    }
+
+    return this.modalService
+      .open(this.modalConfirmarSalida, { centered: true })
+      .result.then(() => {
+        console.log('✅ Usuario confirmó salir');
+        return true;
+      })
+      .catch(() => {
+        console.log('❌ Usuario canceló navegación');
+        return false;
+      });
+  }
+
+  onFormChange(): void {
+    this.cambiosSinGuardar = true;
+  }
+
+  // Tras guardar, resetear el estado:
+  resetCambios(): void {
+    this.cambiosSinGuardar = false;
+  }
+
+  // #endregion Cambios Pendientes
 
   abrirConfirmacion(tipo: string, index: number) {
     this.itemAEliminar = { tipo, index };
@@ -388,65 +424,6 @@ export class RegistroComponent implements OnInit {
     }
   }
 
-  // agregarExperiencia(): void {
-  //   let empresaData;
-
-  //   if (this.empresaSeleccionada?.nombre === 'Otras') {
-  //     if (
-  //       !this.nuevaEmpresa.nombre ||
-  //       !this.nuevaEmpresa.sector ||
-  //       !this.nuevaEmpresa.web
-  //     ) {
-  //       this.notificationService.warning(
-  //         'Debes introducir el nombre, sector y web de la nueva empresa.'
-  //       );
-  //       return;
-  //     }
-  //     empresaData = {
-  //       nombre: this.nuevaEmpresa.nombre,
-  //       sector: this.nuevaEmpresa.sector,
-  //       web: this.nuevaEmpresa.web,
-  //     };
-  //     this.empresasNuevas.push({ ...this.nuevaEmpresa });
-  //   } else if (this.empresaSeleccionada && this.empresaSeleccionada.nombre) {
-  //     empresaData = {
-  //       nombre: this.empresaSeleccionada.nombre,
-  //       sector: this.empresaSeleccionada.sector,
-  //       web: this.empresaSeleccionada.web,
-  //     };
-  //   } else {
-  //     this.notificationService.warning(
-  //       'Por favor, selecciona o introduce una empresa.'
-  //     );
-  //     return;
-  //   }
-
-  //   if (
-  //     this.comienzoExperiencia &&
-  //     this.finExperiencia &&
-  //     this.puestoExperiencia
-  //   ) {
-  //     this.experiencias.push({
-  //       empresa: empresaData,
-  //       puesto: this.puestoExperiencia,
-  //       fecha_inicio: this.comienzoExperiencia,
-  //       fecha_fin: this.finExperiencia,
-  //     });
-
-  //     // Limpiar campos
-  //     this.empresaSeleccionada = null;
-  //     this.comienzoExperiencia = '';
-  //     this.finExperiencia = '';
-  //     this.puestoExperiencia = '';
-  //     this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
-
-  //     this.mostrarModalOpinionSobreEmpresa(empresaData);
-  //   } else {
-  //     this.notificationService.warning(
-  //       'Por favor, completa todos los campos de la experiencia.'
-  //     );
-  //   }
-  // }
   agregarExperiencia(): void {
     let empresaData;
 
@@ -538,6 +515,8 @@ export class RegistroComponent implements OnInit {
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
     this.showCropper = true;
+
+    this.onFormChange(); // Marca como cambio pendiente
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -638,7 +617,7 @@ export class RegistroComponent implements OnInit {
 
     this.authService.register(alumno).subscribe(
       (res) => {
-        console.log('Alumno creado', res);
+        //console.log('Alumno creado', res);
         // Llamar al login automático
         this.authService.login(this.email, this.password).subscribe(
           (loginRes) => {
@@ -650,6 +629,11 @@ export class RegistroComponent implements OnInit {
               this.enviarOpinionesPendientes();
             }
 
+            // Reseteamos cambios
+            this.resetCambios();
+            console.log(
+              '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
+            );
             this.router.navigate(['/ofertas']);
           },
           (loginErr) => {

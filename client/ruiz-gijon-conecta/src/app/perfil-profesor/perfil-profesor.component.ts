@@ -99,6 +99,8 @@ export class PerfilProfesorComponent implements OnInit {
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
     this.showCropper = true;
+
+    this.onFormChange(); // Marca como cambio pendiente
   }
 
   imageCropped(event: ImageCroppedEvent) {
