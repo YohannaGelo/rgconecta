@@ -24,6 +24,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
+import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
+import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,9 @@ import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opinion
     DetallesAlumnoComponent,
     PerfilAlumnoComponent,
     PerfilProfesorComponent,
-    OpinionesUsuarioComponent
+    OpinionesUsuarioComponent,
+    NoVerificadoComponent,
+    VerificarAlumnosComponent
   ],
   imports: [
     BrowserModule,

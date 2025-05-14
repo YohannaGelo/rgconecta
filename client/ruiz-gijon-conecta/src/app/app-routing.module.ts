@@ -14,30 +14,60 @@ import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
 import { PendingChangesGuard } from './core/guards/pending-changes.guard';
+import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
+import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'registro', component: RegistroComponent, canDeactivate: [PendingChangesGuard], },
-  { path: 'registro-profes', component: RegistroProfesorComponent, canDeactivate: [PendingChangesGuard],},
+  {
+    path: 'registro',
+    component: RegistroComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
+  {
+    path: 'registro-profes',
+    component: RegistroProfesorComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
   { path: 'ofertas', component: OfertasComponent },
   { path: 'alumnos', component: AlumnosComponent },
-  { path: 'opiniones', component: OpinionesComponent },
+  {
+    path: 'opiniones',
+    component: OpinionesComponent,
+    canActivate: [AuthGuard],
+  },
   {
     path: 'nueva-oferta',
     component: NuevaOfertaComponent,
     canActivate: [AuthGuard],
-    
   },
   {
     path: 'alumnos/:id',
     component: DetallesAlumnoComponent,
+    canActivate: [AuthGuard],
   },
-  { path: 'perfil', component: PerfilAlumnoComponent, canDeactivate: [PendingChangesGuard], },
-  { path: 'perfil-profesor', component: PerfilProfesorComponent, canDeactivate: [PendingChangesGuard], },
+  {
+    path: 'perfil',
+    component: PerfilAlumnoComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
+  {
+    path: 'perfil-profesor',
+    component: PerfilProfesorComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
   { path: 'mis-opiniones', component: OpinionesUsuarioComponent },
-
+  {
+    path: 'no-verificado',
+    component: NoVerificadoComponent,
+  },
+  {
+    path: 'verificar-alumnos',
+    component: VerificarAlumnosComponent,
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({

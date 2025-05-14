@@ -45,7 +45,6 @@ class AlumnoController extends Controller
             $query->whereHas('experiencias', function ($q) use ($request) {
                 // $q->whereRaw('TIMESTAMPDIFF(YEAR, fecha_inicio, fecha_fin) >= ?', [$request->experiencia]);
                 $q->whereRaw('(IFNULL(fecha_fin, YEAR(CURDATE())) - fecha_inicio) >= ?', [$request->experiencia]);
-
             });
         }
 
@@ -482,5 +481,30 @@ class AlumnoController extends Controller
             'message' => 'Alumno verificado correctamente.',
             'data' => $alumno
         ]);
+    }
+
+    /**
+     * Obtener alumnos no verificados (solo para admin y profesor)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    // Método para obtener alumnos no verificados
+    public function noVerificados(Request $request)
+    {
+        $user = $request->user();
+
+        $role = method_exists($user, 'user') && $user->user ? $user->user->role : $user->role;
+
+        if (!in_array($role, ['profesor', 'admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $alumnos = Alumno::with('user')
+            ->where('is_verified', 0)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json(['data' => $alumnos]);
     }
 }
