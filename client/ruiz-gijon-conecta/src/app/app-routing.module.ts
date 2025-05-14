@@ -13,13 +13,14 @@ import { DetallesAlumnoComponent } from './detalles-alumno/detalles-alumno.compo
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
+import { PendingChangesGuard } from './guards/pending-changes.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'registro', component: RegistroComponent },
-  { path: 'registro-profes', component: RegistroProfesorComponent },
+  { path: 'registro', component: RegistroComponent, },
+  { path: 'registro-profes', component: RegistroProfesorComponent,},
   { path: 'ofertas', component: OfertasComponent },
   { path: 'alumnos', component: AlumnosComponent },
   { path: 'opiniones', component: OpinionesComponent },
@@ -27,15 +28,16 @@ const routes: Routes = [
     path: 'nueva-oferta',
     component: NuevaOfertaComponent,
     canActivate: [AuthGuard],
+    
   },
   {
     path: 'alumnos/:id',
     component: DetallesAlumnoComponent,
   },
-  { path: 'perfil', component: PerfilAlumnoComponent },
-  { path: 'perfil-profesor', component: PerfilProfesorComponent },
+  { path: 'perfil', component: PerfilAlumnoComponent, canDeactivate: [PendingChangesGuard], },
+  { path: 'perfil-profesor', component: PerfilProfesorComponent, canDeactivate: [PendingChangesGuard], },
   { path: 'mis-opiniones', component: OpinionesUsuarioComponent },
-  
+
 ];
 
 @NgModule({

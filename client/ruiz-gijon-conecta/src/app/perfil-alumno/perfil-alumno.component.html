@@ -36,11 +36,13 @@
 
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control" [(ngModel)]="user.name" name="name">
+                    <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.name"
+                        name="name">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Correo electrónico</label>
-                    <input type="email" class="form-control" [(ngModel)]="user.email" name="email" readonly>
+                    <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
+                        name="email" readonly>
                 </div>
                 <div class="mb-3 d-flex align-items-center gap-2">
                     <span class="fw-bold">Contraseña</span>
@@ -51,17 +53,18 @@
 
                 <div class="mb-3">
                     <label class="form-label">Título profesional</label>
-                    <input type="text" class="form-control" [(ngModel)]="alumno.titulo_profesional"
-                        name="tituloProfesional">
+                    <input type="text" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="alumno.titulo_profesional" name="tituloProfesional">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Fecha de nacimiento</label>
-                    <input type="date" class="form-control" [(ngModel)]="alumno.fecha_nacimiento"
-                        name="fechaNacimiento">
+                    <input type="date" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="alumno.fecha_nacimiento" name="fechaNacimiento">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Situación laboral</label>
-                    <select class="form-select" [(ngModel)]="alumno.situacion_laboral" name="situacionLaboral">
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="alumno.situacion_laboral"
+                        name="situacionLaboral">
                         <option value="trabajando">Trabajando</option>
                         <option value="buscando_empleo">Buscando empleo</option>
                         <option value="desempleado">Desempleado</option>
@@ -69,7 +72,8 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Promoción (IES Ruiz Gijón)</label>
-                    <input type="text" class="form-control" [(ngModel)]="alumno.promocion" name="promocion">
+                    <input type="text" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="alumno.promocion" name="promocion">
                 </div>
             </div>
         </div>
@@ -99,7 +103,7 @@
             <div class="row d-flex align-items-end mb-2">
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Título</label>
-                    <select class="form-select" [(ngModel)]="titulo" name="titulo">
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="titulo" name="titulo">
                         <option [ngValue]="null" disabled selected>Selecciona título</option>
                         <option *ngFor="let t of titulosDisponibles" [ngValue]="t">
                             {{ t.tipo }} - {{ t.nombre }}
@@ -109,20 +113,20 @@
 
                 <div class="col-md-2">
                     <label class="form-label text-uppercase text-secondary">Inicio</label>
-                    <input type="text" class="form-control" placeholder="Ej: 2020" [(ngModel)]="comienzoEstudios"
-                        name="comienzoEstudios">
+                    <input type="text" class="form-control" placeholder="Ej: 2020" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="comienzoEstudios" name="comienzoEstudios">
                 </div>
 
                 <div class="col-md-2">
                     <label class="form-label text-uppercase text-secondary">Fin</label>
-                    <input type="text" class="form-control" placeholder="Ej: 2022" [(ngModel)]="finEstudios"
-                        name="finEstudios">
+                    <input type="text" class="form-control" placeholder="Ej: 2022" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="finEstudios" name="finEstudios">
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Institución</label>
-                    <input type="text" class="form-control" placeholder="Ej: IES Ruiz Gijón" [(ngModel)]="empresa"
-                        name="empresa">
+                    <input type="text" class="form-control" placeholder="Ej: IES Ruiz Gijón"
+                        (ngModelChange)="onFormChange()" [(ngModel)]="empresa" name="empresa">
                 </div>
 
                 <div class="col d-flex justify-content-end">
@@ -162,8 +166,8 @@
                 <div class="col-md-12">
                     <label class="form-label text-uppercase text-secondary">(Experiencia) Compañía</label>
 
-                    <ng-select [items]="empresasDisponibles" bindLabel="nombre" [(ngModel)]="empresaSeleccionada"
-                        [compareWith]="compareEmpresa" name="empresaSeleccionada"
+                    <ng-select [items]="empresasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="empresaSeleccionada" [compareWith]="compareEmpresa" name="empresaSeleccionada"
                         placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()">
                     </ng-select>
                 </div>
@@ -173,17 +177,18 @@
             <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre === 'Otras'">
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Nombre</label>
-                    <input class="form-control" [(ngModel)]="nuevaEmpresa.nombre" name="nombreEmpresa"
-                        placeholder="Ej: GestiónPro" required />
+                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.nombre"
+                        name="nombreEmpresa" placeholder="Ej: GestiónPro" required />
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Web</label>
-                    <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
-                        placeholder="https://empresa.com" />
+                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.web"
+                        name="webEmpresa" placeholder="https://empresa.com" />
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Sector</label>
-                    <select class="form-select" [(ngModel)]="nuevaEmpresa.sector" name="sectorEmpresa" required>
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector"
+                        name="sectorEmpresa" required>
                         <option value="" disabled selected>Selecciona un sector</option>
                         <option *ngFor="let s of sectoresEmpresa" [value]="s">
                             {{ sectoresEmpresaMap[s] }}
@@ -197,18 +202,19 @@
                 <div class="col-4 col-md-2">
                     <label for="input_ageStartExp" class="form-label text-uppercase text-secondary">Comienzo</label>
                     <input type="text" class="form-control" id="input_ageStartExp" placeholder="2022"
-                        [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia" required />
+                        (ngModelChange)="onFormChange()" [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia"
+                        required />
                 </div>
                 <div class="col-4 col-md-2">
                     <label for="input_ageFinishExp" class="form-label text-uppercase text-secondary">Fin</label>
                     <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
-                        [(ngModel)]="finExperiencia" name="finExperiencia" required />
+                        (ngModelChange)="onFormChange()" [(ngModel)]="finExperiencia" name="finExperiencia" required />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Puesto</label>
-                    <input class="form-control" [(ngModel)]="puestoExperiencia" name="puestoExperiencia"
-                        placeholder="Ej: Desarrollador Frontend" required />
+                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="puestoExperiencia"
+                        name="puestoExperiencia" placeholder="Ej: Desarrollador Frontend" required />
                 </div>
 
                 <div class="col-4 d-flex justify-content-end align-items-end">
@@ -243,16 +249,17 @@
             <div class="row d-flex align-items-end mb-2">
                 <div class="col-12 col-md-4">
                     <label for="input-tec" class="form-label text-uppercase text-secondary">Habilidades</label>
-                    <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" [(ngModel)]="tecnologiaSeleccionada"
-                        name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
-                        (change)="onTecnologiaChange()">
+                    <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
+                        placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
                     </ng-select>
                 </div>
 
                 <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
                 <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
-                    <select class="form-select" [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nivelSeleccionado"
+                        name="nivelSeleccionado">
                         <option value="" disabled selected>Selecciona</option>
                         <option *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
                             [value]="nivel">
@@ -274,7 +281,8 @@
             <div class="row mt-3" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Tipo</label>
-                    <select class="form-select" [(ngModel)]="nuevaTecnologia.tipo" name="tipoTecnologia" required>
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.tipo"
+                        name="tipoTecnologia" required>
                         <option value="" disabled selected>Selecciona un tipo</option>
                         <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">
                             {{ tiposTecnologiaMap[tipo] | titlecase }}
@@ -283,13 +291,13 @@
                 </div>
                 <div class="col-md-5">
                     <label class="form-label text-uppercase text-secondary">Nombre</label>
-                    <input class="form-control" [(ngModel)]="nuevaTecnologia.nombre" name="nombreTecnologia"
-                        placeholder="Ej: Figma" required>
+                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.nombre"
+                        name="nombreTecnologia" placeholder="Ej: Figma" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
-                    <select class="form-select" [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia"
-                        required>
+                    <select class="form-select" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia" required>
                         <option value="" disabled selected>Selecciona un nivel</option>
                         <option *ngFor="let nivel of nivelesMap[nuevaTecnologia.tipo] || nivelesMap['default']"
                             [value]="nivel">
@@ -327,21 +335,21 @@
         <form #changePasswordForm="ngForm">
             <div class="mb-3">
                 <label class="form-label">Contraseña actual</label>
-                <input type="password" class="form-control" [(ngModel)]="currentPassword" name="currentPassword"
-                    required>
+                <input type="password" class="form-control" (ngModelChange)="onFormChange()"
+                    [(ngModel)]="currentPassword" name="currentPassword" required>
             </div>
             <div class="mb-3">
                 <label class="form-label">Nueva contraseña</label>
-                <input type="password" class="form-control" [(ngModel)]="newPassword" name="newPassword" required
-                    (ngModelChange)="validatePassword()">
+                <input type="password" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="newPassword"
+                    name="newPassword" required (ngModelChange)="validatePassword()">
                 <div *ngIf="!passwordValid && newPassword" class="text-danger small mt-1">
                     La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Confirmar nueva contraseña</label>
-                <input type="password" class="form-control" [(ngModel)]="confirmNewPassword" name="confirmNewPassword"
-                    required>
+                <input type="password" class="form-control" (ngModelChange)="onFormChange()"
+                    [(ngModel)]="confirmNewPassword" name="confirmNewPassword" required>
                 <div *ngIf="newPassword !== confirmNewPassword && confirmNewPassword" class="text-danger small mt-1">
                     Las contraseñas no coinciden.
                 </div>
@@ -395,16 +403,10 @@
     </div>
     <div class="modal-body">
         <form #opinionForm="ngForm" (ngSubmit)="enviarOpinionDesdeModal(modal)" novalidate>
-            <!-- <div class="mb-3">
-                <label class="form-label">Años en la empresa</label>
-                <input type="range" class="form-range " id="anios" min="0" max="50" step="1"
-                    [(ngModel)]="opinion.anios_en_empresa" name="anios_en_empresa" required>
-            </div> -->
-
             <div class="mb-3">
                 <label class="form-label">Opinión</label>
-                <textarea class="form-control" [(ngModel)]="opinion.contenido" name="contenido" rows="3"
-                    required></textarea>
+                <textarea class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="opinion.contenido"
+                    name="contenido" rows="3" required></textarea>
             </div>
 
             <div class="mb-3">
@@ -420,5 +422,20 @@
 
             <button type="submit" class="btn btn-success" [disabled]="!opinionForm.form.valid">Enviar opinión</button>
         </form>
+    </div>
+</ng-template>
+
+<!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
+<ng-template #modalConfirmarSalida let-modal>
+    <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Cambios sin guardar</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <p>Has realizado cambios que no se han guardado. ¿Seguro que quieres salir?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button class="btn btn-danger" (click)="modal.close()">Salir sin guardar</button>
     </div>
 </ng-template>

@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-perfil-profesor',
@@ -12,6 +13,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PerfilProfesorComponent implements OnInit {
   @ViewChild('changePasswordModal') changePasswordModal: any;
+
+  // Modal para confirmar salida
+  @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
+
+  cambiosSinGuardar = false;
+  private resolveSalir: ((value: boolean) => void) | null = null;
 
   user: any = {};
   profesor: any = {};
@@ -36,6 +43,38 @@ export class PerfilProfesorComponent implements OnInit {
   ngOnInit(): void {
     this.loadCurrentProfesor();
   }
+
+  // #region Cambios Pendientes
+  // Método para confirmar si hay cambios pendientes
+  hayCambiosPendientes(): boolean | Promise<boolean> {
+    console.log(this.cambiosSinGuardar);
+
+    if (!this.cambiosSinGuardar) {
+      return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
+    }
+
+    return this.modalService
+      .open(this.modalConfirmarSalida, { centered: true })
+      .result.then(() => {
+        console.log('✅ Usuario confirmó salir');
+        return true;
+      })
+      .catch(() => {
+        console.log('❌ Usuario canceló navegación');
+        return false;
+      });
+  }
+
+  onFormChange(): void {
+    this.cambiosSinGuardar = true;
+  }
+
+  // Tras guardar, resetear el estado:
+  resetCambios(): void {
+    this.cambiosSinGuardar = false;
+  }
+
+  // #endregion Cambios Pendientes
 
   loadCurrentProfesor(): void {
     this.authService.currentUser$.subscribe((data) => {
@@ -159,38 +198,6 @@ export class PerfilProfesorComponent implements OnInit {
       );
   }
 
-  // submitNewPassword(modal: any): void {
-  //   if (!this.passwordValid || this.newPassword !== this.confirmNewPassword) {
-  //     this.notificationService.error('Revisa los requisitos de la nueva contraseña.');
-  //     return;
-  //   }
-
-  //   this.authService.updatePassword(this.currentPassword, this.newPassword).subscribe(
-  //     (res) => {
-  //       const newToken = res.token;
-  //       const updatedUser = res.user;
-
-  //       if (newToken && updatedUser) {
-  //         this.authService.setToken(newToken);
-  //         this.authService.setCurrentUser(updatedUser);
-  //         this.notificationService.success('Contraseña actualizada y sesión renovada.');
-  //       } else {
-  //         this.notificationService.warning('Contraseña cambiada, pero necesitas volver a iniciar sesión.');
-  //         this.authService.logout();
-  //       }
-
-  //       modal.close();
-  //       this.currentPassword = '';
-  //       this.newPassword = '';
-  //       this.confirmNewPassword = '';
-  //     },
-  //     (error) => {
-  //       const msg = error.error?.error || error.error?.message || 'Error al actualizar la contraseña.';
-  //       this.notificationService.error(msg);
-  //     }
-  //   );
-  // }
-
   updateProfile(): void {
     if (!this.profesor || !this.profesor.id) {
       console.error('❌ No se encontró el ID del profesor para actualizar.');
@@ -214,7 +221,7 @@ export class PerfilProfesorComponent implements OnInit {
       departamento: this.profesor.departamento,
     };
 
-    console.log('Actualizando perfil del profesor:', profesorActualizado);
+    //console.log('Actualizando perfil del profesor:', profesorActualizado);
     this.authService
       .updateProfesorProfile(this.profesor.id, profesorActualizado)
       .subscribe(
@@ -222,6 +229,14 @@ export class PerfilProfesorComponent implements OnInit {
           this.notificationService.success('Perfil actualizado correctamente');
           this.authService.setCurrentUser(res.data);
           this.cancelarImagen();
+          // Reseteamos cambios
+          this.cambiosSinGuardar = false;
+
+          // Si el usuario intentó salir antes, resolvemos esa promesa pendiente
+          if (this.resolveSalir) {
+            this.resolveSalir(true);
+            this.resolveSalir = null;
+          }
         },
         (err) => {
           console.error('❌ Error al actualizar perfil:', err);
