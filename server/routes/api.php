@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Alumnos
     Route::post('/alumnos/{alumno}/verify', [AlumnoController::class, 'verify']);
+    Route::get('/alumnos/no-verificados', [AlumnoController::class, 'noVerificados']);
     Route::get('/alumnos/{alumno}', [AlumnoController::class, 'show']); // Detalle protegido
     Route::put('/alumnos/{alumno}', [AlumnoController::class, 'update']);
     Route::delete('/alumnos/{alumno}', [AlumnoController::class, 'destroy']);

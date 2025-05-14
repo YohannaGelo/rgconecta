@@ -59,21 +59,27 @@ export class AuthService {
       );
   }
 
-  updatePassword(currentPassword: string, newPassword: string): Observable<any> {
+  updatePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.patch(`${this.apiUrl}/profile/password`, {
-      current_password: currentPassword,
-      new_password: newPassword,
-      new_password_confirmation: newPassword // 👈 mandamos la confirmación igual
-    }, { headers });
+    return this.http.patch(
+      `${this.apiUrl}/profile/password`,
+      {
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: newPassword, // 👈 mandamos la confirmación igual
+      },
+      { headers }
+    );
   }
-
 
   setToken(newToken: string): void {
     sessionStorage.setItem('token', newToken);
     this.token = newToken;
   }
-  
+
   setCurrentUser(user: any): void {
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
@@ -82,7 +88,6 @@ export class AuthService {
   setAuthenticated(status: boolean): void {
     this.isAuthenticatedSubject.next(status);
   }
-  
 
   register(userData: any): Observable<any> {
     const headers = new HttpHeaders({
@@ -103,15 +108,18 @@ export class AuthService {
   // Método para actualizar el perfil del alumno
   updateProfile(alumno: any): Observable<any> {
     const headers = this.getHeaders();
-    const alumnoId = this.currentUser?.id || alumno.id; 
-    return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno, { headers });
+    const alumnoId = this.currentUser?.id || alumno.id;
+    return this.http.put<any>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno, {
+      headers,
+    });
   }
 
   updateProfesorProfile(profesorId: number, data: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.put<any>(`${this.apiUrl}/profesores/${profesorId}`, data, { headers });
+    return this.http.put<any>(`${this.apiUrl}/profesores/${profesorId}`, data, {
+      headers,
+    });
   }
-  
 
   logout() {
     sessionStorage.removeItem('token');
@@ -123,9 +131,18 @@ export class AuthService {
 
   getHeaders(): HttpHeaders {
     return new HttpHeaders({
-      'Authorization': `Bearer ${this.token}`,
-      'Accept': 'application/json'
+      Authorization: `Bearer ${this.token}`,
+      Accept: 'application/json',
     });
+  }
+
+  authHeader() {
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.token}`,
+        Accept: 'application/json',
+      }),
+    };
   }
 
   // getHeaders() {
