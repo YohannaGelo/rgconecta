@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { HttpClient } from '@angular/common/http';
@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { Subject, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-perfil-alumno',
@@ -19,6 +20,12 @@ export class PerfilAlumnoComponent implements OnInit {
 
   @ViewChild('modalConfirmarOpinion') modalConfirmarOpinion: any;
   @ViewChild('modalFormularioOpinion') modalFormularioOpinion: any;
+
+  // Modal para confirmar salida
+  @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
+
+  cambiosSinGuardar = false;
+  private resolveSalir: ((value: boolean) => void) | null = null;
 
   ultimaEmpresaAgregada: any = null;
 
@@ -154,6 +161,42 @@ export class PerfilAlumnoComponent implements OnInit {
     this.cargarEmpresas();
   }
 
+  // #region Cambios Pendientes
+  // Método para confirmar si hay cambios pendientes
+  hayCambiosPendientes(): boolean | Promise<boolean> {
+    console.log(
+      this.cambiosSinGuardar
+    );
+
+    if (!this.cambiosSinGuardar) {
+      return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
+    }
+
+    return this.modalService
+      .open(this.modalConfirmarSalida, { centered: true })
+      .result.then(() => {
+        console.log('✅ Usuario confirmó salir');
+        return true;
+      })
+      .catch(() => {
+        console.log('❌ Usuario canceló navegación');
+        return false;
+      });
+  }
+
+  onFormChange(): void {
+    this.cambiosSinGuardar = true;
+  }
+
+  // Tras guardar, resetear el estado:
+  resetCambios(): void {
+    this.cambiosSinGuardar = false;
+  }
+
+  // #endregion Cambios Pendientes
+
+  // #region Modal de Confirmación
+  // Método para abrir el modal de confirmación de eliminación
   abrirModalEliminar(
     tipo: 'titulo' | 'tecnologia' | 'experiencia',
     index: number
@@ -183,6 +226,10 @@ export class PerfilAlumnoComponent implements OnInit {
     modal.close();
   }
 
+  // endregion Modal de Confirmación
+
+  // #region Modal de Cambiar Contraseña
+  // Método para abrir el modal de cambio de contraseña
   openChangePasswordModal() {
     this.modalService.open(this.changePasswordModal, { centered: true });
   }
@@ -255,6 +302,9 @@ export class PerfilAlumnoComponent implements OnInit {
       );
   }
 
+  //endregion Modal de Cambiar Contraseña
+  // #region Cargar datos
+  // Método para cargar los datos del alumno
   loadCurrentAlumno(): void {
     this.authService.loadCurrentUser().subscribe(
       (res) => {
@@ -366,6 +416,9 @@ export class PerfilAlumnoComponent implements OnInit {
     );
   }
 
+  // #endregion Cargar datos
+
+  // #region Actualizar perfil
   updateProfile(): void {
     if (!this.alumno || !this.alumno.id) {
       console.error('❌ No se encontró el ID del alumno para actualizar.');
@@ -389,7 +442,7 @@ export class PerfilAlumnoComponent implements OnInit {
       },
     }));
 
-    console.log(' titulosParaEnviar', titulosParaEnviar);
+    // console.log(' titulosParaEnviar', titulosParaEnviar);
 
     const alumnoActualizado = {
       id: this.alumno.id, // 👈 aseguramos enviar el ID correcto
@@ -407,11 +460,11 @@ export class PerfilAlumnoComponent implements OnInit {
       experiencias: this.experiencias,
     };
 
-    console.log('📤 Enviando datos para actualizar:', alumnoActualizado);
+    // console.log('📤 Enviando datos para actualizar:', alumnoActualizado);
 
     this.authService.updateProfile(alumnoActualizado).subscribe(
       (res) => {
-        console.log('✅ Perfil actualizado con respuesta:', res);
+        //console.log('✅ Perfil actualizado con respuesta:', res);
         this.notificationService.success('Perfil actualizado correctamente');
 
         // Recargar datos del usuario para reflejar cambios
@@ -419,6 +472,10 @@ export class PerfilAlumnoComponent implements OnInit {
 
         // Cerrar cropper y limpiar imagen temporal
         this.cancelarImagen();
+
+        // Reseteamos cambios
+        this.resetCambios();
+        console.log('🧹 Flag cambiosSinGuardar puesto a false tras guardar');
       },
       (err) => {
         console.error('❌ Error al actualizar perfil:', err);
@@ -558,7 +615,6 @@ export class PerfilAlumnoComponent implements OnInit {
 
       // this.mostrarModalOpinionSobreEmpresa(empresaData);
       this.mostrarModalOpinionSobreEmpresa(empresaData, comienzo, fin);
-
     } else {
       this.notificationService.warning(
         'Por favor, completa todos los campos de la experiencia.'
@@ -619,13 +675,16 @@ export class PerfilAlumnoComponent implements OnInit {
 
   // #region Dejar Opinión
   // Mostrar modal tras agregar experiencia
-  mostrarModalOpinionSobreEmpresa(empresa: any, comienzo: string, fin: string): void {
+  mostrarModalOpinionSobreEmpresa(
+    empresa: any,
+    comienzo: string,
+    fin: string
+  ): void {
     this.ultimaEmpresaAgregada = empresa;
     this.comienzoExperiencia = comienzo;
     this.finExperiencia = fin;
     this.modalService.open(this.modalConfirmarOpinion, { centered: true });
   }
-
 
   // Abrir modal con el formulario de opinión
   abrirModalOpinion(modalConfirm: any): void {

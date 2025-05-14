@@ -15,6 +15,7 @@ para mostrar alert personalizados
 
 # POSIBILIDADES
 
+## Mejorar la organizacion de carpetas
 
 ## Crear app android e iOS
 
