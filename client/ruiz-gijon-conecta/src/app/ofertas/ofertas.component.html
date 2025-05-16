@@ -22,11 +22,14 @@
             <div class="col-sm-3 col-md-3 p-0">
                 <ng-select [items]="categorias" bindLabel="" placeholder="🧩 Categoría" [(ngModel)]="filtroCategoria"
                     (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                    <ng-template ng-option-tmp let-item="item">
+                        {{ item | titlecase }}
+                    </ng-template>
                 </ng-select>
             </div>
+
         </div>
     </section>
-
 
 
     <!-- Ofertas -->
@@ -48,7 +51,8 @@
                             <h5 class="card-title ">{{ oferta.titulo }}</h5>
                         </div>
                         <article class="d-flex bg-light justify-content-evenly py-2 mb-3 text-secondary rounded">
-                            <i class="bi bi-clock fs-6 mx-2 fst-normal"> {{ oferta.jornada }}</i>
+                            <i class="bi bi-clock fs-6 mx-2 fst-normal" title="Duración de la jornada laboral"> {{ getTextoJornada(oferta.jornada) }}</i>
+
                             <i class="bi bi-geo-alt fs-6 me-2 fst-normal"> {{ oferta.localizacion }}</i>
                         </article>
                         <p class="card-text" style="min-height: 2.2rem;">
