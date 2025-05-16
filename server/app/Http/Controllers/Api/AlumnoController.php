@@ -484,6 +484,30 @@ class AlumnoController extends Controller
     }
 
     /**
+     * Rechazar el alumno (ej: al registrarse)
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    // Método para rechazar el alumno
+    public function rechazar($id)
+    {
+        $user = request()->user();
+        $role = $user->role ?? $user->user->role ?? null;
+
+        if (!in_array($role, ['profesor', 'admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $alumno = Alumno::findOrFail($id);
+        $alumno->user()->delete(); // elimina también el usuario asociado
+        $alumno->delete();         // y elimina el alumno
+
+        return response()->json(['message' => 'Alumno rechazado y eliminado']);
+    }
+
+
+    /**
      * Obtener alumnos no verificados (solo para admin y profesor)
      *
      * @param Request $request
