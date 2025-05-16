@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\TecnologiaController;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/ofertas', [OfertaController::class, 'index']);
+Route::get('/ofertas/localizaciones', [OfertaController::class, 'localizacionesUnicas']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);

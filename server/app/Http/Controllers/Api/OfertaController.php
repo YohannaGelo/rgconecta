@@ -20,11 +20,57 @@ class OfertaController extends Controller
      * Display a listing of the resource.
      */
     // Listar ofertas
-    public function index()
+    // public function index()
+    // {
+    //     return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
+    //         ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'descripcion', 'fecha_publicacion', 'fecha_expiracion'])
+    //         ->paginate(8);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Ofertas obtenidas correctamente.',
+    //         'data' => $ofertas->items(),
+    //         'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
+    //     ]);
+    // }
+    public function index(Request $request)
     {
-        return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
-            ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion', 'fecha_expiracion'])
-            ->paginate(8);
+        $query = Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
+            ->select([
+                'id',
+                'titulo',
+                'empresa_id',
+                'jornada',
+                'localizacion',
+                'descripcion',
+                'fecha_publicacion',
+                'fecha_expiracion'
+            ]);
+
+        // Filtro: localización
+        if ($request->filled('localizacion')) {
+            $query->where('localizacion', 'LIKE', '%' . $request->localizacion . '%');
+        }
+
+        // Filtro: categoría (tipo de tecnología)
+        if ($request->filled('categoria')) {
+            $query->whereHas('tecnologias', function ($q) use ($request) {
+                $q->where('tipo', $request->categoria);
+            });
+        }
+
+        // Orden por fecha
+        if ($request->filled('fecha')) {
+            if ($request->fecha === 'recientes') {
+                $query->orderByDesc('fecha_publicacion');
+            } elseif ($request->fecha === 'antiguas') {
+                $query->orderBy('fecha_publicacion');
+            }
+        } else {
+            $query->orderByDesc('fecha_publicacion'); // orden por defecto
+        }
+
+        $ofertas = $query->paginate(8);
 
         return response()->json([
             'success' => true,
@@ -33,6 +79,7 @@ class OfertaController extends Controller
             'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -125,6 +172,21 @@ class OfertaController extends Controller
             'data' => $oferta->fresh()->load('tecnologias', 'empresa')
         ]);
     }
+
+    /**
+     * Get unique localizaciones.
+     */
+    // Obtener localizaciones únicas
+    public function localizacionesUnicas()
+    {
+        $localizaciones = Oferta::select('localizacion')
+            ->distinct()
+            ->orderBy('localizacion')
+            ->pluck('localizacion');
+
+        return response()->json($localizaciones);
+    }
+
 
     /**
      * Remove the specified resource from storage.

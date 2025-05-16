@@ -381,56 +381,6 @@ class AlumnoController extends Controller
         }
     }
 
-    // public function update(Request $request, Alumno $alumno)
-    // {
-    //     // 1. Validación con todos los campos posibles
-    //     $validated = $request->validate([
-    //         'fecha_nacimiento' => 'sometimes|date',
-    //         'situacion_laboral' => 'sometimes|in:trabajando,buscando_empleo,desempleado',
-    //         'promocion' => 'sometimes|string|max:9',
-    //         'titulo_profesional' => 'sometimes|string|max:100',
-    //         'tecnologias' => 'sometimes|array',
-    //         'experiencias' => 'sometimes|array'
-    //     ]);
-
-    //     // 2. Debug: Ver datos recibidos
-    //     // \Log::info('Datos recibidos para actualización:', $validated);
-
-    //     // 3. Actualizar relaciones si existen
-    //     if (isset($validated['tecnologias'])) {
-    //         $syncData = collect($validated['tecnologias'])
-    //             ->mapWithKeys(fn($tech) => [$tech['id'] => ['nivel' => $tech['nivel']]])
-    //             ->toArray();
-    //         $alumno->tecnologias()->sync($syncData);
-    //         unset($validated['tecnologias']);
-    //     }
-
-    //     if (isset($validated['experiencias'])) {
-    //         $alumno->experiencias()->delete();
-    //         $alumno->experiencias()->createMany($validated['experiencias']);
-    //         unset($validated['experiencias']);
-    //     }
-
-    //     // 4. Actualizar campos directos (SOLUCIÓN CLAVE)
-    //     if (!empty($validated)) {
-    //         $alumno->fill($validated);
-
-    //         // Debug: Ver cambios detectados
-    //         // \Log::info('Cambios detectados:', $alumno->getDirty());
-
-    //         if ($alumno->isDirty()) {
-    //             $alumno->save();
-    //         }
-    //     }
-
-    //     // 5. Respuesta con datos frescos
-    //     return response()->json([
-    //         'message' => 'Alumno actualizado correctamente',
-    //         'changes' => $alumno->getChanges(),
-    //         'data' => $alumno->fresh()->load(['user', 'tecnologias', 'experiencias'])
-    //     ]);
-    // }
-
     /**
      * Remove the specified resource from storage.
      */
