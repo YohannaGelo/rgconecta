@@ -303,4 +303,30 @@ export class OpinionesComponent implements OnInit {
       this.paginaActual++;
     }
   }
+
+  acortarNombre(nombre: string): string {
+    if (!nombre) return '';
+
+    const partes = nombre.trim().split(' ');
+
+    // Capitaliza cada palabra (por si vienen todas en minúscula o mayúscula)
+    const capitalizar = (palabra: string) =>
+      palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+
+    const partesCap = partes.map(capitalizar);
+
+    if (nombre.length <= 25) {
+      return partesCap.join(' ');
+    }
+
+    if (partesCap.length >= 4) {
+      return `${partesCap[0][0]}. ${partesCap[1][0]}. ${partesCap[2]}`;
+    }
+
+    if (partesCap.length === 3) {
+      return `${partesCap[0][0]}. ${partesCap[1]}`;
+    }
+
+    return `${partesCap[0][0]}. ${partesCap.slice(1).join(' ')}`;
+  }
 }

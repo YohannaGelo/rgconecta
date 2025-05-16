@@ -1,1 +1,84 @@
-<p>ofertas works!</p>
+<div class="d-flex flex-column flex-grow-1 my-3" style="min-height: calc(100vh - 220px);">
+
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3 me-4">
+        <div class="col-xl-9 row gap-2 justify-content-end">
+
+            <!-- Fecha -->
+            <div class="col-sm-4 col-md-3 p-0">
+                <ng-select [items]="['recientes', 'antiguas']" bindLabel="" placeholder="📅 Fecha"
+                    [(ngModel)]="filtroFecha" (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                </ng-select>
+            </div>
+
+            <!-- Localización -->
+            <div class="col-sm-4 col-md-3 p-0">
+                <ng-select [items]="localizacionesDisponibles" bindLabel="" placeholder="📍 Localización"
+                    [(ngModel)]="filtroLocalizacion" (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                </ng-select>
+            </div>
+
+            <!-- Categoría -->
+            <div class="col-sm-3 col-md-3 p-0">
+                <ng-select [items]="categorias" bindLabel="" placeholder="🧩 Categoría" [(ngModel)]="filtroCategoria"
+                    (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                </ng-select>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Ofertas -->
+    <div class="mx-2 flex-grow-1 mb-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3">
+            <div class="col" *ngFor="let oferta of ofertas">
+                <div class="card h-100 shadow-sm py-2">
+                    <div class="card-body d-flex flex-column">
+                        <div class="">
+                            <p class="btn rounded-5 py-0 px-3 pe-none me-2"
+                                [ngClass]="{ 'btn-primary': oferta.fecha_expiracion > hoy, 'btn-outline-secondary': oferta.fecha_expiracion <= hoy }">
+                                {{ oferta.fecha_expiracion > hoy ? 'Activa' : 'Fin.' }}
+                            </p>
+                            <p *ngIf="oferta.tecnologias.length" class="btn btn-dark rounded-5 py-0 px-3 pe-none">
+                                {{ oferta.tecnologias[0].tipo | titlecase }}
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center" style="min-height: 4rem;">
+                            <h5 class="card-title ">{{ oferta.titulo }}</h5>
+                        </div>
+                        <article class="d-flex bg-light justify-content-evenly py-2 mb-3 text-secondary rounded">
+                            <i class="bi bi-clock fs-6 mx-2 fst-normal"> {{ oferta.jornada }}</i>
+                            <i class="bi bi-geo-alt fs-6 me-2 fst-normal"> {{ oferta.localizacion }}</i>
+                        </article>
+                        <p class="card-text" style="min-height: 2.2rem;">
+                            {{ acortarDescripcion(oferta.descripcion) }}
+                        </p>
+                        <a [routerLink]="['/ofertas', oferta.id]"
+                            class="text-primary text-decoration-none fw-semibold mt-auto">
+                            Ver Detalles <i class="bi bi-arrow-right fs-6 me-2 fw-bolder"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flechas  -->
+    <div class="ms-4">
+        <button class="btn btn-primary rounded-1 text-white px-3 py-2" [disabled]="currentPage === 1"
+            (click)="cambiarPagina(currentPage - 1)">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ currentPage }} de {{ lastPage }}
+        </small>
+
+        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" [disabled]="currentPage === lastPage"
+            (click)="cambiarPagina(currentPage + 1)">
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+
+</div>

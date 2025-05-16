@@ -35,7 +35,7 @@ export class AlumnosComponent implements OnInit {
       .get<any>('http://localhost:8000/api/alumnos', { params })
       .subscribe({
         next: (response) => {
-          console.log('Respuesta:', response);
+          //console.log('Respuesta:', response);
           this.alumnos = response.data;
           this.tecnologias = response.stats.tecnologias;
 
