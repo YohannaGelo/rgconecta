@@ -286,3 +286,5 @@ Necesitamos confirmar un commit y lanzar este comando
 ```bash
 git push server develop
 ```
+
+Luego podemos hacer el push normalmente a gitHub desde Visual
