@@ -277,3 +277,10 @@ git push origin main
 ```
 
 Con eso tendrás en `main` un único commit que representa todos los cambios funcionales sin ruido.
+
+
+### Actualizar app en el servido
+
+```bash
+git push server develop
+```
