@@ -279,7 +279,9 @@ git push origin main
 Con eso tendrás en `main` un único commit que representa todos los cambios funcionales sin ruido.
 
 
-### Actualizar app en el servido
+### Actualizar app en el servidor
+
+Necesitamos confirmar un commit y lanzar este comando
 
 ```bash
 git push server develop
