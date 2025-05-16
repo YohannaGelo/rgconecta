@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-verificar-alumnos',
@@ -11,12 +11,16 @@ import { NotificationService } from '../../core/services/notification.service';
   styleUrl: './verificar-alumnos.component.scss',
 })
 export class VerificarAlumnosComponent implements OnInit {
+  @ViewChild('modalConfirmarRechazo') modalConfirmarRechazo!: TemplateRef<any>;
+  alumnoARechazarId: number | null = null;
+
   alumnos: any[] = [];
 
   constructor(
     private http: HttpClient,
     private auth: AuthService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -66,7 +70,7 @@ export class VerificarAlumnosComponent implements OnInit {
       });
   }
 
-    acortarNombre(nombre: string): string {
+  acortarNombre(nombre: string): string {
     if (!nombre) return '';
 
     const partes = nombre.trim().split(' ');
@@ -94,5 +98,64 @@ export class VerificarAlumnosComponent implements OnInit {
 
   acortarTitulo(titulo: string, max = 50): string {
     return titulo.length > max ? titulo.slice(0, max) + '...' : titulo;
+  }
+
+  rechazarAlumno(id: number): void {
+    if (
+      !confirm(
+        '¿Seguro que quieres rechazar a este alumno? Esta acción no se puede deshacer.'
+      )
+    ) {
+      return;
+    }
+
+    this.http
+      .post(
+        `http://localhost:8000/api/alumnos/${id}/rechazar`,
+        {},
+        this.auth.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          this.notification.success('Alumno rechazado correctamente');
+          this.alumnos = this.alumnos.filter((a) => a.id !== id);
+        },
+        error: (err) => {
+          console.error('Error al rechazar alumno:', err);
+          this.notification.error('Error al rechazar al alumno');
+        },
+      });
+  }
+
+  abrirModalRechazo(id: number): void {
+    this.alumnoARechazarId = id;
+    this.modalService.open(this.modalConfirmarRechazo, { centered: true });
+  }
+
+  confirmarRechazo(modal: any): void {
+    if (!this.alumnoARechazarId) return;
+
+    this.http
+      .post(
+        `http://localhost:8000/api/alumnos/${this.alumnoARechazarId}/rechazar`,
+        {},
+        this.auth.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          this.notification.success('Alumno rechazado correctamente');
+          this.alumnos = this.alumnos.filter(
+            (a) => a.id !== this.alumnoARechazarId
+          );
+          modal.close();
+          this.alumnoARechazarId = null;
+        },
+        error: (err) => {
+          console.error('Error al rechazar alumno:', err);
+          this.notification.error('Error al rechazar al alumno');
+          modal.close();
+          this.alumnoARechazarId = null;
+        },
+      });
   }
 }
