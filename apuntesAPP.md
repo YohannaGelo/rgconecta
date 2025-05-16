@@ -287,4 +287,4 @@ Necesitamos confirmar un commit y lanzar este comando
 git push server develop
 ```
 
-Luego podemos hacer el push normalmente a gitHub desde Visual
+Luego podemos hacer el push normalmente a gitHub desde Visual para tener el commit en ambos lugares.
