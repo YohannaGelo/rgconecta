@@ -2,6 +2,7 @@
 
 ## HACER 100% SEGURO
 
+- Rechazar alumno
 - Volver a revisar el registro-alumno y las comprobaciones del formulario
 - Revisar página de no-verificado y ver el mail
 - Implemetar gestión de correos... avisos al registrar, verificar...
