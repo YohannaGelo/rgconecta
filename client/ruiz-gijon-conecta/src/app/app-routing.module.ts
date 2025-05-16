@@ -42,6 +42,7 @@ const routes: Routes = [
     path: 'nueva-oferta',
     component: NuevaOfertaComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [PendingChangesGuard],
   },
   {
     path: 'alumnos/:id',

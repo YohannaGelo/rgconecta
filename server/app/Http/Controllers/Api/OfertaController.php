@@ -76,7 +76,12 @@ class OfertaController extends Controller
             'success' => true,
             'message' => 'Ofertas obtenidas correctamente.',
             'data' => $ofertas->items(),
-            'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
+            'pagination' => [
+                'total' => $ofertas->total(),
+                'current_page' => $ofertas->currentPage(),
+                'per_page' => $ofertas->perPage(),
+                'last_page' => $ofertas->lastPage(),
+            ],
         ]);
     }
 

@@ -17,14 +17,7 @@ export class OfertasComponent implements OnInit {
   filtroLocalizacion: string | null = null; // 'cercana' | 'lejos'
   filtroCategoria: string | null = null; // 'frontend', 'backend', etc.
 
-  categorias: string[] = [
-    'frontend',
-    'backend',
-    'fullstack',
-    'data',
-    'cloud',
-    'mobile',
-  ];
+  categorias: string[] = [];
   localizacionesDisponibles: string[] = [];
 
   constructor(private http: HttpClient) {}
@@ -32,6 +25,7 @@ export class OfertasComponent implements OnInit {
   ngOnInit(): void {
     this.cargarOfertas();
     this.cargarLocalizaciones();
+    this.cargarCategorias();
   }
 
   cargarLocalizaciones(): void {
@@ -45,6 +39,18 @@ export class OfertasComponent implements OnInit {
           console.error('Error al cargar localizaciones', err);
         },
       });
+  }
+
+  cargarCategorias(): void {
+    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe({
+      next: (res) => {
+        const tiposUnicos = Array.from(new Set(res.map((t) => t.tipo)));
+        this.categorias = tiposUnicos.sort();
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías de tecnologías', err);
+      },
+    });
   }
 
   cargarOfertas(pagina: number = 1): void {
@@ -61,8 +67,9 @@ export class OfertasComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.ofertas = res.data;
-          this.currentPage = res.current_page ?? 1;
-          this.lastPage = res.last_page ?? 1;
+          this.currentPage = res.pagination?.current_page ?? 1;
+          this.lastPage = res.pagination?.last_page ?? 1;
+
           this.loading = false;
         },
         error: (err) => {
@@ -86,6 +93,21 @@ export class OfertasComponent implements OnInit {
 
   aplicarFiltros(): void {
     this.cargarOfertas(1); // Reinicia a la primera página al aplicar filtros
+  }
+
+  getTextoJornada(jornada: string): string {
+    switch (jornada) {
+      case 'completa':
+        return 'Completa';
+      case 'media_jornada':
+        return '1/2 jornada';
+      case '3_6_horas':
+        return '3–6 horas';
+      case 'menos_3_horas':
+        return '< 3 horas';
+      default:
+        return jornada;
+    }
   }
 
   paginaAnterior(): void {

@@ -69,7 +69,7 @@ export class OpinionesComponent implements OnInit {
 
   resaltarFormulario = false;
 
-  opinionesPorPagina = 4;
+  opinionesPorPagina = 3;
   paginaActual = 1;
 
   constructor(
