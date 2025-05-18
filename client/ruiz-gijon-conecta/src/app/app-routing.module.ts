@@ -16,6 +16,7 @@ import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opinion
 import { PendingChangesGuard } from './core/guards/pending-changes.guard';
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
+import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -60,6 +61,7 @@ const routes: Routes = [
     canDeactivate: [PendingChangesGuard],
   },
   { path: 'mis-opiniones', component: OpinionesUsuarioComponent },
+  { path: 'mis-ofertas', component: OfertasUsuarioComponent },
   {
     path: 'no-verificado',
     component: NoVerificadoComponent,
