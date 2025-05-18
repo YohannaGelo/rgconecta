@@ -38,9 +38,9 @@
                     <label class="form-label text-uppercase text-secondary">Web</label>
                     <div class="input-group">
                         <span class="input-group-text">https://</span>
-                        <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="webSinProtocolo" name="webEmpresa"
-                            placeholder="empresa.com" required pattern="^\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                            title="Formato válido: ejemplo.com" />
+                        <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="webSinProtocolo"
+                            name="webEmpresa" placeholder="empresa.com" required
+                            pattern="^\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Formato válido: ejemplo.com" />
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -128,10 +128,22 @@
                                 ngbTooltip="El tipo de la primera habilidad que añadas determinará la categoría principal de la oferta."></i>
                         </label>
 
-                        <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
-                            [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
-                            placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
+                        <ng-select [items]="tecnologiasDisponibles" [(ngModel)]="tecnologiaSeleccionada"
+                            name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
+                            (change)="onTecnologiaChange()">
+
+                            <!-- 🔽 Etiqueta que aparece en el desplegable -->
+                            <ng-template ng-label-tmp let-item="item">
+                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
+                            </ng-template>
+
+                            <!-- 🔽 Etiqueta que aparece en la lista de opciones -->
+                            <ng-template ng-option-tmp let-item="item">
+                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
+                            </ng-template>
+
                         </ng-select>
+
 
                         <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
                         <div class="row mt-2"

@@ -16,19 +16,6 @@ class OpinionController extends Controller
 {
     use AuthorizesRequests;
     // Listar opiniones (público)
-    // public function index()
-    // {
-    //     $opiniones = Opinion::with(['user:id,name,role', 'empresa:id,nombre'])
-    //         ->latest()
-    //         ->paginate(10);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Opiniones obtenidas correctamente.',
-    //         'data' => $opiniones->items(),
-    //         'pagination' => $opiniones->only(['total', 'current_page', 'per_page', 'last_page']),
-    //     ]);
-    // }
     public function index()
     {
         $opiniones = Opinion::with(['user:id,name,role', 'empresa:id,nombre'])
@@ -48,10 +35,6 @@ class OpinionController extends Controller
 
 
     // Listar opiniones de una empresa (público)
-    // public function indexByEmpresa(Empresa $empresa)
-    // {
-    //     return $empresa->opiniones()->with('alumno.user')->latest()->paginate(10);
-    // }
     public function indexByEmpresa(Empresa $empresa)
     {
         return $empresa->opiniones()

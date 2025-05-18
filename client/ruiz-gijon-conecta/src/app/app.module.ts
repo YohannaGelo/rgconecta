@@ -26,6 +26,7 @@ import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.compo
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
+import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verifica
     PerfilProfesorComponent,
     OpinionesUsuarioComponent,
     NoVerificadoComponent,
-    VerificarAlumnosComponent
+    VerificarAlumnosComponent,
+    OfertasUsuarioComponent
   ],
   imports: [
     BrowserModule,

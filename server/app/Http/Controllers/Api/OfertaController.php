@@ -7,6 +7,7 @@ use App\Models\Oferta;
 use App\Models\Empresa;
 use App\Enums\SectorEmpresa;
 use App\Models\User;
+use App\Models\Tecnologia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -153,28 +154,49 @@ class OfertaController extends Controller
     // Actualizar una oferta
     public function update(Request $request, Oferta $oferta)
     {
-        // Validación (similar a store())
+        // Validación
         $validated = $request->validate([
             'titulo' => 'sometimes|string|max:255',
             'descripcion' => 'sometimes|string',
-            'jornada' => 'sometimes|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'jornada' => [
+                'sometimes',
+                Rule::in(['completa', 'media_jornada', '3_6_horas', 'menos_3_horas']),
+            ],
             'localizacion' => 'sometimes|string',
-            'tecnologias' => 'nullable|array',
             'fecha_expiracion' => 'sometimes|date|after:today',
+            'tecnologias' => 'nullable|array',
         ]);
 
-        // Actualizar campos
+        // Actualizar campos principales
         $oferta->update($validated);
 
-        // Sync tecnologías
+        // Sincronizar tecnologías
         if ($request->has('tecnologias')) {
-            $oferta->tecnologias()->sync($request->tecnologias);
+            $oferta->tecnologias()->detach();
+
+            foreach ($request->tecnologias as $tecno) {
+                // Si es solo un ID (caso simplificado)
+                if (is_numeric($tecno)) {
+                    $oferta->tecnologias()->attach($tecno);
+                    continue;
+                }
+
+                // Crear o encontrar la tecnología por nombre/tipo
+                $tec = Tecnologia::firstOrCreate(
+                    ['nombre' => $tecno['nombre']],
+                    ['tipo' => $tecno['tipo']]
+                );
+
+                $oferta->tecnologias()->attach($tec->id, [
+                    'nivel' => $tecno['pivot']['nivel'] ?? null,
+                ]);
+            }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Oferta actualizada correctamente.',
-            'data' => $oferta->fresh()->load('tecnologias', 'empresa')
+            'data' => $oferta->fresh()->load('tecnologias', 'empresa'),
         ]);
     }
 
@@ -190,6 +212,26 @@ class OfertaController extends Controller
             ->pluck('localizacion');
 
         return response()->json($localizaciones);
+    }
+
+    /**
+     * Get ofertas of the authenticated user.
+     */
+    // Obtener ofertas del usuario autenticado
+    public function misOfertas()
+    {
+        $userId = Auth::id();
+
+        $ofertas = Oferta::with(['empresa:id,nombre', 'tecnologias']) // puedes añadir más relaciones si necesitas
+            ->where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ofertas del usuario obtenidas correctamente.',
+            'data' => $ofertas,
+        ]);
     }
 
 
