@@ -1,0 +1,164 @@
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2">
+        <h2 class="mb-0">Gestión de Experiencias</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Formulario nueva experiencia -->
+    <!-- <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="mb-3 text-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Experiencia
+            </h5>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Alumno ID</label>
+                    <input type="number" class="form-control" [(ngModel)]="nueva.alumno_id" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Empresa ID</label>
+                    <input type="number" class="form-control" [(ngModel)]="nueva.empresa_id" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Puesto</label>
+                    <input type="text" class="form-control" [(ngModel)]="nueva.puesto" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small text-muted">Inicio</label>
+                    <input type="number" class="form-control" [(ngModel)]="nueva.fecha_inicio" />
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small text-muted">Fin</label>
+                    <input type="number" class="form-control" [(ngModel)]="nueva.fecha_fin" />
+                </div>
+                <div class="col-md-1 d-grid">
+                    <button class="btn btn-primary" (click)="guardarNueva()">
+                        <i class="bi bi-save me-1"></i>Crear
+                    </button>
+                </div>
+                <div class="col-12">
+                    <label class="form-label small text-muted">Descripción</label>
+                    <textarea class="form-control" rows="2" [(ngModel)]="nueva.descripcion"></textarea>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Estado vacío -->
+    <div *ngIf="experiencias.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+        <p class="mb-0">Aún no hay experiencias registradas.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && experiencias.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col" *ngFor="let exp of experiencias">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-light text-dark rounded-pill">ID: {{ exp.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item" (click)="editar(exp)"><i
+                                            class="bi bi-pencil me-2"></i>Editar</button></li>
+                                <li><button class="dropdown-item text-danger" (click)="eliminar(exp.id)"><i
+                                            class="bi bi-trash me-2"></i>Eliminar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h5 class="card-title mb-1">{{ exp.puesto }}</h5>
+                    <p class="mb-1 text-muted"><i class="bi bi-building me-1"></i>{{ exp.empresa?.nombre || 'Empresa ID
+                        ' + exp.empresa_id }}</p>
+                    <p class="mb-1 text-muted"><i class="bi bi-person me-1"></i>{{ exp.alumno?.user?.name || 'Alumno ID
+                        ' + exp.alumno_id }}</p>
+                    <p class="mb-1"><i class="bi bi-calendar me-1"></i>{{ exp.fecha_inicio }} - {{ exp.fecha_fin ||
+                        'Actual' }}</p>
+
+                    <p class="mt-2 text-muted small" *ngIf="exp.descripcion">{{ exp.descripcion }}</p>
+
+                    <div *ngIf="editando?.id === exp.id" class="mt-3">
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.puesto" />
+                        <input type="number" class="form-control mb-2" [(ngModel)]="editando.fecha_inicio" />
+                        <input type="number" class="form-control mb-2" [(ngModel)]="editando.fecha_fin" />
+                        <textarea rows="2" class="form-control mb-2" [(ngModel)]="editando.descripcion"></textarea>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                <i class="bi bi-check-lg me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista tabla -->
+    <div *ngIf="vistaTabla && experiencias.length > 0" class="card border-0 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Alumno</th>
+                        <th>Empresa</th>
+                        <th>Puesto</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let exp of experiencias">
+                        <td>{{ exp.id }}</td>
+                        <td>{{ exp.alumno?.user?.name || 'ID ' + exp.alumno_id }}</td>
+                        <td>{{ exp.empresa?.nombre || 'ID ' + exp.empresa_id }}</td>
+                        <td>
+                            <div *ngIf="editando?.id !== exp.id">{{ exp.puesto }}</div>
+                            <input *ngIf="editando?.id === exp.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.puesto" />
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== exp.id">{{ exp.fecha_inicio }}</div>
+                            <input *ngIf="editando?.id === exp.id" type="number" class="form-control form-control-sm"
+                                [(ngModel)]="editando.fecha_inicio" />
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== exp.id">{{ exp.fecha_fin || 'Actual' }}</div>
+                            <input *ngIf="editando?.id === exp.id" type="number" class="form-control form-control-sm"
+                                [(ngModel)]="editando.fecha_fin" />
+                        </td>
+                        <td class="text-end">
+                            <ng-container *ngIf="editando?.id !== exp.id">
+                                <button class="btn btn-sm btn-outline-primary me-1" (click)="editar(exp)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" (click)="eliminar(exp.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </ng-container>
+                            <ng-container *ngIf="editando?.id === exp.id">
+                                <button class="btn btn-sm btn-success me-1" (click)="guardarEdicion()">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </ng-container>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

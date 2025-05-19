@@ -1,0 +1,109 @@
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2">
+        <h2 class="mb-0">Gestión de Opiniones</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="opiniones.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-chat-dots fs-1 mb-3 d-block"></i>
+        <p class="mb-0">No hay opiniones registradas.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && opiniones.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col" *ngFor="let opinion of opiniones">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-light text-dark rounded-pill">ID: {{ opinion.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item" (click)="editar(opinion)"><i
+                                            class="bi bi-pencil me-2"></i>Editar</button></li>
+                                <li><button class="dropdown-item text-danger" (click)="eliminar(opinion.id)"><i
+                                            class="bi bi-trash me-2"></i>Eliminar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h5 class="card-title">{{ opinion.empresa?.nombre || 'Sin empresa' }}</h5>
+                    <p class="text-muted small mb-1">Usuario: {{ opinion.user?.name || 'Desconocido' }}</p>
+                    <p class="mb-1"><strong>Valoración:</strong> {{ opinion.valoracion }}/5</p>
+                    <p class="mb-1"><strong>Contenido:</strong></p>
+                    <p class="small text-muted">{{ opinion.contenido }}</p>
+
+                    <div *ngIf="editando?.id === opinion.id" class="mt-3">
+                        <label class="form-label small text-muted">Contenido</label>
+                        <textarea rows="3" class="form-control mb-2" [(ngModel)]="editando.contenido"></textarea>
+                        <label class="form-label small text-muted">Valoración</label>
+                        <input type="number" class="form-control mb-3" [(ngModel)]="editando.valoracion" min="1"
+                            max="5" />
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                <i class="bi bi-check-lg me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista tabla -->
+    <div *ngIf="vistaTabla && opiniones.length > 0" class="card border-0 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Empresa</th>
+                        <th>Usuario</th>
+                        <th>Valoración</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let opinion of opiniones">
+                        <td>{{ opinion.id }}</td>
+                        <td>{{ opinion.empresa?.nombre }}</td>
+                        <td>{{ opinion.user?.name }}</td>
+                        <td>
+                            <div *ngIf="editando?.id !== opinion.id">{{ opinion.valoracion }}</div>
+                            <input *ngIf="editando?.id === opinion.id" type="number"
+                                class="form-control form-control-sm" [(ngModel)]="editando.valoracion" min="1"
+                                max="5" />
+                        </td>
+                        <td class="text-end">
+                            <ng-container *ngIf="editando?.id !== opinion.id">
+                                <button class="btn btn-sm btn-outline-primary me-2" (click)="editar(opinion)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" (click)="eliminar(opinion.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </ng-container>
+                            <ng-container *ngIf="editando?.id === opinion.id">
+                                <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </ng-container>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

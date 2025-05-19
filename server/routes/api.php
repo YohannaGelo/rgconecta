@@ -12,6 +12,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\TituloController;
 use App\Http\Controllers\Api\TecnologiaController;
 
+use App\Http\Middleware\AdminMiddleware;
+// Admin
+use App\Http\Controllers\Admin\TituloController as AdminTituloController;
+use App\Http\Controllers\Admin\TecnologiaController as AdminTecnologiaController;
+use App\Http\Controllers\Admin\EmpresaController as AdminEmpresaController;
+use App\Http\Controllers\Admin\ExperienciaController as AdminExperienciaController;
+use App\Http\Controllers\Admin\UsuarioController as AdminUsuarioController;
+use App\Http\Controllers\Admin\OpinionController as AdminOpinionController;
+use App\Http\Controllers\Admin\AlumnoController as AdminAlumnoController;
+use App\Http\Controllers\Admin\ProfesorController as AdminProfesorController;
+use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -91,3 +104,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profesores/{profesor}', [ProfesorController::class, 'update']);
     Route::delete('/profesores/{profesor}', [ProfesorController::class, 'destroy']);
 });
+
+// Rutas ADMIN
+Route::middleware(['auth:sanctum', AdminMiddleware::class])
+    ->prefix('admin')
+    ->group(function () {
+        Route::apiResource('usuarios', AdminUsuarioController::class)->except(['show']);
+        Route::delete('usuarios/{user}/foto', [AdminUsuarioController::class, 'destroyFoto']);
+        Route::apiResource('empresas', AdminEmpresaController::class);
+        Route::apiResource('ofertas', AdminOfertaController::class);
+        Route::apiResource('titulos', AdminTituloController::class);
+        Route::apiResource('tecnologias', AdminTecnologiaController::class);
+        Route::apiResource('opiniones', AdminOpinionController::class);
+        Route::apiResource('experiencias', AdminExperienciaController::class);
+        Route::apiResource('profesores', AdminProfesorController::class);
+        Route::apiResource('alumnos', AdminAlumnoController::class);
+
+    });

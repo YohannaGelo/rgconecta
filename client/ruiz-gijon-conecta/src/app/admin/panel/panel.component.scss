@@ -1,0 +1,24 @@
+.custom-tabs {
+    border-bottom: 1px solid var(--bs-border-color); // usa el color de borde de Bootstrap
+
+    .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--bs-secondary); // texto gris tipo "secondary"
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .nav-link:hover {
+        color: var(--bs-primary);
+        border-color: rgba(var(--bs-primary-rgb), 0.2); // azul con transparencia
+    }
+
+    .nav-link.active {
+        color: var(--bs-primary);
+        border-bottom: 3px solid var(--bs-primary);
+        background-color: transparent;
+        font-weight: 600;
+    }
+}

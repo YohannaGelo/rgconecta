@@ -35,11 +35,6 @@ class OpinionPolicy
     /**
      * Determine whether the user can update the model.
      */
-    // public function update(User $user, Opinion $opinion)
-    // {
-    //     // Solo el autor puede editar
-    //     return $opinion->alumno_id === $user->alumno?->id;
-    // }
     public function update(User $user, Opinion $opinion)
     {
         // Solo el autor puede editar
