@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
 use App\Enums\SectorEmpresa;
-
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -105,7 +104,7 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'sometimes|string|max:255',
-            'sector' => 'sometimes|string|in:' . implode(',', SectorEmpresa::values()),
+            'sector' => ['sometimes', 'string', Rule::in(Empresa::SECTORES)],
             'web' => 'nullable|url',
             'descripcion' => 'nullable|string'
         ]);

@@ -1,0 +1,146 @@
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2">
+        <h2 class="mb-0">Gestión de Ofertas</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="ofertas.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+        <p class="mb-0">Aún no hay ofertas registradas.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && ofertas.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col" *ngFor="let oferta of ofertas">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary text-light">ID: {{ oferta.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item" (click)="editar(oferta)"><i
+                                            class="bi bi-pencil me-2"></i>Editar</button></li>
+                                <li><button class="dropdown-item text-danger" (click)="eliminar(oferta.id)"><i
+                                            class="bi bi-trash me-2"></i>Eliminar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h5 class="card-title">{{ oferta.titulo }}</h5>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-building me-1"></i> {{ oferta.empresa?.nombre || 'Sin empresa' }}
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-geo-alt me-1"></i> {{ oferta.localizacion }}
+                    </p>
+
+                    <div class="mb-2">
+                        <span class="badge bg-light text-dark">{{ jornadaTexto(oferta.jornada) }}</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary ms-2"
+                            *ngIf="oferta.titulacion?.nombre">
+                            Titulación: {{ oferta.titulacion.nombre }}
+                        </span>
+                    </div>
+
+                    <div *ngIf="oferta.tecnologias?.length > 0">
+                        <p class="mb-1 small text-muted">Tecnologías:</p>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span *ngFor="let t of oferta.tecnologias"
+                                class="badge bg-secondary bg-opacity-25 text-dark">
+                                {{ t.nombre }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="editando?.id === oferta.id" class="mt-3">
+                        <input type="text" [(ngModel)]="editando.titulo" class="form-control form-control-sm mb-2" />
+                        <input type="text" [(ngModel)]="editando.localizacion"
+                            class="form-control form-control-sm mb-2" />
+                        <input type="date" [(ngModel)]="editando.fecha_expiracion"
+                            class="form-control form-control-sm mb-2" />
+                        <select [(ngModel)]="editando.jornada" class="form-select form-select-sm mb-2">
+                            <option value="completa">Jornada completa</option>
+                            <option value="media_jornada">Media jornada</option>
+                            <option value="3_6_horas">3-6 horas</option>
+                            <option value="menos_3_horas">Menos de 3 horas</option>
+                        </select>
+                        <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">
+                            <i class="bi bi-check-lg me-1"></i>Guardar
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista tabla -->
+    <div *ngIf="vistaTabla && ofertas.length > 0" class="card shadow-sm border-0 p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Empresa</th>
+                        <th>Jornada</th>
+                        <th>Localización</th>
+                        <th>Expira</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let oferta of ofertas">
+                        <td>{{ oferta.id }}</td>
+                        <td>
+                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.titulo }}</div>
+                            <input *ngIf="editando?.id === oferta.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.titulo" />
+                        </td>
+                        <td>{{ oferta.empresa?.nombre }}</td>
+                        <td>{{ jornadaTexto(oferta.jornada) }}</td>
+                        <td>
+                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.localizacion }}</div>
+                            <input *ngIf="editando?.id === oferta.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.localizacion" />
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.fecha_expiracion }}</div>
+                            <input *ngIf="editando?.id === oferta.id" type="date" class="form-control form-control-sm"
+                                [(ngModel)]="editando.fecha_expiracion" />
+                        </td>
+                        <td class="text-end">
+                            <ng-container *ngIf="editando?.id !== oferta.id">
+                                <button class="btn btn-sm btn-outline-primary me-2" (click)="editar(oferta)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" (click)="eliminar(oferta.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </ng-container>
+                            <ng-container *ngIf="editando?.id === oferta.id">
+                                <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </ng-container>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

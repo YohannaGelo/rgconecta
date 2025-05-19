@@ -28,6 +28,17 @@ import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
 import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.component';
+import { UsuariosComponent as AdminUsuariosComponent} from './admin/usuarios/usuarios.component';
+import { EmpresasComponent as AdminEmpresasComponent} from './admin/empresas/empresas.component';
+import { TitulacionesComponent as AdminTitulacionesComponent} from './admin/titulaciones/titulaciones.component';
+import { TecnologiasComponent as AdminTecnologiasComponent} from './admin/tecnologias/tecnologias.component';
+import { ExperienciasComponent as AdminExperienciasComponent} from './admin/experiencias/experiencias.component';
+import { OpinionesComponent as AdminOpinionesComponent } from './admin/opiniones/opiniones.component';
+import { OfertasComponent as AdminOfertasComponent } from './admin/ofertas/ofertas.component';
+import { PanelComponent } from './admin/panel/panel.component';
+import { AlumnosComponent as AdminAlumnoComponent} from './admin/alumnos/alumnos.component';
+import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
+
 
 @NgModule({
   declarations: [
@@ -49,7 +60,17 @@ import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.
     NoVerificadoComponent,
     VerificarAlumnosComponent,
     OfertasUsuarioComponent,
-    DetalleOfertaComponent
+    DetalleOfertaComponent,
+    AdminUsuariosComponent,
+    AdminEmpresasComponent,
+    AdminTitulacionesComponent,
+    AdminTecnologiasComponent,
+    AdminExperienciasComponent,
+    AdminOpinionesComponent,
+    AdminOfertasComponent,
+    PanelComponent,
+    AdminAlumnoComponent,
+    AdminProfesoresComponent
   ],
   imports: [
     BrowserModule,

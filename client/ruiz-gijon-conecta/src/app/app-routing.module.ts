@@ -18,6 +18,17 @@ import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
 import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.component';
+import { PanelComponent } from './admin/panel/panel.component';
+
+import { TitulacionesComponent as AdminTitulacionesComponent } from './admin/titulaciones/titulaciones.component';
+import { TecnologiasComponent as AdminTecnologiasComponent } from './admin/tecnologias/tecnologias.component';
+import { UsuariosComponent as AdminUsuariosComponent} from './admin/usuarios/usuarios.component';
+import { ExperienciasComponent as AdminExperienciasComponent} from './admin/experiencias/experiencias.component';
+import { EmpresasComponent as AdminEmpresasComponent } from './admin/empresas/empresas.component';
+import { OfertasComponent as AdminOfertasComponent } from './admin/ofertas/ofertas.component';
+import { OpinionesComponent as AdminOpinionesComponent } from './admin/opiniones/opiniones.component';
+import { AlumnosComponent as AdminAlumnosComponent } from './admin/alumnos/alumnos.component';
+import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -76,6 +87,22 @@ const routes: Routes = [
     path: 'verificar-alumnos',
     component: VerificarAlumnosComponent,
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'admin',
+    component: PanelComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'titulos', component: AdminTitulacionesComponent },
+      { path: 'tecnologias', component: AdminTecnologiasComponent },
+      { path: 'empresas', component: AdminEmpresasComponent },
+      { path: 'experiencias', component: AdminExperienciasComponent },
+      { path: 'ofertas', component: AdminOfertasComponent },
+      { path: 'opiniones', component: AdminOpinionesComponent },
+      { path: 'alumnos', component: AdminAlumnosComponent },
+      { path: 'profesores', component: AdminProfesoresComponent },
+      { path: 'usuarios', component: AdminUsuariosComponent },
+    ]
   },
 ];
 

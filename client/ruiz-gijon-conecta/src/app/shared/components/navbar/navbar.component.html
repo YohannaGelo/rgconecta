@@ -52,40 +52,43 @@
       <div ngbDropdown class="d-flex align-items-center">
         <div class="me-2 text-end">
           <p class="mb-0 fw-semibold nombre-nav">
-            {{ acortarNombre(currentUser?.user.name) }}
+            {{ acortarNombre(currentUser?.user?.name || currentUser?.name) }}
           </p>
-          <small class="text-uppercase text-muted">{{ currentUser?.user.role }}</small>
+          <small class="text-uppercase text-muted">{{ currentUser?.user?.role || currentUser?.role }}</small>
         </div>
         <div ngbDropdownToggle class="d-flex align-items-center" style="cursor: pointer;">
-          <img [src]="getFotoPerfil(currentUser?.user.foto_perfil)" alt="Imagen de usuario"
+          <!-- <img [src]="getFotoPerfil(currentUser?.user.foto_perfil)" alt="Imagen de usuario"
+            class="img-fluid rounded-circle border border-2 shadow-sm me-1" style="width: 55px;"> -->
+          <img [src]="getFotoPerfil(currentUser?.user?.foto_perfil || currentUser?.foto_perfil)" alt="Imagen de usuario"
             class="img-fluid rounded-circle border border-2 shadow-sm me-1" style="width: 55px;">
         </div>
+
         <div ngbDropdownMenu>
           <a class="dropdown-item"
-            [routerLink]="currentUser?.user.role === 'profesor' ? '/perfil-profesor' : '/perfil'">
+            [routerLink]="(currentUser?.user?.role || currentUser?.role) === 'profesor' ? '/perfil-profesor' : '/perfil'">
             👤 Ver perfil
           </a>
 
-
-          <!-- Opciones comunes para alumno y profesor -->
-          <a *ngIf="currentUser?.user.role === 'alumno' || currentUser?.user.role === 'profesor'" class="dropdown-item"
+          <a *ngIf="['alumno', 'profesor'].includes(currentUser?.user?.role || currentUser?.role)" class="dropdown-item"
             routerLink="/mis-ofertas">
             💼 Mis ofertas
           </a>
-          <a *ngIf="currentUser?.user.role === 'alumno' || currentUser?.user.role === 'profesor'" class="dropdown-item"
+
+          <a *ngIf="['alumno', 'profesor'].includes(currentUser?.user?.role || currentUser?.role)" class="dropdown-item"
             routerLink="/mis-opiniones">
             ✍️ Mis opiniones
           </a>
 
-          <!-- Solo para profesor -->
-          <a *ngIf="currentUser?.user.role === 'profesor'" class="dropdown-item" routerLink="/verificar-alumnos">
+          <a *ngIf="(currentUser?.user?.role || currentUser?.role) === 'profesor'" class="dropdown-item"
+            routerLink="/verificar-alumnos">
             ✅ Verificar alumnos
           </a>
 
-          <!-- Solo para admin -->
-          <a *ngIf="currentUser?.user.role === 'admin'" class="dropdown-item" routerLink="/admin">
+          <a *ngIf="(currentUser?.user?.role || currentUser?.role) === 'admin'" class="dropdown-item"
+            routerLink="/admin">
             ⚙️ Gestión de cuentas
           </a>
+
 
           <div class="dropdown-divider"></div>
           <button class="dropdown-item text-danger" (click)="logout()">🚪 Cerrar sesión</button>
