@@ -18,12 +18,16 @@ class OpinionController extends Controller
     // Listar opiniones (público)
     public function index()
     {
-        $opiniones = Opinion::with(['user:id,name,role', 'empresa:id,nombre'])
+        $opiniones = Opinion::with([
+            'user:id,name,role',
+            'empresa:id,nombre,sector_id',
+            'empresa.sector:id,nombre'
+        ])
             ->whereHas('user', function ($query) {
                 $query->where(function ($q) {
-                    $q->where('role', '!=', 'alumno') // profesores y admin
+                    $q->where('role', '!=', 'alumno')
                         ->orWhereHas('alumno', function ($subquery) {
-                            $subquery->where('is_verified', 1); // alumnos verificados
+                            $subquery->where('is_verified', 1);
                         });
                 });
             })
@@ -44,7 +48,11 @@ class OpinionController extends Controller
     public function indexByEmpresa(Empresa $empresa)
     {
         return $empresa->opiniones()
-            ->with(['user:id,name,role', 'empresa:id,nombre']) // Carga el usuario y su perfil de alumno si existe
+            ->with([
+                'user:id,name,role',
+                'empresa:id,nombre,sector_id',
+                'empresa.sector:id,nombre'
+            ])
             ->latest()
             ->paginate(10);
     }
@@ -69,17 +77,19 @@ class OpinionController extends Controller
                 $empresa = Empresa::firstOrCreate(
                     ['nombre' => $empresaData['nombre']],
                     [
-                        'sector' => $empresaData['sector'] ?? null,
+                        'sector_id' => $empresaData['sector_id'] ?? null,
                         'web' => $empresaData['web'] ?? null,
                         'descripcion' => $empresaData['descripcion'] ?? null
                     ]
                 );
+
                 $empresaId = $empresa->id;
             } else {
                 $empresaId = $request->input('empresa_id');
             }
 
             $validated = $request->validate([
+                'empresa.sector_id' => 'nullable|exists:sectores,id',
                 'contenido' => 'required|string|max:500',
                 'valoracion' => 'required|integer|between:1,5',
                 'anios_en_empresa' => 'nullable|numeric|min:0'
@@ -148,7 +158,13 @@ class OpinionController extends Controller
             return response()->json(['message' => 'No estás registrado como alumno'], 403);
         }
 
-        $opiniones = $user->opiniones()->with('empresa')->latest()->get();
+        $opiniones = $user->opiniones()
+            ->with([
+                'empresa:id,nombre,sector_id',
+                'empresa.sector:id,nombre'
+            ])
+            ->latest()
+            ->get();
 
         return response()->json([
             'success' => true,

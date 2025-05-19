@@ -32,6 +32,7 @@ export class DetalleOfertaComponent implements OnInit {
     disenio: 'Diseño',
     otros: 'Otros',
   };
+  
 
   hoy = new Date().toISOString().split('T')[0]; // para comparar fechas de expiración
 

@@ -2,6 +2,8 @@
 
 ## HACER 100% SEGURO
 
+- Página perfil de profe y perfil de admin - REVISAR
+- Ver profes?... pestaña permanente para contacto y ver desde ahí?
 - Poner Otros en primera posición para crear nuevas cosas, que se pueda escribir en los select
 - Comprobar registros de e-mail repetidos??
 - Volver a revisar el registro-alumno y las comprobaciones del formulario (no insertar fecha, insertar tecnologia y nivel)

@@ -45,10 +45,12 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Sector</label>
-                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector"
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector_id"
                         name="nuevaEmpresaSector">
                         <option value="" disabled selected>Selecciona un sector</option>
-                        <option *ngFor="let s of sectoresEmpresa" [value]="s">{{ sectoresEmpresaMap[s] }}</option>
+                        <option *ngFor="let s of sectores" [value]="s.id">
+                            {{ s.nombre }}
+                        </option>
                     </select>
                 </div>
             </div>
@@ -107,8 +109,7 @@
                 <div class="mt-3">
                     <label class="form-label text-uppercase text-secondary">Titulación requerida</label>
                     <ng-select [items]="titulosDisponibles" bindLabel="nombre" [bindValue]="'id'"
-                        [(ngModel)]="titulacionSeleccionada"
-                        name="titulacionSeleccionada"
+                        [(ngModel)]="titulacionSeleccionada" name="titulacionSeleccionada"
                         placeholder="Selecciona un título...">
                     </ng-select>
 

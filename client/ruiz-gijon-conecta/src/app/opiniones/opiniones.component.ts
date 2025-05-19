@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SectorService } from '../services/sector.service';
 
 @Component({
   selector: 'app-opiniones',
@@ -27,40 +28,11 @@ export class OpinionesComponent implements OnInit {
 
   nuevaEmpresa = {
     nombre: '',
-    sector: '',
+    sector_id: null,
     web: '',
     descripcion: '',
   };
-  sectoresEmpresa: string[] = [
-    'tecnologia',
-    'educacion',
-    'salud',
-    'construccion',
-    'comercio',
-    'hosteleria',
-    'finanzas',
-    'logistica',
-    'marketing',
-    'industria',
-    'diseno',
-    'otros',
-  ];
-
-  // Mapeo para mostrar etiquetas más legibles
-  sectoresEmpresaMap: { [key: string]: string } = {
-    tecnologia: 'Tecnología',
-    educacion: 'Educación',
-    salud: 'Salud',
-    construccion: 'Construcción',
-    comercio: 'Comercio',
-    hosteleria: 'Hostelería',
-    finanzas: 'Finanzas',
-    logistica: 'Logística',
-    marketing: 'Marketing',
-    industria: 'Industria',
-    diseno: 'Diseño',
-    otros: 'Otros',
-  };
+  sectores: any[] = [];
 
   empresasNuevas: any[] = []; // Guardará las nuevas empresas añadidas
 
@@ -77,7 +49,8 @@ export class OpinionesComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private http: HttpClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sectorService: SectorService
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +65,7 @@ export class OpinionesComponent implements OnInit {
     }
 
     this.cargarOpiniones();
+    this.cargarSectores();
     this.cargarEmpresas();
     this.empresasUnicas = [
       ...new Map(
@@ -106,6 +80,13 @@ export class OpinionesComponent implements OnInit {
       } else {
         this.cargarOpiniones();
       }
+    });
+  }
+
+  cargarSectores(): void {
+    this.sectorService.getPublic().subscribe({
+      next: (res) => (this.sectores = res.data),
+      error: (err) => console.error('Error cargando sectores', err),
     });
   }
 
@@ -185,7 +166,12 @@ export class OpinionesComponent implements OnInit {
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada !== 'Otras') {
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+      this.nuevaEmpresa = {
+        nombre: '',
+        sector_id: null,
+        web: '',
+        descripcion: '',
+      };
     }
   }
 
@@ -202,7 +188,7 @@ export class OpinionesComponent implements OnInit {
     const empresaValida =
       this.empresaSeleccionada &&
       (this.empresaSeleccionada.nombre !== 'Otras' ||
-        (this.nuevaEmpresa.nombre && this.nuevaEmpresa.sector));
+        (this.nuevaEmpresa.nombre && this.nuevaEmpresa.sector_id));
 
     if (
       !empresaValida ||
@@ -284,7 +270,7 @@ export class OpinionesComponent implements OnInit {
     this.empresaSeleccionada = null;
     this.nuevaEmpresa = {
       nombre: '',
-      sector: '',
+      sector_id: null,
       web: '',
       descripcion: '',
     };

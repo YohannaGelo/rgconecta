@@ -23,15 +23,19 @@ class Empresa extends Model
         'otros'
     ];
 
-    public function opiniones() {
+    public function opiniones()
+    {
         return $this->hasMany(Opinion::class);
     }
 
-    // public function ofertas() {
-    //     return $this->hasMany(Oferta::class, 'empresa_nombre', 'nombre'); // Relación por nombre
-    // }
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
+    }
 
-    public function ofertas() {
+
+    public function ofertas()
+    {
         return $this->hasMany(Oferta::class, 'empresa_id'); // Relación ESTÁNDAR por ID
     }
 }

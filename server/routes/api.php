@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OpinionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\TituloController;
 use App\Http\Controllers\Api\TecnologiaController;
+use App\Http\Controllers\Api\SectorController;
 
 use App\Http\Middleware\AdminMiddleware;
 // Admin
@@ -23,6 +24,7 @@ use App\Http\Controllers\Admin\OpinionController as AdminOpinionController;
 use App\Http\Controllers\Admin\AlumnoController as AdminAlumnoController;
 use App\Http\Controllers\Admin\ProfesorController as AdminProfesorController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
+use App\Http\Controllers\Admin\SectorController as AdminSectorController;
 
 
 /*
@@ -50,6 +52,8 @@ Route::post('/profesores', [ProfesorController::class, 'store']);
 Route::get('/empresas', [EmpresaController::class, 'index']);
 
 Route::get('/opiniones', [OpinionController::class, 'index']);
+
+Route::get('/sectores', [SectorController::class, 'index']);
 
 Route::get('/empresas/{empresa}/opiniones', [OpinionController::class, 'indexByEmpresa']);
 Route::post('/empresas', [EmpresaController::class, 'store']);
@@ -112,6 +116,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         Route::apiResource('usuarios', AdminUsuarioController::class)->except(['show']);
         Route::delete('usuarios/{user}/foto', [AdminUsuarioController::class, 'destroyFoto']);
         Route::apiResource('empresas', AdminEmpresaController::class);
+        Route::apiResource('sectores', AdminSectorController::class)->except(['show']);
         Route::apiResource('ofertas', AdminOfertaController::class);
         Route::apiResource('titulos', AdminTituloController::class);
         Route::apiResource('tecnologias', AdminTecnologiaController::class);

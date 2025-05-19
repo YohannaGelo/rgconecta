@@ -97,7 +97,7 @@ class AlumnoController extends Controller
 
             'experiencias' => 'array',
             'experiencias.*.empresa.nombre' => 'required|string',
-            'experiencias.*.empresa.sector' => ['nullable', 'string', Rule::in(Empresa::SECTORES)],
+            'experiencias.*.empresa.sector_id' => 'nullable|exists:sectores,id',
             'experiencias.*.puesto' => 'required|string',
             'experiencias.*.fecha_inicio' => 'required|string',
             'experiencias.*.fecha_fin' => 'nullable|string',
@@ -184,7 +184,7 @@ class AlumnoController extends Controller
                 $empresa = Empresa::firstOrCreate(
                     ['nombre' => $exp['empresa']['nombre']],
                     [
-                        'sector' => $exp['empresa']['sector'] ?? null,
+                        'sector_id' => $exp['empresa']['sector_id'] ?? null,
                         'web' => $exp['empresa']['web'] ?? null
                     ]
                 );
@@ -224,7 +224,8 @@ class AlumnoController extends Controller
                 'titulos',
                 'tecnologias',
                 'opiniones.empresa:id,nombre',
-                'experiencias.empresa:id,nombre'
+                'experiencias.empresa:id,nombre',
+                'experiencias.empresa.sector:id,nombre'
             ])
         );
     }
@@ -259,7 +260,7 @@ class AlumnoController extends Controller
 
             'experiencias' => 'array',
             'experiencias.*.empresa.nombre' => 'required|string',
-            'experiencias.*.empresa.sector' => 'nullable|string',
+            'experiencias.*.empresa.sector_id' => 'nullable|exists:sectores,id',
             'experiencias.*.puesto' => 'required|string',
             'experiencias.*.fecha_inicio' => 'required|string',
             'experiencias.*.fecha_fin' => 'nullable|string',
@@ -351,7 +352,7 @@ class AlumnoController extends Controller
                     $empresa = \App\Models\Empresa::firstOrCreate(
                         ['nombre' => $exp['empresa']['nombre']],
                         [
-                            'sector' => $exp['empresa']['sector'] ?? null,
+                            'sector_id' => $exp['empresa']['sector_id'] ?? null,
                             'web' => $exp['empresa']['web'] ?? null,
                         ]
                     );

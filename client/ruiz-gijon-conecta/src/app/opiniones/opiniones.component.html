@@ -96,11 +96,11 @@
                         </div>
                         <div class="">
                             <label class="form-label text-uppercase text-secondary">Sector</label>
-                            <select class="form-select" [(ngModel)]="nuevaEmpresa.sector" name="sectorEmpresa"
+                            <select class="form-select" [(ngModel)]="nuevaEmpresa.sector_id" name="sectorEmpresa"
                                 [required]="empresaSeleccionada?.nombre === 'Otras'">
                                 <option value="" disabled selected>Selecciona un sector</option>
-                                <option *ngFor="let s of sectoresEmpresa" [value]="s">
-                                    {{ sectoresEmpresaMap[s] }}
+                                <option *ngFor="let s of sectores" [value]="s.id">
+                                    {{ s.nombre }}
                                 </option>
                             </select>
                         </div>
