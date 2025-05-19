@@ -294,6 +294,7 @@ export class NuevaOfertaComponent implements OnInit {
         titulo: this.titulo,
         descripcion: this.descripcion,
         jornada: this.jornada,
+        titulacion_id: this.titulacionSeleccionada,
         localizacion: this.localizacion,
         anios_experiencia: this.aniosExperiencia,
         fecha_expiracion: this.fechaExpiracion,

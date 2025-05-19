@@ -12,6 +12,7 @@
 - Que los desplegabes aparezcan en orden alfabético
 - Alumnos: mostrar solo los verificados
 - En verificar alumnos, link mailto en los correos
+- Poder poner 0 años de experiencia
 - ¡ REVISAR LOS CONSOLE LOG Y QUITAR LOS DATOS !
 
 ---
@@ -19,6 +20,7 @@
 ## MEJORAS CONVENIENTES
 
 - Filtrado y paginación en verificar-alumnos
+- Botón volver en detalles alumno y detalles oferta
 
 ---
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-opiniones',
@@ -73,6 +73,7 @@ export class OpinionesComponent implements OnInit {
   paginaActual = 1;
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private http: HttpClient,
@@ -97,6 +98,15 @@ export class OpinionesComponent implements OnInit {
         this.opiniones.map((op) => [op.empresa.id, op.empresa])
       ).values(),
     ];
+
+    this.route.queryParams.subscribe((params) => {
+      const empresaId = params['empresa'];
+      if (empresaId) {
+        this.cargarOpinionesPorEmpresa(empresaId);
+      } else {
+        this.cargarOpiniones();
+      }
+    });
   }
 
   cargarOpiniones(): void {
@@ -117,6 +127,28 @@ export class OpinionesComponent implements OnInit {
         console.error('Error cargando opiniones:', error);
       }
     );
+  }
+
+  cargarOpinionesPorEmpresa(empresaId: number): void {
+    console.log('Cargando opiniones para empresa:', empresaId);
+    this.http
+      .get<any>(`http://localhost:8000/api/empresas/${empresaId}/opiniones`)
+      .subscribe({
+        next: (res) => {
+          this.opiniones = res.data || [];
+          this.opinionesFiltradas = [...this.opiniones];
+          // Extraer empresas únicas
+          this.empresasUnicas = [
+            ...new Map(
+              this.opiniones.map((op) => [op.empresa.id, op.empresa])
+            ).values(),
+          ];
+          // this.filtrarOpiniones();
+        },
+        error: (err) => {
+          console.error('Error al cargar opiniones de empresa', err);
+        },
+      });
   }
 
   // empresas
@@ -278,6 +310,7 @@ export class OpinionesComponent implements OnInit {
       this.opinionesFiltradas = [...this.opiniones];
     }
   }
+
   pluralizarAnios(anios: number): string {
     return anios === 1 ? '1 año' : `${anios} años`;
   }

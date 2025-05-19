@@ -106,10 +106,12 @@
                 <!-- Titulación -->
                 <div class="mt-3">
                     <label class="form-label text-uppercase text-secondary">Titulación requerida</label>
-                    <ng-select [items]="titulosDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
-                        [(ngModel)]="titulacionSeleccionada" name="titulacionSeleccionada"
+                    <ng-select [items]="titulosDisponibles" bindLabel="nombre" [bindValue]="'id'"
+                        [(ngModel)]="titulacionSeleccionada"
+                        name="titulacionSeleccionada"
                         placeholder="Selecciona un título...">
                     </ng-select>
+
                 </div>
 
                 <!-- Años de experiencia -->

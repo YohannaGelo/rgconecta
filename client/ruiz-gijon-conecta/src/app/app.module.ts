@@ -27,6 +27,7 @@ import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opinion
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
+import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuar
     OpinionesUsuarioComponent,
     NoVerificadoComponent,
     VerificarAlumnosComponent,
-    OfertasUsuarioComponent
+    OfertasUsuarioComponent,
+    DetalleOfertaComponent
   ],
   imports: [
     BrowserModule,
