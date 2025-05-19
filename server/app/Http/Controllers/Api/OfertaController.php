@@ -36,7 +36,11 @@ class OfertaController extends Controller
     // }
     public function index(Request $request)
     {
-        $query = Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
+        $query = Oferta::with([
+            'tecnologias',
+            'empresa:id,nombre,sector_id',
+            'empresa.sector:id,nombre'
+        ])
             ->select([
                 'id',
                 'titulo',
@@ -47,6 +51,7 @@ class OfertaController extends Controller
                 'fecha_publicacion',
                 'fecha_expiracion'
             ]);
+
 
         // Filtro: localización
         if ($request->filled('localizacion')) {
@@ -99,7 +104,8 @@ class OfertaController extends Controller
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'sobre_empresa' => 'nullable|string|required_without:empresa_id',
             // 'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
-            'sector' => ['required_if:empresa_id,null', 'string', Rule::in(Empresa::SECTORES)],
+            'sector_id' => ['required_if:empresa_id,null', 'exists:sectores,id'],
+
             'web' => 'nullable|url|required_if:empresa_id,null',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
             'titulacion_id' => 'nullable|exists:titulos,id',
@@ -112,7 +118,11 @@ class OfertaController extends Controller
         // Gestionar empresa
         $empresa = $request->empresa_id
             ? Empresa::find($request->empresa_id)
-            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => $validated['sector'], 'web' => $validated['web'] ?? null]);
+            : Empresa::firstOrCreate(
+                ['nombre' => $validated['sobre_empresa']],
+                ['sector_id' => $validated['sector_id'], 'web' => $validated['web'] ?? null]
+            );
+
 
         // Crear oferta (con usuario autenticado)
         $oferta = Oferta::create([

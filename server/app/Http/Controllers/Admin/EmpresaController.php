@@ -13,7 +13,7 @@ class EmpresaController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Empresa::orderBy('id')->get()
+            'data' => Empresa::with('sector')->orderBy('id')->get()
         ]);
     }
 
@@ -22,7 +22,7 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:empresas,nombre',
-            'sector' => 'nullable|string|max:255',
+            'sector_id' => 'required|exists:sectores,id',
             'web' => 'nullable|url',
         ]);
 
@@ -31,7 +31,7 @@ class EmpresaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Empresa creada correctamente.',
-            'data' => $empresa
+            'data' => $empresa->load('sector'),
         ], 201);
     }
 
@@ -40,7 +40,7 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255|unique:empresas,nombre,' . $empresa->id,
-            'sector' => 'nullable|string|max:255',
+            'sector_id' => 'required|exists:sectores,id',
             'web' => 'nullable|url',
         ]);
 
@@ -49,7 +49,7 @@ class EmpresaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Empresa actualizada correctamente.',
-            'data' => $empresa
+            'data' => $empresa->fresh()->load('sector'),
         ]);
     }
 

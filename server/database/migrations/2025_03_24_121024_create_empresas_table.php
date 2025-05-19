@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('empresas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique(); // Ej: "TechSolutions S.L."
-            $table->string('sector')->nullable(); // Opcional: "Tecnología", "Educación", etc.
+            // $table->string('sector')->nullable(); // Opcional: "Tecnología", "Educación", etc.
+            $table->foreignId('sector_id')->nullable()->constrained('sectores')->onDelete('set null');
             $table->string('web')->nullable(); // Opcional
             $table->timestamps();
         });

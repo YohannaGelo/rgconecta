@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SectorService } from '../services/sector.service';
 
 @Component({
   selector: 'app-nueva-oferta',
@@ -26,40 +27,12 @@ export class NuevaOfertaComponent implements OnInit {
 
   empresasDisponibles: any[] = [];
   empresaSeleccionada: any = null;
-  nuevaEmpresa = { nombre: '', sector: '', web: '' };
+  nuevaEmpresa = { nombre: '', sector_id: null, web: '' };
   webSinProtocolo: string = '';
 
   titulosDisponibles: any[] = [];
 
-  sectoresEmpresa: string[] = [
-    'tecnologia',
-    'educacion',
-    'salud',
-    'construccion',
-    'comercio',
-    'hosteleria',
-    'finanzas',
-    'logistica',
-    'marketing',
-    'industria',
-    'diseno',
-    'otros',
-  ];
-
-  sectoresEmpresaMap: { [key: string]: string } = {
-    tecnologia: 'Tecnología',
-    educacion: 'Educación',
-    salud: 'Salud',
-    construccion: 'Construcción',
-    comercio: 'Comercio',
-    hosteleria: 'Hostelería',
-    finanzas: 'Finanzas',
-    logistica: 'Logística',
-    marketing: 'Marketing',
-    industria: 'Industria',
-    diseno: 'Diseño',
-    otros: 'Otros',
-  };
+  sectores: any[] = [];
 
   // Array para las tecnologías disponibles (desde la API)
   tecnologiasDisponibles: any[] = [];
@@ -102,14 +75,23 @@ export class NuevaOfertaComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sectorService: SectorService
   ) {}
 
   ngOnInit(): void {
+    this.cargarSectores();
     this.cargarEmpresas();
     this.cargarTecnologias();
     this.cargarTitulos();
     this.cargarTecnologias();
+  }
+
+  cargarSectores(): void {
+    this.sectorService.getPublic().subscribe({
+      next: (res) => (this.sectores = res.data),
+      error: (err) => console.error('Error cargando sectores', err),
+    });
   }
 
   // #region Cambios Pendientes
@@ -164,7 +146,7 @@ export class NuevaOfertaComponent implements OnInit {
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada?.nombre !== 'Otras') {
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '' };
+      this.nuevaEmpresa = { nombre: '', sector_id: null, web: '' };
     }
   }
 
@@ -305,7 +287,7 @@ export class NuevaOfertaComponent implements OnInit {
           ? { empresa_id: this.empresaSeleccionada?.id }
           : {
               sobre_empresa: this.nuevaEmpresa.nombre,
-              sector: this.nuevaEmpresa.sector,
+              sector_id: this.nuevaEmpresa.sector_id,
               web: this.nuevaEmpresa.web,
             }),
       };

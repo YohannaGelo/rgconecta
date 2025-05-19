@@ -45,7 +45,10 @@ class AuthController extends Controller
                 'titulos',
                 'tecnologias',
                 'opiniones.empresa:id,nombre',
-                'experiencias.empresa:id,nombre,sector'
+                'experiencias.empresa:id,nombre,sector_id',
+                'experiencias.empresa.sector:id,nombre',
+                'opiniones.empresa:id,nombre,sector_id',
+                'opiniones.empresa.sector:id,nombre',
             ])->first();
 
             return response()->json($alumno);

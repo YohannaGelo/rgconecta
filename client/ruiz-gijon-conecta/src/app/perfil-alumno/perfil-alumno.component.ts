@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { SectorService } from '../services/sector.service';
 
 
 @Component({
@@ -94,35 +95,10 @@ export class PerfilAlumnoComponent implements OnInit {
   empresasDisponibles: any[] = [];
   empresaSeleccionada: any = null;
   // puestoExperiencia: string = '';
-  nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
-  sectoresEmpresa: string[] = [
-    'tecnologia',
-    'educacion',
-    'salud',
-    'construccion',
-    'comercio',
-    'hosteleria',
-    'finanzas',
-    'logistica',
-    'marketing',
-    'industria',
-    'diseno',
-    'otros',
-  ];
-  sectoresEmpresaMap: { [key: string]: string } = {
-    tecnologia: 'Tecnología',
-    educacion: 'Educación',
-    salud: 'Salud',
-    construccion: 'Construcción',
-    comercio: 'Comercio',
-    hosteleria: 'Hostelería',
-    finanzas: 'Finanzas',
-    logistica: 'Logística',
-    marketing: 'Marketing',
-    industria: 'Industria',
-    diseno: 'Diseño',
-    otros: 'Otros',
-  };
+  nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
+  
+  sectores: any[] = [];
+
   empresasNuevas: any[] = [];
 
   compareEmpresa = (e1: any, e2: any) =>
@@ -149,14 +125,23 @@ export class PerfilAlumnoComponent implements OnInit {
     private modalService: NgbModal,
     private authService: AuthService,
     private notificationService: NotificationService,
-    private http: HttpClient
+    private http: HttpClient,
+    private sectorService: SectorService
   ) {}
 
   ngOnInit(): void {
     this.loadCurrentAlumno();
     this.cargarTitulos();
     this.cargarTecnologias();
+    this.cargarSectores(); 
     this.cargarEmpresas();
+  }
+
+  cargarSectores(): void {
+    this.sectorService.getPublic().subscribe({
+      next: (res) => (this.sectores = res.data),
+      error: (err) => console.error('Error cargando sectores', err),
+    });
   }
 
   // #region Cambios Pendientes
@@ -554,7 +539,7 @@ export class PerfilAlumnoComponent implements OnInit {
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada?.nombre !== 'Otras') {
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+      this.nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
     }
   }
 
@@ -564,7 +549,7 @@ export class PerfilAlumnoComponent implements OnInit {
     if (this.empresaSeleccionada?.nombre === 'Otras') {
       if (
         !this.nuevaEmpresa.nombre ||
-        !this.nuevaEmpresa.sector ||
+        !this.nuevaEmpresa.sector_id ||
         !this.nuevaEmpresa.web
       ) {
         this.notificationService.warning(
@@ -574,7 +559,7 @@ export class PerfilAlumnoComponent implements OnInit {
       }
       empresaData = {
         nombre: this.nuevaEmpresa.nombre,
-        sector: this.nuevaEmpresa.sector,
+        sector: this.nuevaEmpresa.sector_id,
         web: this.nuevaEmpresa.web,
       };
       this.empresasNuevas.push({ ...this.nuevaEmpresa });
@@ -611,7 +596,7 @@ export class PerfilAlumnoComponent implements OnInit {
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
       this.puestoExperiencia = '';
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+      this.nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
 
       // this.mostrarModalOpinionSobreEmpresa(empresaData);
       this.mostrarModalOpinionSobreEmpresa(empresaData, comienzo, fin);

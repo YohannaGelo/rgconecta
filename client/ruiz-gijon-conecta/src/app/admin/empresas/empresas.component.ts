@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EmpresaService } from '../../services/empresa.service';
+import { SectorService } from '../../services/sector.service';
 
 @Component({
   selector: 'app-empresas',
@@ -9,14 +10,26 @@ import { EmpresaService } from '../../services/empresa.service';
 })
 export class EmpresasComponent implements OnInit {
   empresas: any[] = [];
-  nuevaEmpresa = { nombre: '', sector: '', web: '' };
+  nuevaEmpresa = { nombre: '', sector_id: null, web: '' };
   vistaTabla = false;
   editando: any = null;
+  sectores: any[] = [];
 
-  constructor(private empresaService: EmpresaService) {}
+  constructor(
+    private empresaService: EmpresaService,
+    private sectorService: SectorService
+  ) {}
 
   ngOnInit(): void {
+    this.cargarSectores();
     this.cargarEmpresas();
+  }
+
+  cargarSectores(): void {
+    this.sectorService.getAdmin().subscribe({
+      next: (res) => (this.sectores = res.data),
+      error: (err) => console.error('Error cargando sectores', err),
+    });
   }
 
   cargarEmpresas(): void {
@@ -29,7 +42,7 @@ export class EmpresasComponent implements OnInit {
   guardarNueva(): void {
     this.empresaService.create(this.nuevaEmpresa).subscribe({
       next: () => {
-        this.nuevaEmpresa = { nombre: '', sector: '', web: '' };
+        this.nuevaEmpresa = { nombre: '', sector_id: null, web: '' };
         this.cargarEmpresas();
       },
     });

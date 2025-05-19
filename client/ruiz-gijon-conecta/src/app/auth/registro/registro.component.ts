@@ -8,6 +8,7 @@ import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewChild } from '@angular/core';
+import { SectorService } from '../../services/sector.service';
 
 @Component({
   selector: 'app-registro',
@@ -110,40 +111,11 @@ export class RegistroComponent implements OnInit {
 
   nuevaEmpresa = {
     nombre: '',
-    sector: '',
+    sector_id: null,
     web: '',
     descripcion: '',
   };
-  sectoresEmpresa: string[] = [
-    'tecnologia',
-    'educacion',
-    'salud',
-    'construccion',
-    'comercio',
-    'hosteleria',
-    'finanzas',
-    'logistica',
-    'marketing',
-    'industria',
-    'diseno',
-    'otros',
-  ];
-
-  // Mapeo para mostrar etiquetas más legibles
-  sectoresEmpresaMap: { [key: string]: string } = {
-    tecnologia: 'Tecnología',
-    educacion: 'Educación',
-    salud: 'Salud',
-    construccion: 'Construcción',
-    comercio: 'Comercio',
-    hosteleria: 'Hostelería',
-    finanzas: 'Finanzas',
-    logistica: 'Logística',
-    marketing: 'Marketing',
-    industria: 'Industria',
-    diseno: 'Diseño',
-    otros: 'Otros',
-  };
+  sectores: any[] = [];
 
   experiencias: any[] = []; // Guardará la lista de experiencias añadidas
   empresasNuevas: any[] = []; // Guardará las nuevas empresas añadidas
@@ -168,13 +140,15 @@ export class RegistroComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sectorService: SectorService
   ) {}
 
   ngOnInit(): void {
-    this.cargarTitulos(); // Llamar al método para cargar los títulos disponibles
-    this.cargarEmpresas(); // Llamar al método para cargar las empresas disponibles
-    this.cargarTecnologias(); // Llamar al método para cargar las tecnologías disponibles
+    this.cargarTitulos(); 
+    this.cargarSectores(); 
+    this.cargarEmpresas(); 
+    this.cargarTecnologias(); 
 
     // Cargar múltiples opiniones pendientes
     const stored = sessionStorage.getItem('opinionesPendientes');
@@ -182,6 +156,13 @@ export class RegistroComponent implements OnInit {
       this.opinionesPendientes = JSON.parse(stored);
       sessionStorage.removeItem('opinionesPendientes');
     }
+  }
+
+  cargarSectores(): void {
+    this.sectorService.getPublic().subscribe({
+      next: (res) => (this.sectores = res.data),
+      error: (err) => console.error('Error cargando sectores', err),
+    });
   }
 
   // #region Cambios Pendientes
@@ -398,7 +379,7 @@ export class RegistroComponent implements OnInit {
           this.empresasDisponibles = [
             ...response.data.map((e: any) => ({
               nombre: e.nombre,
-              sector: e.sector || 'otros', // si falta sector, pone 'otros'
+              sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
               web: e.web || '', // si falta web, pone vacío
             })),
             { nombre: 'Otras' }, // opción para crear nueva empresa
@@ -420,7 +401,12 @@ export class RegistroComponent implements OnInit {
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada !== 'Otras') {
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+      this.nuevaEmpresa = {
+        nombre: '',
+        sector_id: null,
+        web: '',
+        descripcion: '',
+      };
     }
   }
 
@@ -430,11 +416,11 @@ export class RegistroComponent implements OnInit {
     if (this.empresaSeleccionada?.nombre === 'Otras') {
       if (
         !this.nuevaEmpresa.nombre ||
-        !this.nuevaEmpresa.sector ||
+        !this.nuevaEmpresa.sector_id ||
         !this.nuevaEmpresa.web
       ) {
         this.notificationService.warning(
-          'Debes introducir el nombre, sector y web de la nueva empresa.'
+          'Debes introducir el nombre, sector_id y web de la nueva empresa.'
         );
         return;
       }
@@ -477,7 +463,12 @@ export class RegistroComponent implements OnInit {
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
       this.puestoExperiencia = '';
-      this.nuevaEmpresa = { nombre: '', sector: '', web: '', descripcion: '' };
+      this.nuevaEmpresa = {
+        nombre: '',
+        sector_id: null,
+        web: '',
+        descripcion: '',
+      };
 
       // 🔔 Lanza modal para dejar opinión
       this.mostrarModalOpinionSobreEmpresa(empresaData);
@@ -585,9 +576,9 @@ export class RegistroComponent implements OnInit {
       experiencias: this.experiencias.map((exp) => ({
         empresa: {
           nombre: exp.empresa.nombre || exp.empresa, // si es nueva, será string
-          // sector: exp.empresa.sector || '', // rellena vacío si no viene
-          sector: exp.empresa.sector
-            ? exp.empresa.sector
+          // sector_id: exp.empresa.sector_id || '', // rellena vacío si no viene
+          sector_id: exp.empresa.sector_id
+            ? exp.empresa.sector_id
                 .toLowerCase()
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
@@ -747,7 +738,7 @@ export class RegistroComponent implements OnInit {
       } else {
         payload.empresa = {
           nombre: opinion.empresa?.nombre,
-          sector: opinion.empresa?.sector || 'otros',
+          sector_id: opinion.empresa?.sector_id || 'otros',
           web: opinion.empresa?.web || '',
           descripcion: opinion.empresa?.descripcion || null,
         };

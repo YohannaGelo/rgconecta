@@ -150,15 +150,20 @@
             <ul class="list-group mb-3">
                 <li *ngFor="let exp of experiencias; let i = index"
                     class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ exp.empresa.nombre }} [{{ exp.empresa.sector }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
-                    exp.fecha_fin }})
-                    <!-- <button class="btn btn-sm btn-danger" (click)="eliminarExperiencia(i)"><i
-                            class="bi bi-trash"></i></button> -->
+
+                    {{ exp.empresa.nombre }}
+                    <ng-container *ngIf="exp.empresa.sector; else sinSector">
+                        [{{ exp.empresa.sector.nombre }}]
+                    </ng-container>
+                    <ng-template #sinSector>[Sin sector]</ng-template>
+
+                    - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{ exp.fecha_fin }})
+
                     <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('experiencia', i)">
                         <i class="bi bi-trash3"></i>
                     </button>
-
                 </li>
+
             </ul>
             <!-- Formulario añadir experiencia -->
 
@@ -187,11 +192,11 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Sector</label>
-                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector"
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector_id"
                         name="sectorEmpresa" required>
                         <option value="" disabled selected>Selecciona un sector</option>
-                        <option *ngFor="let s of sectoresEmpresa" [value]="s">
-                            {{ sectoresEmpresaMap[s] }}
+                        <option *ngFor="let s of sectores" [value]="s.id">
+                            {{ s.nombre }}
                         </option>
                     </select>
                 </div>
