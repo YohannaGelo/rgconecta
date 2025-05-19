@@ -1,0 +1,144 @@
+<!-- Detalles -->
+<div class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1">
+
+    <!-- Info principal -->
+    <section class="col bg-white rounded-1 shadow p-4 pb-1">
+
+        <!-- Cabecera -->
+        <article>
+            <div class="d-flex">
+                <p class="btn rounded-5 py-0 px-3 pe-none me-2"
+                    [ngClass]="{ 'btn-primary': oferta.fecha_expiracion > hoy, 'btn-outline-secondary': oferta.fecha_expiracion <= hoy }">
+                    {{ oferta.fecha_expiracion > hoy ? 'Activa' : 'Fin.' }}
+                </p>
+                <p *ngIf="oferta.tecnologias.length" class="btn btn-dark rounded-5 py-0 px-3 pe-none">
+                    {{ oferta.tecnologias[0].tipo | titlecase }}
+                </p>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center justify-content-between my-3">
+                <h2 class="card-title">{{ oferta?.titulo }}</h2>
+                <h2 class="fs-1 fw-light text-primary">{{ oferta?.empresa?.nombre }}</h2>
+            </div>
+        </article>
+
+        <!-- Empresa: web y sector -->
+        <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.empresa">
+            <p class="text-secondary my-2 form-label">WEB DE LA EMPRESA</p>
+            <p class="mb-1">
+                <a [href]="oferta.empresa.web" target="_blank" rel="noopener noreferrer" class="text-primary">
+                    {{ oferta.empresa.web }}
+                </a>
+            </p>
+            <p class="text-secondary small mt-1">Sector: {{ oferta.empresa.sector }}</p>
+        </div>
+
+        <!-- Descripción de la oferta -->
+        <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.descripcion">
+            <p class="text-secondary my-2 form-label">PUESTO DE TRABAJO</p>
+            <p class="mb-2">{{ oferta.descripcion }}</p>
+            <p class="mb-1 text-secondary small">
+                {{ obtenerTipoTrabajo(oferta.localizacion) }}
+            </p>
+        </div>
+
+
+        <!-- Requisitos -->
+        <div class="bg-light py-1 pb-2 px-4 mt-3">
+            <p class="text-secondary my-2 form-label">REQUISITOS</p>
+            <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.jornada">
+                <i class="bi bi-file-earmark-text rounded-1 pe-2 ms-3"></i>
+                {{ oferta.titulacion?.nombre || 'No especificada' }}
+            </p>
+            <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.anios_experiencia">
+                <i class="bi bi-clock-history rounded-1 pe-2 ms-3"></i>
+                {{ oferta.anios_experiencia }} años de experiencia
+            </p>
+            <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.tecnologias?.length">
+                <i class="bi bi-code-slash rounded-1 pe-2 ms-3"></i>
+                <span *ngFor="let tec of oferta.tecnologias; let i = index">
+                    {{ tec.nombre }}<span *ngIf="tec.pivot?.nivel"> ({{ tec.pivot.nivel }})</span><span
+                        *ngIf="i < oferta.tecnologias.length - 1">, </span>
+                </span>
+            </p>
+        </div>
+
+        <!-- Horario y autor -->
+        <div class="mt-3 mb-0 d-flex flex-column flex-md-row gap-3 justify-content-between">
+            <p class="bg-light fw-light text-secondary fs-6 py-2 px-4 mb-0 mb-md-3">
+                Oferta publicada por <span class="fw-semibold text-primary">{{ oferta?.user?.name }}</span>
+                el {{ oferta?.fecha_publicacion | date:'longDate' }}
+            </p>
+            <p class="bg-light text-secondary py-2 px-4">
+                <i class="bi bi-clock mx-2 fst-normal"></i> {{ jornadaLegible(oferta?.jornada) }}
+                <i class="bi bi-geo-alt ms-3 me-2 fst-normal"></i> {{ oferta?.localizacion }}
+            </p>
+        </div>
+
+        <!-- Formulario de contacto -->
+        <div class="mt-2 mb-4">
+            <p class="form-label text-secondary">¿Necesitas ayuda para contactar?</p>
+            <textarea [(ngModel)]="mensajeContacto" rows="3" class="form-control mb-2"
+                placeholder="Escribe un mensaje breve al publicador de esta oferta..."></textarea>
+            <button class="btn btn-outline-primary btn-sm" (click)="enviarMensaje()">
+                <i class="bi bi-send me-2"></i>Enviar mensaje
+            </button>
+        </div>
+    </section>
+
+    <!-- Opiniones -->
+    <div class="col-lg-4">
+        <div class="row bg-white rounded-1 shadow p-4">
+            <h4 class="pb-3">Opiniones de alumnos</h4>
+
+            <ng-container *ngIf="opinionesPaginadas.length > 0; else sinOpiniones">
+                <div *ngFor="let op of opinionesPaginadas" class="bg-light p-3 mb-3 rounded">
+                    <h5 class="fw-light text-secondary">
+                        {{ op.user?.role === 'profesor' ? 'Profesor:' : 'Alumno:' }}
+                        <span class="fw-semibold">{{ acortarNombre(op.user?.name) }}</span>
+                    </h5>
+                    <h6 class="fw-light text-secondary">
+                        Experiencia en la empresa: <span class="fw-semibold">{{ op.anios_en_empresa }} años</span>
+                    </h6>
+                    <p class="overflow-hidden">{{ acortarDescripcion(op.contenido) }}</p>
+                    <div class="d-flex align-items-center mt-2">
+                        <span *ngFor="let idx of [1,2,3,4,5]">
+
+                            <i class="bi bi-star-fill me-1" [ngClass]="{
+                                'text-primary': idx <= op.valoracion,
+                                'text-secondary': idx > op.valoracion
+                            }">
+                            </i>
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Paginación -->
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <button class="btn btn-primary rounded-1 text-white btn-sm" [disabled]="paginaOpiniones === 1"
+                        (click)="paginaAnterior()">
+                        <i class="bi-arrow-left"></i>
+                    </button>
+                    <span class="text-muted small">Página {{ paginaOpiniones }} de {{ totalPaginas }}</span>
+                    <button class="btn btn-primary rounded-1 text-white  btn-sm" [disabled]="paginaOpiniones === totalPaginas"
+                        (click)="paginaSiguiente()">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </ng-container>
+
+            <!-- Sin opiniones -->
+            <ng-template #sinOpiniones>
+                <p class="text-secondary fst-italic">Esta empresa aún no tiene opiniones.</p>
+            </ng-template>
+
+            <!-- Botón ver todas -->
+            <div class="text-center mt-3">
+                <button class="btn btn-link text-primary text-decoration-underline" (click)="verTodasOpiniones()">
+                    Ver todas las opiniones de esta empresa
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

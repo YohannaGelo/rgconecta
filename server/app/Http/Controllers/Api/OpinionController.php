@@ -19,8 +19,13 @@ class OpinionController extends Controller
     public function index()
     {
         $opiniones = Opinion::with(['user:id,name,role', 'empresa:id,nombre'])
-            ->whereHas('user.alumno', function ($query) {
-                $query->where('is_verified', 1);
+            ->whereHas('user', function ($query) {
+                $query->where(function ($q) {
+                    $q->where('role', '!=', 'alumno') // profesores y admin
+                        ->orWhereHas('alumno', function ($subquery) {
+                            $subquery->where('is_verified', 1); // alumnos verificados
+                        });
+                });
             })
             ->latest()
             ->paginate(10);
@@ -34,17 +39,16 @@ class OpinionController extends Controller
     }
 
 
+
     // Listar opiniones de una empresa (público)
     public function indexByEmpresa(Empresa $empresa)
     {
         return $empresa->opiniones()
-            ->whereHas('user.alumno', function ($query) {
-                $query->where('is_verified', 1);
-            })
-            ->with('alumno.user')
+            ->with(['user:id,name,role', 'empresa:id,nombre']) // Carga el usuario y su perfil de alumno si existe
             ->latest()
             ->paginate(10);
     }
+
 
 
 

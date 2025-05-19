@@ -4,7 +4,8 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="card-title mt-2">Mis ofertas publicadas</h3>
-            <button class="btn btn-success d-flex align-items-center px-3 py-2" (click)="irANuevaOferta()">
+            <button class="btn btn-success d-flex align-items-center px-3 py-2" (click)="irANuevaOferta()"
+                *ngIf="ofertas.length > 0">
                 <i class="bi bi-pencil-square me-2"></i> Crear nueva oferta
             </button>
         </div>
@@ -68,6 +69,13 @@
                                 {{ jornadaLegible(oferta.jornada) }}
                             </p>
 
+                            <p class="mb-2 text-secondary">
+                                <i class="bi bi-mortarboard-fill me-1 text-primary"></i>
+                                <span class="form-label">Titulación requerida: </span>
+                                {{ oferta.titulacion?.nombre || 'No especificada' }}
+                            </p>
+
+
                             <p class="mb-2 text-secondary small">
                                 <i class="bi bi-clock me-1 text-primary"></i>
                                 <span class="form-label">Publicada: </span>{{ oferta.fecha_publicacion |
@@ -110,6 +118,14 @@
                                     <option value="menos_3_horas">Menos de 3 horas</option>
                                 </select>
                             </div>
+
+                            <div class="mb-2">
+                                <label class="form-label small text-secondary">Titulación requerida</label>
+                                <ng-select [items]="titulosDisponibles" bindLabel="nombre" [bindValue]="'id'"
+                                    [(ngModel)]="ofertaEditando.titulacion_id" placeholder="Selecciona un título...">
+                                </ng-select>
+                            </div>
+
 
                             <div class="mb-2">
                                 <label class="form-label small text-secondary">Fecha expiración</label>
@@ -155,7 +171,7 @@
                             <!-- Nivel -->
                             <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
                                 <label class="form-label text-secondary small">Nivel</label>
-                                <select class="form-select form-select" [(ngModel)]="nivelSeleccionado" >
+                                <select class="form-select form-select" [(ngModel)]="nivelSeleccionado">
                                     <option value="" disabled selected>Selecciona nivel</option>
                                     <option
                                         *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"

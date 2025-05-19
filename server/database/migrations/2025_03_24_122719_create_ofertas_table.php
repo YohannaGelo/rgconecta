@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('sobre_empresa')->nullable();
             $table->foreignId('user_id')->constrained(); // Publicado por (profesor/alumno)
             $table->enum('jornada', ['completa', 'media_jornada', '3_6_horas', 'menos_3_horas']);
+            $table->foreignId('titulacion_id')->nullable()->constrained('titulos')->nullOnDelete();
             $table->integer('anios_experiencia')->nullable()->default(0);
             $table->string('localizacion');
             $table->date('fecha_publicacion');

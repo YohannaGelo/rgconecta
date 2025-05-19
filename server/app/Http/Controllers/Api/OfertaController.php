@@ -102,6 +102,7 @@ class OfertaController extends Controller
             'sector' => ['required_if:empresa_id,null', 'string', Rule::in(Empresa::SECTORES)],
             'web' => 'nullable|url|required_if:empresa_id,null',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'titulacion_id' => 'nullable|exists:titulos,id',
             'anios_experiencia' => 'nullable|integer|min:0',
             'localizacion' => 'required|string',
             'tecnologias' => 'nullable|array',
@@ -128,7 +129,7 @@ class OfertaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Oferta creada correctamente.',
-            'data' => $oferta->load(['tecnologias', 'empresa'])
+            'data' => $oferta->load(['tecnologias', 'empresa', 'titulacion'])
         ], 201);
     }
 
@@ -144,7 +145,7 @@ class OfertaController extends Controller
         return response()->json([ // Añadido mensaje de éxito
             'success' => true,
             'message' => 'Oferta obtenida correctamente.',
-            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name']),
+            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name', 'titulacion']),
         ]);
     }
 
@@ -162,6 +163,7 @@ class OfertaController extends Controller
                 'sometimes',
                 Rule::in(['completa', 'media_jornada', '3_6_horas', 'menos_3_horas']),
             ],
+            'titulacion_id' => 'nullable|exists:titulos,id',
             'localizacion' => 'sometimes|string',
             'fecha_expiracion' => 'sometimes|date|after:today',
             'tecnologias' => 'nullable|array',
@@ -196,7 +198,7 @@ class OfertaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Oferta actualizada correctamente.',
-            'data' => $oferta->fresh()->load('tecnologias', 'empresa'),
+            'data' => $oferta->fresh()->load('tecnologias', 'empresa', 'titulacion'),
         ]);
     }
 
@@ -222,7 +224,7 @@ class OfertaController extends Controller
     {
         $userId = Auth::id();
 
-        $ofertas = Oferta::with(['empresa:id,nombre', 'tecnologias']) // puedes añadir más relaciones si necesitas
+        $ofertas = Oferta::with(['empresa:id,nombre', 'tecnologias', 'titulacion'])
             ->where('user_id', $userId)
             ->orderByDesc('created_at')
             ->get();
@@ -233,6 +235,7 @@ class OfertaController extends Controller
             'data' => $ofertas,
         ]);
     }
+
 
 
     /**

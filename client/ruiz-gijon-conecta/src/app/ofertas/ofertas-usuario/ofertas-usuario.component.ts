@@ -54,6 +54,8 @@ export class OfertasUsuarioComponent implements OnInit {
     default: ['básico', 'intermedio', 'avanzado'],
   };
 
+  titulosDisponibles: any[] = [];
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -64,6 +66,14 @@ export class OfertasUsuarioComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarMisOfertas();
+    this.cargarTitulos();
+  }
+
+  cargarTitulos(): void {
+    this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe({
+      next: (res) => (this.titulosDisponibles = res),
+      error: (err) => console.error('Error al cargar títulos', err),
+    });
   }
 
   cargarMisOfertas(): void {
@@ -108,6 +118,7 @@ export class OfertasUsuarioComponent implements OnInit {
       titulo: this.ofertaEditando.titulo,
       descripcion: this.ofertaEditando.descripcion,
       jornada: this.ofertaEditando.jornada,
+      titulacion_id: this.ofertaEditando.titulacion_id,
       localizacion: this.ofertaEditando.localizacion,
       fecha_expiracion: this.ofertaEditando.fecha_expiracion,
       tecnologias: this.tecnologiasSeleccionadas,

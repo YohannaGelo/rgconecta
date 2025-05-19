@@ -16,6 +16,7 @@ class Oferta extends Model
         'empresa_id',
         'user_id',
         'jornada',
+        'titulacion_id',
         'anios_experiencia',
         'localizacion',
         'fecha_publicacion',
@@ -48,6 +49,12 @@ class Oferta extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function titulacion()
+    {
+        return $this->belongsTo(Titulo::class, 'titulacion_id');
+    }
+
 
     // // Evento que se dispara al crear una oferta
     // protected static function booted()

@@ -17,6 +17,7 @@ import { PendingChangesGuard } from './core/guards/pending-changes.guard';
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
+import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -48,6 +49,11 @@ const routes: Routes = [
   {
     path: 'alumnos/:id',
     component: DetallesAlumnoComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'ofertas/:id',
+    component: DetalleOfertaComponent,
     canActivate: [AuthGuard],
   },
   {
