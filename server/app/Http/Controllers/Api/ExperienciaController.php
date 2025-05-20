@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -15,7 +16,7 @@ class ExperienciaController extends Controller
             'alumno_id' => 'required|integer|exists:alumnos,id',
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'empresa_nombre' => 'nullable|string|required_without:empresa_id|max:255',
-            'sector' => 'required_if:empresa_id,null|string|in:tecnologia,educacion,salud,otros',
+            'sector_id' => 'required|exists:sectores,id',
             'puesto' => 'required|string|max:255',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after:fecha_inicio',
@@ -27,8 +28,9 @@ class ExperienciaController extends Controller
             ? Empresa::find($validated['empresa_id'])
             : Empresa::firstOrCreate(
                 ['nombre' => $validated['empresa_nombre']],
-                ['sector' => $validated['sector']]
+                ['sector_id' => $validated['sector_id']]
             );
+
 
         // Crear experiencia
         $experiencia = Experiencia::create([

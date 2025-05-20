@@ -8,7 +8,7 @@ import { AlumnoService } from '../../services/alumno.service';
   styleUrl: './alumnos.component.scss'
 })
 export class AlumnosComponent implements OnInit {
-  vistaTabla = true;
+  vistaTabla = false;
   alumnos: any[] = [];
   editando: any = null;
 

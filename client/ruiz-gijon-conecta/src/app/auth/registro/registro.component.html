@@ -209,7 +209,7 @@
           <h6 class="text-secondary">Experiencias añadidas:</h6>
           <ul class="list-group">
             <li *ngFor="let exp of experiencias; let i = index" class="list-group-item d-flex justify-content-between">
-              {{ exp.empresa.nombre }} [{{ exp.empresa.sector }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
+              {{ exp.empresa.nombre }} [{{ exp.empresa.sector?.nombre }}] - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{
               exp.fecha_fin }})
               <button type="button" class="btn btn-sm btn-danger" (click)="abrirConfirmacion('experiencia', i)">
                 <i class="bi bi-x"></i>

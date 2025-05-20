@@ -1,74 +1,79 @@
-<div class="container py-4">
+<ng-container *ngIf="user && user.name">
 
-  <!-- Card: Imagen + Datos personales -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">👤 Datos personales</h5>
-    </div>
-    <div class="card-body d-flex">
+  <div class="container py-4">
 
-      <!-- Imagen -->
-      <div class="me-4 text-center col-md-4">
-        <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
+    <!-- Card: Imagen + Datos personales -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">👤 Datos personales</h5>
+      </div>
+      <div class="card-body d-flex">
+
+        <!-- Imagen -->
+        <div class="me-4 text-center col-md-4">
+          <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
                 style="width: 150px; height: 150px; object-fit: cover;"> -->
-        <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
-          class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+          <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
+            class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
 
 
-        <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
+          <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
 
-        <div *ngIf="showCropper" class="mt-2">
-          <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1"
-            [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)" style="max-height: 200px;">
-          </image-cropper>
+          <div *ngIf="showCropper" class="mt-2">
+            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1"
+              [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)" style="max-height: 200px;">
+            </image-cropper>
 
-          <div class="mt-2 d-flex gap-2 justify-content-center">
-            <button class="btn btn-outline-secondary btn-sm" (click)="rotateLeft()">Rotar izquierda</button>
-            <button class="btn btn-outline-secondary btn-sm" (click)="rotateRight()">Rotar derecha</button>
-            <button class="btn btn-outline-danger btn-sm" (click)="cancelarImagen()">Cancelar</button>
+            <div class="mt-2 d-flex gap-2 justify-content-center">
+              <button class="btn btn-outline-secondary btn-sm" (click)="rotateLeft()">Rotar izquierda</button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="rotateRight()">Rotar derecha</button>
+              <button class="btn btn-outline-danger btn-sm" (click)="cancelarImagen()">Cancelar</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Datos personales -->
-      <div class="flex-grow-1">
+        <!-- Datos personales -->
+        <div class="flex-grow-1">
 
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.name" name="name">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.name"
+              name="name">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
+              name="email" readonly>
+          </div>
+
+          <div class="mb-3" *ngIf="(auth.currentUser$ | async)?.user?.role === 'profesor'">
+            <label class="form-label">Departamento</label>
+            <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="profesor.departamento"
+              name="departamento">
+          </div>
+
+
+          <div class="mb-3 d-flex align-items-center gap-2">
+            <span class="fw-bold">Contraseña</span>
+            <button class="btn btn-sm btn-outline-primary" (click)="openChangePasswordModal()">
+              Cambiar contraseña
+            </button>
+          </div>
+
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">Correo electrónico</label>
-          <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
-            name="email" readonly>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Departamento</label>
-          <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="profesor.departamento"
-            name="departamento">
-        </div>
-
-        <div class="mb-3 d-flex align-items-center gap-2">
-          <span class="fw-bold">Contraseña</span>
-          <button class="btn btn-sm btn-outline-primary" (click)="openChangePasswordModal()">
-            Cambiar contraseña
-          </button>
-        </div>
-
       </div>
     </div>
-  </div>
 
-  <!-- Botón Guardar -->
-  <div class="text-center mt-4">
-    <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
-      <i class="bi bi-save me-2"></i> Guardar perfil
-    </button>
-  </div>
+    <!-- Botón Guardar -->
+    <div class="text-center mt-4">
+      <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
+        <i class="bi bi-save me-2"></i> Guardar perfil
+      </button>
+    </div>
 
-</div>
+  </div>
+</ng-container>
 
 <!-- Modal Cambiar Contraseña -->
 <ng-template #changePasswordModal let-modal>

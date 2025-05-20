@@ -1,20 +1,22 @@
-<div class="container mx-2">
+<div class="mx-2">
 
-    <div class="row  my-3 justify-content-between gap-3 flex-grow-1 bg-white rounded-1 shadow p-4">
-    <h2 class="mb-4">Panel de administración</h2>
+    <!-- <div class="row my-3 justify-content-between gap-3 flex-grow-1 bg-white rounded-1 shadow p-4"> -->
+    <div class="card my-3 justify-content-between gap-3 flex-grow-1 p-4 shadow">
 
-    <!-- Navegación estilo pestañas -->
-    <ul class="nav nav-tabs custom-tabs mb-4" role="tablist">
-        <li class="nav-item" *ngFor="let link of adminLinks">
-            <a class="nav-link" [routerLink]="link.route" routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }">{{ link.label }}</a>
-        </li>
-    </ul>
+        <!-- Lista de opiniones -->
+            <h2 class="mb-4">Panel de administración</h2>
 
-    <!-- Contenido de la vista seleccionada -->
-    <div class="tab-content bg-light ">
-        <router-outlet></router-outlet>
-    </div>
+            <!-- Navegación estilo pestañas -->
+            <ul class="nav nav-tabs custom-tabs mb-4 d-flex justify-content-around" role="tablist">
+                <li class="nav-item" *ngFor="let link of adminLinks">
+                    <a class="nav-link" [routerLink]="link.route" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }">{{ link.label }}</a>
+                </li>
+            </ul>
 
+            <!-- Contenido de la vista seleccionada -->
+            <div class="tab-content bg-light">
+                <router-outlet></router-outlet>
+            </div>
     </div>
 </div>

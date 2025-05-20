@@ -40,6 +40,7 @@ export class EmpresasComponent implements OnInit {
   }
 
   guardarNueva(): void {
+    console.log('🧪 Nueva empresa a guardar:', this.nuevaEmpresa);
     this.empresaService.create(this.nuevaEmpresa).subscribe({
       next: () => {
         this.nuevaEmpresa = { nombre: '', sector_id: null, web: '' };
