@@ -41,7 +41,7 @@ export class PerfilProfesorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCurrentProfesor();
+    this.loadCurrentUser();
   }
 
   // #region Cambios Pendientes
@@ -76,11 +76,22 @@ export class PerfilProfesorComponent implements OnInit {
 
   // #endregion Cambios Pendientes
 
-  loadCurrentProfesor(): void {
+  // loadCurrentProfesor(): void {
+  //   this.authService.currentUser$.subscribe((data) => {
+  //     if (data) {
+  //       this.user = data.user;
+  //       this.profesor = data;
+  //     }
+  //   });
+  // }
+
+  loadCurrentUser(): void {
     this.authService.currentUser$.subscribe((data) => {
       if (data) {
-        this.user = data.user;
-        this.profesor = data;
+        this.user = data.user || data; // Usa user si existe, o data directamente (admin)
+        if (this.user.role === 'profesor') {
+          this.profesor = data;
+        }
       }
     });
   }

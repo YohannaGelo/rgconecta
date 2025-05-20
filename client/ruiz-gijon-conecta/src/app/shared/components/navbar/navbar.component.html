@@ -65,7 +65,7 @@
 
         <div ngbDropdownMenu>
           <a class="dropdown-item"
-            [routerLink]="(currentUser?.user?.role || currentUser?.role) === 'profesor' ? '/perfil-profesor' : '/perfil'">
+            [routerLink]="(currentUser?.user?.role || currentUser?.role) === 'admin' || (currentUser?.user?.role || currentUser?.role) === 'profesor' ? '/perfil-profesor' : '/perfil'">
             👤 Ver perfil
           </a>
 
@@ -79,7 +79,7 @@
             ✍️ Mis opiniones
           </a>
 
-          <a *ngIf="(currentUser?.user?.role || currentUser?.role) === 'profesor'" class="dropdown-item"
+          <a *ngIf="['admin', 'profesor'].includes(currentUser?.user?.role || currentUser?.role)" class="dropdown-item"
             routerLink="/verificar-alumnos">
             ✅ Verificar alumnos
           </a>

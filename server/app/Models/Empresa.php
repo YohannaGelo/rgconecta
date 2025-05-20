@@ -6,22 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empresa extends Model
 {
-    protected $fillable = ['nombre', 'sector', 'web'];
-
-    public const SECTORES = [
-        'tecnologia',
-        'educacion',
-        'salud',
-        'construccion',
-        'comercio',
-        'hosteleria',
-        'finanzas',
-        'logistica',
-        'marketing',
-        'industria',
-        'diseno',
-        'otros'
-    ];
+    protected $fillable = ['nombre', 'sector_id', 'web'];
 
     public function opiniones()
     {

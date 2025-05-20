@@ -21,9 +21,9 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-light text-dark rounded-pill">ID: {{ opinion.id }}</span>
+                        <span class="badge bg-primary rounded-pill">ID: {{ opinion.id }}</span>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -37,9 +37,9 @@
 
                     <h5 class="card-title">{{ opinion.empresa?.nombre || 'Sin empresa' }}</h5>
                     <p class="text-muted small mb-1">Usuario: {{ opinion.user?.name || 'Desconocido' }}</p>
-                    <p class="mb-1"><strong>Valoración:</strong> {{ opinion.valoracion }}/5</p>
-                    <p class="mb-1"><strong>Contenido:</strong></p>
-                    <p class="small text-muted">{{ opinion.contenido }}</p>
+                    <p class="badge bg-light text-dark mb-2"><strong>Valoración:</strong> {{ opinion.valoracion }}/5</p>
+                    
+                    <p class=" text-muted">{{ opinion.contenido }}</p>
 
                     <div *ngIf="editando?.id === opinion.id" class="mt-3">
                         <label class="form-label small text-muted">Contenido</label>
@@ -69,6 +69,7 @@
                         <th>Empresa</th>
                         <th>Usuario</th>
                         <th>Valoración</th>
+                        <th>Contenido</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
@@ -82,6 +83,14 @@
                             <input *ngIf="editando?.id === opinion.id" type="number"
                                 class="form-control form-control-sm" [(ngModel)]="editando.valoracion" min="1"
                                 max="5" />
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== opinion.id" class="text-truncate" style="max-width: 300px;">
+                                {{ opinion.contenido }}
+                            </div>
+                            <textarea *ngIf="editando?.id === opinion.id" rows="2" class="form-control form-control-sm"
+                                [(ngModel)]="editando.contenido">
+      </textarea>
                         </td>
                         <td class="text-end">
                             <ng-container *ngIf="editando?.id !== opinion.id">
@@ -103,6 +112,7 @@
                         </td>
                     </tr>
                 </tbody>
+
             </table>
         </div>
     </div>

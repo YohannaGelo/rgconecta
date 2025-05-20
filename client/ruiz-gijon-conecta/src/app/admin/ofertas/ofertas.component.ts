@@ -9,7 +9,7 @@ import { OfertaService } from '../../services/oferta.service';
 })
 export class OfertasComponent implements OnInit {
   ofertas: any[] = [];
-  vistaTabla = true;
+  vistaTabla = false;
   editando: any = null;
 
   constructor(private ofertaService: OfertaService) {}

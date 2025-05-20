@@ -23,8 +23,11 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small text-muted">Sector</label>
-                    <input type="text" class="form-control" [(ngModel)]="nuevaEmpresa.sector_id"
-                        placeholder="Ej: Tecnología" />
+                    <select class="form-select" [(ngModel)]="nuevaEmpresa.sector_id">
+                        <option [ngValue]="null" disabled selected>Selecciona un sector</option>
+                        <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                    </select>
+
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small text-muted">Web</label>
@@ -51,9 +54,9 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span class="badge bg-light text-dark rounded-pill">ID: {{ empresa.id }}</span>
+                        <span class="badge bg-primary rounded-pill text-white">ID: {{ empresa.id }}</span>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -72,17 +75,21 @@
                     </div>
 
                     <h4 class="card-title mb-1">{{ empresa.nombre }}</h4>
-                    <p class="text-muted mb-2"><i class="bi bi-tag me-1"></i>{{ empresa.sector || 'Sin sector' }}</p>
-                    <p class="text-muted small mb-0" *ngIf="empresa.web"><i class="bi bi-globe me-1"></i>{{ empresa.web
+                    <p class="text-muted mb-2"><i class="bi bi-tag me-1"></i>{{ empresa.sector?.nombre || 'Sin sector'
+                        }}</p>
+                    <p class="badge text-muted small mb-0 bg-light" *ngIf="empresa.web"><i class="bi bi-globe me-1"></i>{{ empresa.web
                         }}</p>
 
                     <!-- Edición -->
                     <div *ngIf="editando?.id === empresa.id" class="mt-3">
                         <input type="text" class="form-control mb-2" [(ngModel)]="editando.nombre"
                             placeholder="Nombre" />
-                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.sector"
-                            placeholder="Sector" />
-                        <input type="text" class="form-control mb-3" [(ngModel)]="editando.web" placeholder="Web" />
+
+                        <select class="form-select mb-2" [(ngModel)]="editando.sector_id">
+                            <option [ngValue]="null" disabled>Selecciona un sector</option>
+                            <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                        </select>
+
                         <div class="d-grid gap-2">
                             <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
                                 <i class="bi bi-check-lg me-1"></i>Guardar
@@ -95,6 +102,7 @@
         </div>
     </div>
 
+    <!-- Vista de tabla -->
     <!-- Vista de tabla -->
     <div *ngIf="vistaTabla && empresas.length > 0" class="card border-0 shadow-sm p-4">
         <div class="table-responsive">
@@ -111,21 +119,32 @@
                 <tbody>
                     <tr *ngFor="let empresa of empresas">
                         <td class="ps-4 fw-semibold text-muted">{{ empresa.id }}</td>
+
+                        <!-- Nombre -->
                         <td>
                             <div *ngIf="editando?.id !== empresa.id">{{ empresa.nombre }}</div>
                             <input *ngIf="editando?.id === empresa.id" class="form-control form-control-sm"
                                 [(ngModel)]="editando.nombre" />
                         </td>
+
+                        <!-- Sector -->
                         <td>
-                            <div *ngIf="editando?.id !== empresa.id">{{ empresa.sector }}</div>
-                            <input *ngIf="editando?.id === empresa.id" class="form-control form-control-sm"
-                                [(ngModel)]="editando.sector" />
+                            <div *ngIf="editando?.id !== empresa.id">{{ empresa.sector?.nombre || 'Sin sector' }}</div>
+                            <select *ngIf="editando?.id === empresa.id" class="form-select form-select-sm"
+                                [(ngModel)]="editando.sector_id">
+                                <option [ngValue]="null" disabled>Selecciona un sector</option>
+                                <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                            </select>
                         </td>
+
+                        <!-- Web -->
                         <td>
                             <div *ngIf="editando?.id !== empresa.id">{{ empresa.web }}</div>
                             <input *ngIf="editando?.id === empresa.id" class="form-control form-control-sm"
                                 [(ngModel)]="editando.web" />
                         </td>
+
+                        <!-- Acciones -->
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2 flex-wrap">
                                 <ng-container *ngIf="editando?.id !== empresa.id">
@@ -136,6 +155,7 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </ng-container>
+
                                 <ng-container *ngIf="editando?.id === empresa.id">
                                     <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
                                         <i class="bi bi-check-lg"></i>
@@ -151,4 +171,5 @@
             </table>
         </div>
     </div>
+
 </div>

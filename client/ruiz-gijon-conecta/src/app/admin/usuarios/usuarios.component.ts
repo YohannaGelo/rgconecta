@@ -8,7 +8,7 @@ import { UsuarioService } from '../../services/usuario.service';
   styleUrl: './usuarios.component.scss',
 })
 export class UsuariosComponent implements OnInit {
-  vistaTabla = true;
+  vistaTabla = false;
   usuarios: any[] = [];
   editando: any = null;
 

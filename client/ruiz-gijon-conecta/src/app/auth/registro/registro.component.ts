@@ -9,6 +9,13 @@ import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewChild } from '@angular/core';
 import { SectorService } from '../../services/sector.service';
+interface EmpresaData {
+  nombre: string;
+  sector_id: number | null;
+  web: string;
+  descripcion?: string;
+  sector?: { id: number; nombre: string }; // opcional para evitar error TS2339
+}
 
 @Component({
   selector: 'app-registro',
@@ -109,12 +116,13 @@ export class RegistroComponent implements OnInit {
   empresaSeleccionada: any = null;
   puestoExperiencia: string = '';
 
-  nuevaEmpresa = {
+  nuevaEmpresa: EmpresaData = {
     nombre: '',
     sector_id: null,
     web: '',
     descripcion: '',
   };
+
   sectores: any[] = [];
 
   experiencias: any[] = []; // Guardará la lista de experiencias añadidas
@@ -145,10 +153,10 @@ export class RegistroComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarTitulos(); 
-    this.cargarSectores(); 
-    this.cargarEmpresas(); 
-    this.cargarTecnologias(); 
+    this.cargarTitulos();
+    this.cargarSectores();
+    this.cargarEmpresas();
+    this.cargarTecnologias();
 
     // Cargar múltiples opiniones pendientes
     const stored = sessionStorage.getItem('opinionesPendientes');
@@ -411,8 +419,9 @@ export class RegistroComponent implements OnInit {
   }
 
   agregarExperiencia(): void {
-    let empresaData;
+    let empresaData: EmpresaData;
 
+    // Si es una empresa nueva
     if (this.empresaSeleccionada?.nombre === 'Otras') {
       if (
         !this.nuevaEmpresa.nombre ||
@@ -420,14 +429,32 @@ export class RegistroComponent implements OnInit {
         !this.nuevaEmpresa.web
       ) {
         this.notificationService.warning(
-          'Debes introducir el nombre, sector_id y web de la nueva empresa.'
+          'Debes introducir el nombre, sector y web de la nueva empresa.'
         );
         return;
       }
-      empresaData = { ...this.nuevaEmpresa };
+
+      const sectorObj = this.sectores.find(
+        (s) => s.id === this.nuevaEmpresa.sector_id
+      );
+
+      empresaData = {
+        ...this.nuevaEmpresa,
+        sector: sectorObj ?? { id: 0, nombre: 'Desconocido' }, // Fallback
+      };
+
       this.empresasNuevas.push(empresaData);
-    } else if (this.empresaSeleccionada?.nombre) {
-      empresaData = { ...this.empresaSeleccionada };
+    }
+
+    // Si es una empresa seleccionada existente
+    else if (this.empresaSeleccionada?.nombre) {
+      empresaData = {
+        ...this.empresaSeleccionada,
+        sector: this.empresaSeleccionada.sector ??
+          this.sectores.find(
+            (s) => s.id === this.empresaSeleccionada.sector_id
+          ) ?? { id: 0, nombre: 'Desconocido' },
+      };
     } else {
       this.notificationService.warning(
         'Por favor, selecciona o introduce una empresa.'
@@ -435,6 +462,7 @@ export class RegistroComponent implements OnInit {
       return;
     }
 
+    // Verifica que los campos estén completos
     if (
       this.comienzoExperiencia &&
       this.finExperiencia &&
@@ -449,16 +477,13 @@ export class RegistroComponent implements OnInit {
 
       this.experiencias.push(nuevaExp);
 
-      // 👉 Guarda años ANTES de limpiar campos
       this.opinion.anios_en_empresa = this.calcularAnios(
         this.comienzoExperiencia,
         this.finExperiencia
       );
-
-      // Guarda para la futura opinión
       this.ultimaEmpresaAgregada = empresaData;
 
-      // Limpia campos después de guardar los datos necesarios
+      // Limpiar campos
       this.empresaSeleccionada = null;
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
@@ -470,7 +495,6 @@ export class RegistroComponent implements OnInit {
         descripcion: '',
       };
 
-      // 🔔 Lanza modal para dejar opinión
       this.mostrarModalOpinionSobreEmpresa(empresaData);
     } else {
       this.notificationService.warning(
@@ -575,15 +599,9 @@ export class RegistroComponent implements OnInit {
       tecnologias: this.tecnologiasSeleccionadas,
       experiencias: this.experiencias.map((exp) => ({
         empresa: {
-          nombre: exp.empresa.nombre || exp.empresa, // si es nueva, será string
-          // sector_id: exp.empresa.sector_id || '', // rellena vacío si no viene
-          sector_id: exp.empresa.sector_id
-            ? exp.empresa.sector_id
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-            : '',
-          web: exp.empresa.web || '', // igual aquí
+          nombre: exp.empresa.nombre || exp.empresa,
+          sector_id: exp.empresa.sector_id || null, // ID numérico
+          web: exp.empresa.web || '',
         },
         puesto: exp.puesto,
         fecha_inicio: `${exp.fecha_inicio}`,
@@ -738,7 +756,10 @@ export class RegistroComponent implements OnInit {
       } else {
         payload.empresa = {
           nombre: opinion.empresa?.nombre,
-          sector_id: opinion.empresa?.sector_id || 'otros',
+          sector_id:
+            typeof opinion.empresa?.sector_id === 'number'
+              ? opinion.empresa.sector_id
+              : this.sectores.find((s) => s.clave === 'otros')?.id || null,
           web: opinion.empresa?.web || '',
           descripcion: opinion.empresa?.descripcion || null,
         };
@@ -755,7 +776,7 @@ export class RegistroComponent implements OnInit {
             );
           },
           error: (err) => {
-            console.error('❌ Error al enviar opinión pendiente:', err);
+            console.error('❌ Error al enviar opinión pendiente:', err.error);
             this.notificationService.error(
               `No se pudo enviar la opinión sobre ${opinion.empresa.nombre}`
             );

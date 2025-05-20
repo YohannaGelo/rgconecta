@@ -10,7 +10,7 @@ import { OpinionService } from '../../services/opinion.service';
 export class OpinionesComponent implements OnInit {
   opiniones: any[] = [];
   editando: any = null;
-  vistaTabla = true;
+  vistaTabla = false;
 
   constructor(private opinionService: OpinionService) {}
 

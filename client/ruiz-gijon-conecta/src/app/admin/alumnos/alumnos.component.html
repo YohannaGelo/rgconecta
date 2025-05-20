@@ -19,9 +19,9 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span class="badge bg-light text-dark rounded-pill">ID: {{ alumno.id }}</span>
+                        <span class="badge bg-primary rounded-pill">ID: {{ alumno.id }}</span>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -46,7 +46,7 @@
                         </p>
                         <p class="mb-1"><strong>Promoción:</strong> {{ alumno.promocion }}</p>
                         <p class="mb-1"><strong>Situación:</strong> {{ alumno.situacion_laboral }}</p>
-                        <span class="badge" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
+                        <span class="badge mt-auto" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
                             {{ alumno.is_verified ? 'Verificado' : 'No verificado' }}
                         </span>
                     </div>

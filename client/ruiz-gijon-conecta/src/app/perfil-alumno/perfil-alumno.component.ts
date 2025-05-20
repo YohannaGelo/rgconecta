@@ -8,6 +8,21 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { SectorService } from '../services/sector.service';
 
+interface EmpresaForm {
+  nombre: string;
+  sector_id: number | null;
+  web: string;
+  descripcion: string;
+}
+
+interface EmpresaExperienciaVista {
+  id?: number;
+  nombre: string;
+  sector_id: number;
+  web: string;
+  descripcion?: string;
+  sector?: { id: number; nombre: string } | null;
+}
 
 @Component({
   selector: 'app-perfil-alumno',
@@ -96,7 +111,7 @@ export class PerfilAlumnoComponent implements OnInit {
   empresaSeleccionada: any = null;
   // puestoExperiencia: string = '';
   nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
-  
+
   sectores: any[] = [];
 
   empresasNuevas: any[] = [];
@@ -133,7 +148,7 @@ export class PerfilAlumnoComponent implements OnInit {
     this.loadCurrentAlumno();
     this.cargarTitulos();
     this.cargarTecnologias();
-    this.cargarSectores(); 
+    this.cargarSectores();
     this.cargarEmpresas();
   }
 
@@ -147,9 +162,7 @@ export class PerfilAlumnoComponent implements OnInit {
   // #region Cambios Pendientes
   // Método para confirmar si hay cambios pendientes
   hayCambiosPendientes(): boolean | Promise<boolean> {
-    console.log(
-      this.cambiosSinGuardar
-    );
+    console.log(this.cambiosSinGuardar);
 
     if (!this.cambiosSinGuardar) {
       return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
@@ -379,7 +392,7 @@ export class PerfilAlumnoComponent implements OnInit {
           this.empresasDisponibles = [
             ...response.data.map((e: any) => ({
               nombre: e.nombre,
-              sector: e.sector || 'otros', // si falta sector, pone 'otros'
+              sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
               web: e.web || '', // si falta web, pone vacío
             })),
             { nombre: 'Otras' }, // opción para crear nueva empresa
@@ -539,12 +552,24 @@ export class PerfilAlumnoComponent implements OnInit {
 
   onEmpresaChange(): void {
     if (this.empresaSeleccionada?.nombre !== 'Otras') {
-      this.nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
+      this.nuevaEmpresa = {
+        nombre: '',
+        sector_id: null,
+        web: '',
+        descripcion: '',
+      };
     }
   }
 
+  getNombreSector(id: number | string | null): string {
+    if (!id) return 'Sin sector';
+
+    const sector = this.sectores.find((s) => s.id === +id); // ⚠️ usa +id
+    return sector ? sector.nombre : 'Desconocido';
+  }
+
   agregarExperiencia(): void {
-    let empresaData;
+    let empresaData: EmpresaExperienciaVista | null = null;
 
     if (this.empresaSeleccionada?.nombre === 'Otras') {
       if (
@@ -557,17 +582,29 @@ export class PerfilAlumnoComponent implements OnInit {
         );
         return;
       }
+
+      const sectorCompleto = this.sectores.find(
+        (s) => s.id === this.nuevaEmpresa.sector_id
+      );
+
       empresaData = {
         nombre: this.nuevaEmpresa.nombre,
-        sector: this.nuevaEmpresa.sector_id,
+        sector_id: this.nuevaEmpresa.sector_id,
         web: this.nuevaEmpresa.web,
+        descripcion: this.nuevaEmpresa.descripcion,
+        sector: sectorCompleto ?? null, // 👈 necesario para vista previa
       };
+      console.log('Experiencias:', this.experiencias);
+
       this.empresasNuevas.push({ ...this.nuevaEmpresa });
-    } else if (this.empresaSeleccionada && this.empresaSeleccionada.nombre) {
+    } else if (this.empresaSeleccionada?.nombre) {
       empresaData = {
+        id: this.empresaSeleccionada.id,
         nombre: this.empresaSeleccionada.nombre,
-        sector: this.empresaSeleccionada.sector,
         web: this.empresaSeleccionada.web,
+        descripcion: this.empresaSeleccionada.descripcion,
+        sector_id: this.empresaSeleccionada.sector_id,
+        sector: this.empresaSeleccionada.sector || null,
       };
     } else {
       this.notificationService.warning(
@@ -581,24 +618,28 @@ export class PerfilAlumnoComponent implements OnInit {
       this.finExperiencia &&
       this.puestoExperiencia
     ) {
-      this.experiencias.push({
-        empresa: empresaData,
-        puesto: this.puestoExperiencia,
-        fecha_inicio: this.comienzoExperiencia,
-        fecha_fin: this.finExperiencia,
-      });
-
       const comienzo = this.comienzoExperiencia;
       const fin = this.finExperiencia;
 
-      // Limpiar campos
+      this.experiencias.push({
+        empresa: empresaData,
+        puesto: this.puestoExperiencia,
+        fecha_inicio: comienzo,
+        fecha_fin: fin,
+      });
+
+      // Limpieza
       this.empresaSeleccionada = null;
       this.comienzoExperiencia = '';
       this.finExperiencia = '';
       this.puestoExperiencia = '';
-      this.nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
+      this.nuevaEmpresa = {
+        nombre: '',
+        sector_id: null,
+        web: '',
+        descripcion: '',
+      };
 
-      // this.mostrarModalOpinionSobreEmpresa(empresaData);
       this.mostrarModalOpinionSobreEmpresa(empresaData, comienzo, fin);
     } else {
       this.notificationService.warning(

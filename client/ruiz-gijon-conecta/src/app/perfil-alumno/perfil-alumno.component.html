@@ -152,17 +152,14 @@
                     class="list-group-item d-flex justify-content-between align-items-center">
 
                     {{ exp.empresa.nombre }}
-                    <ng-container *ngIf="exp.empresa.sector; else sinSector">
-                        [{{ exp.empresa.sector.nombre }}]
-                    </ng-container>
-                    <ng-template #sinSector>[Sin sector]</ng-template>
-
+                    [{{ getNombreSector(exp.empresa.sector_id) }}]
                     - {{ exp.puesto }} ({{ exp.fecha_inicio }} - {{ exp.fecha_fin }})
 
                     <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('experiencia', i)">
                         <i class="bi bi-trash3"></i>
                     </button>
                 </li>
+
 
             </ul>
             <!-- Formulario añadir experiencia -->
