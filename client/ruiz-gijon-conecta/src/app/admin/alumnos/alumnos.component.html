@@ -44,7 +44,7 @@
                         <p class="text-muted mb-1">
                             <i class="bi bi-envelope me-1"></i>{{ alumno.user?.email }}
                         </p>
-                        <p class="mb-1"><strong>Promoción:</strong> {{ alumno.promocion }}</p>
+                        <p class="mb-1 badge bg-primary bg-opacity-10 text-primary"><i class="bi bi-mortarboard me-2"></i> {{ alumno.promocion }}</p>
                         <p class="mb-1"><strong>Situación:</strong> {{ alumno.situacion_laboral }}</p>
                         <span class="badge mt-auto" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
                             {{ alumno.is_verified ? 'Verificado' : 'No verificado' }}
@@ -96,7 +96,7 @@
                         <td>{{ alumno.user?.name }}</td>
                         <td>{{ alumno.user?.email }}</td>
                         <td>
-                            <div *ngIf="editando?.id !== alumno.id">{{ alumno.promocion }}</div>
+                            <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">{{ alumno.promocion }}</div>
                             <input *ngIf="editando?.id === alumno.id" class="form-control form-control-sm"
                                 [(ngModel)]="editando.promocion" />
                         </td>

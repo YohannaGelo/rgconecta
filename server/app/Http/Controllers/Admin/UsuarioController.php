@@ -28,14 +28,22 @@ class UsuarioController extends Controller
             'role' => 'sometimes|in:admin,profesor,alumno',
         ]);
 
-        $user->update($validated);
+        if (empty($validated)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se enviaron datos para actualizar.',
+            ], 400);
+        }
+
+        $resultado = $user->update($validated);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Usuario actualizado correctamente.',
-            'data' => $user
+            'success' => $resultado,
+            'message' => $resultado ? 'Usuario actualizado correctamente.' : 'Falló la actualización.',
+            'data' => $user->fresh() // Forzamos recarga desde DB
         ]);
     }
+
 
     public function destroyFoto(User $user)
     {
@@ -64,7 +72,11 @@ class UsuarioController extends Controller
     // DELETE /api/admin/usuarios/{user}
     public function destroy(User $user)
     {
-        $user->delete();
+        // Si tiene relaciones con profesor o alumno
+        // $user->alumno()?->delete();
+        // $user->profesor()?->delete();
+
+        $user->forceDelete(); // Si usas softDeletes, esto lo borra de verdad
 
         return response()->json([
             'success' => true,

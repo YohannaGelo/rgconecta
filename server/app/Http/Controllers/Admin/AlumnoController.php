@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Alumno;
 
+use Cloudinary\Cloudinary;
+
 class AlumnoController extends Controller
 {
     // GET /api/admin/alumnos
@@ -37,13 +39,29 @@ class AlumnoController extends Controller
     }
 
     // DELETE /api/admin/alumnos/{alumno}
-    public function destroy(Alumno $alumno)
+        public function destroy(Alumno $alumno)
     {
+        $user = $alumno->user;
+
+        // Si tiene public_id, eliminamos la foto de Cloudinary
+        if ($user->foto_perfil_public_id) {
+            $cloudinary = new Cloudinary(config('cloudinary'));
+            try {
+                $cloudinary->uploadApi()->destroy($user->foto_perfil_public_id);
+            } catch (\Exception $e) {
+                \Log::error('Error al eliminar foto de Cloudinary: ' . $e->getMessage());
+            }
+        }
+
+        $alumno->tecnologias()->detach();
+        $alumno->experiencias()->delete();
+        $user->delete();
         $alumno->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Alumno eliminado correctamente.'
-        ]);
+            'message' => 'Alumno, usuario y foto eliminados correctamente.'
+        ], 204);
     }
+
 }
