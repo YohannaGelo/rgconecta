@@ -8,7 +8,7 @@ import { ProfesorService } from '../../services/profesor.service';
   styleUrl: './profesores.component.scss'
 })
 export class ProfesoresComponent implements OnInit {
-  vistaTabla = true;
+  vistaTabla = false;
   profesores: any[] = [];
   editando: any = null;
 

@@ -93,6 +93,7 @@ const routes: Routes = [
     component: PanelComponent,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
       { path: 'titulos', component: AdminTitulacionesComponent },
       { path: 'tecnologias', component: AdminTecnologiasComponent },
       { path: 'empresas', component: AdminEmpresasComponent },

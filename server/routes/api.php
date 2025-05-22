@@ -110,19 +110,41 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Rutas ADMIN
+// Rutas ADMIN
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('admin')
     ->group(function () {
-        Route::apiResource('usuarios', AdminUsuarioController::class)->except(['show']);
-        Route::delete('usuarios/{user}/foto', [AdminUsuarioController::class, 'destroyFoto']);
-        Route::apiResource('empresas', AdminEmpresaController::class);
-        Route::apiResource('sectores', AdminSectorController::class)->except(['show']);
-        Route::apiResource('ofertas', AdminOfertaController::class);
-        Route::apiResource('titulos', AdminTituloController::class);
-        Route::apiResource('tecnologias', AdminTecnologiaController::class);
-        Route::apiResource('opiniones', AdminOpinionController::class);
-        Route::apiResource('experiencias', AdminExperienciaController::class);
-        Route::apiResource('profesores', AdminProfesorController::class);
-        Route::apiResource('alumnos', AdminAlumnoController::class);
+        Route::apiResource('usuarios', AdminUsuarioController::class)
+            ->parameters(['usuarios' => 'user'])
+            ->except(['show']);
 
+        Route::delete('usuarios/{user}/foto', [AdminUsuarioController::class, 'destroyFoto']);
+
+        Route::apiResource('empresas', AdminEmpresaController::class)
+            ->parameters(['empresas' => 'empresa']);
+
+        Route::apiResource('sectores', AdminSectorController::class)
+            ->parameters(['sectores' => 'sector'])
+            ->except(['show']);
+
+        Route::apiResource('ofertas', AdminOfertaController::class)
+            ->parameters(['ofertas' => 'oferta']);
+
+        Route::apiResource('titulos', AdminTituloController::class)
+            ->parameters(['titulos' => 'titulo']);
+
+        Route::apiResource('tecnologias', AdminTecnologiaController::class)
+            ->parameters(['tecnologias' => 'tecnologia']);
+
+        Route::apiResource('opiniones', AdminOpinionController::class)
+            ->parameters(['opiniones' => 'opinion']);
+
+        Route::apiResource('experiencias', AdminExperienciaController::class)
+            ->parameters(['experiencias' => 'experiencia']);
+
+        Route::apiResource('profesores', AdminProfesorController::class)
+            ->parameters(['profesores' => 'profesor']);
+
+        Route::apiResource('alumnos', AdminAlumnoController::class)
+            ->parameters(['alumnos' => 'alumno']);
     });

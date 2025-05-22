@@ -15,10 +15,14 @@ export class UsuarioService {
   }
 
   update(id: number, data: any) {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, data, this.authService.authHeader());
+    return this.http.put<any>(
+      `${this.baseUrl}/${id}`,
+      data,
+      this.authService.authHeader()
+    );
   }
 
-    deleteFoto(id: number) {
+  deleteFoto(id: number) {
     return this.http.delete<any>(
       `${this.baseUrl}/${id}/foto`,
       this.authService.authHeader()
@@ -26,6 +30,9 @@ export class UsuarioService {
   }
 
   delete(id: number) {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`, this.authService.authHeader());
+    return this.http.delete<any>(
+      `${this.baseUrl}/${id}`,
+      this.authService.authHeader()
+    );
   }
 }
