@@ -9,45 +9,22 @@
         </button>
     </div>
 
-    <!-- Formulario nueva experiencia -->
-    <!-- <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-            <h5 class="mb-3 text-primary">
-                <i class="bi bi-plus-circle me-2"></i>Nueva Experiencia
-            </h5>
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label small text-muted">Alumno ID</label>
-                    <input type="number" class="form-control" [(ngModel)]="nueva.alumno_id" />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small text-muted">Empresa ID</label>
-                    <input type="number" class="form-control" [(ngModel)]="nueva.empresa_id" />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small text-muted">Puesto</label>
-                    <input type="text" class="form-control" [(ngModel)]="nueva.puesto" />
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small text-muted">Inicio</label>
-                    <input type="number" class="form-control" [(ngModel)]="nueva.fecha_inicio" />
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small text-muted">Fin</label>
-                    <input type="number" class="form-control" [(ngModel)]="nueva.fecha_fin" />
-                </div>
-                <div class="col-md-1 d-grid">
-                    <button class="btn btn-primary" (click)="guardarNueva()">
-                        <i class="bi bi-save me-1"></i>Crear
-                    </button>
-                </div>
-                <div class="col-12">
-                    <label class="form-label small text-muted">Descripción</label>
-                    <textarea class="form-control" rows="2" [(ngModel)]="nueva.descripcion"></textarea>
-                </div>
+    <!-- Filtros -->
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombreAlumno"
+                    placeholder="Buscar por alumno..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombreEmpresa"
+                    placeholder="Buscar por empresa..." />
             </div>
         </div>
-    </div> -->
+    </section>
+
+
 
     <!-- Estado vacío -->
     <div *ngIf="experiencias.length === 0" class="text-center text-muted py-5">
@@ -57,7 +34,7 @@
 
     <!-- Vista de tarjetas -->
     <div *ngIf="!vistaTabla && experiencias.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
-        <div class="col" *ngFor="let exp of experiencias">
+        <div class="col" *ngFor="let exp of experienciasFiltradas()">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -80,7 +57,8 @@
                         ' + exp.empresa_id }}</p>
                     <p class="mb-1 text-muted"><i class="bi bi-person me-1"></i>{{ exp.alumno?.user?.name || 'Alumno ID
                         ' + exp.alumno_id }}</p>
-                    <p class="mb-1  badge bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar me-2"></i>{{ exp.fecha_inicio }} - {{ exp.fecha_fin ||
+                    <p class="mb-1  badge bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar me-2"></i>{{
+                        exp.fecha_inicio }} - {{ exp.fecha_fin ||
                         'Actual' }}</p>
 
                     <p class="mt-2 text-muted small" *ngIf="exp.descripcion">{{ exp.descripcion }}</p>
@@ -89,7 +67,7 @@
                         <input type="text" class="form-control mb-2" [(ngModel)]="editando.puesto" />
                         <input type="number" class="form-control mb-2" [(ngModel)]="editando.fecha_inicio" />
                         <input type="number" class="form-control mb-2" [(ngModel)]="editando.fecha_fin" />
-                        <textarea rows="2" class="form-control mb-2" [(ngModel)]="editando.descripcion"></textarea>
+
 
                         <div class="d-grid gap-2">
                             <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
@@ -119,7 +97,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let exp of experiencias">
+                    <tr *ngFor="let exp of experienciasFiltradas()">
                         <td>{{ exp.id }}</td>
                         <td>{{ exp.alumno?.user?.name || 'ID ' + exp.alumno_id }}</td>
                         <td>{{ exp.empresa?.nombre || 'ID ' + exp.empresa_id }}</td>

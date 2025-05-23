@@ -7,7 +7,8 @@
 
 // Modificar el tamaño de la letra de los placeholder
 ::placeholder {
-    font-size: 0.7rem;
+    // font-size: 0.7rem;
+    color: rgba(146, 146, 146, 0.86) !important;
 }
 
 // Cambiar el color de las letras del select
@@ -15,6 +16,10 @@
     color: cus.$gris;
 }
 
+.form-control {
+    border: 1px solid rgba(146, 146, 146, 0.299);
+
+}
 
 .img-container {
   width: 100%;

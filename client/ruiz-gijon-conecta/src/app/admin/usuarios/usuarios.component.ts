@@ -17,6 +17,9 @@ export class UsuariosComponent implements OnInit {
 
   roles = ['admin', 'profesor', 'alumno'];
 
+  filtroNombre: string = '';
+  filtroRol: string = '';
+
   private panel: PanelComponent;
 
   constructor(
@@ -30,6 +33,24 @@ export class UsuariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarUsuarios();
+  }
+
+  usuariosFiltrados(): any[] {
+    const normalize = (str: string) =>
+      str
+        ?.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') || '';
+
+    return this.usuarios.filter((usuario) => {
+      const coincideNombre =
+        !this.filtroNombre ||
+        normalize(usuario.name).includes(normalize(this.filtroNombre));
+
+      const coincideRol = !this.filtroRol || usuario.role === this.filtroRol;
+
+      return coincideNombre && coincideRol;
+    });
   }
 
   toggleVista(): void {

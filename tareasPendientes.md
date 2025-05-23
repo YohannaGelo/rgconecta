@@ -23,6 +23,9 @@
 
 - Filtrado y paginación en verificar-alumnos
 - Botón volver en detalles alumno y detalles oferta
+- Filtrado en admin
+- Poner en los perfiles que para cambiar el email se pongan en contacto con el admin
+- Ajustar tamaño de imagenes al subirla
 
 ---
 
