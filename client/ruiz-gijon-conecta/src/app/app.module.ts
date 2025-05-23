@@ -39,6 +39,8 @@ import { PanelComponent } from './admin/panel/panel.component';
 import { AlumnosComponent as AdminAlumnoComponent} from './admin/alumnos/alumnos.component';
 import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
 import { AutofocusDirective } from './shared/autofocus.directive';
+import { FloatingContactPanelComponent } from './shared/components/floating-contact-panel/floating-contact-panel.component';
+import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
 
 
 @NgModule({
@@ -72,7 +74,9 @@ import { AutofocusDirective } from './shared/autofocus.directive';
     PanelComponent,
     AdminAlumnoComponent,
     AdminProfesoresComponent,
-    AutofocusDirective
+    AutofocusDirective,
+    FloatingContactPanelComponent,
+    ProfesoresVistaComponent
   ],
   imports: [
     BrowserModule,

@@ -22,13 +22,14 @@ import { PanelComponent } from './admin/panel/panel.component';
 
 import { TitulacionesComponent as AdminTitulacionesComponent } from './admin/titulaciones/titulaciones.component';
 import { TecnologiasComponent as AdminTecnologiasComponent } from './admin/tecnologias/tecnologias.component';
-import { UsuariosComponent as AdminUsuariosComponent} from './admin/usuarios/usuarios.component';
-import { ExperienciasComponent as AdminExperienciasComponent} from './admin/experiencias/experiencias.component';
+import { UsuariosComponent as AdminUsuariosComponent } from './admin/usuarios/usuarios.component';
+import { ExperienciasComponent as AdminExperienciasComponent } from './admin/experiencias/experiencias.component';
 import { EmpresasComponent as AdminEmpresasComponent } from './admin/empresas/empresas.component';
 import { OfertasComponent as AdminOfertasComponent } from './admin/ofertas/ofertas.component';
 import { OpinionesComponent as AdminOpinionesComponent } from './admin/opiniones/opiniones.component';
 import { AlumnosComponent as AdminAlumnosComponent } from './admin/alumnos/alumnos.component';
 import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
+import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -89,6 +90,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'profesores',
+    component: ProfesoresVistaComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'admin',
     component: PanelComponent,
     canActivate: [AuthGuard],
@@ -103,7 +109,7 @@ const routes: Routes = [
       { path: 'alumnos', component: AdminAlumnosComponent },
       { path: 'profesores', component: AdminProfesoresComponent },
       { path: 'usuarios', component: AdminUsuariosComponent },
-    ]
+    ],
   },
 ];
 

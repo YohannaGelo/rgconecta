@@ -2,7 +2,7 @@
 <div class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1">
 
     <!-- Info principal -->
-    <section class="col bg-white rounded-1 shadow p-4 pb-1">
+    <section class="col bg-white rounded-2 shadow p-4 pb-1">
 
         <!-- Cabecera -->
         <article>
@@ -47,15 +47,15 @@
         <div class="bg-light py-1 pb-2 px-4 mt-3">
             <p class="text-secondary my-2 form-label">REQUISITOS</p>
             <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.jornada">
-                <i class="bi bi-file-earmark-text rounded-1 pe-2 ms-3"></i>
+                <i class="bi bi-file-earmark-text rounded-2 pe-2 ms-3"></i>
                 {{ oferta.titulacion?.nombre || 'No especificada' }}
             </p>
             <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.anios_experiencia">
-                <i class="bi bi-clock-history rounded-1 pe-2 ms-3"></i>
+                <i class="bi bi-clock-history rounded-2 pe-2 ms-3"></i>
                 {{ oferta.anios_experiencia }} años de experiencia
             </p>
             <p class="bg-white text-secondary my-2 py-1 ps-3" *ngIf="oferta?.tecnologias?.length">
-                <i class="bi bi-code-slash rounded-1 pe-2 ms-3"></i>
+                <i class="bi bi-code-slash rounded-2 pe-2 ms-3"></i>
                 <span *ngFor="let tec of oferta.tecnologias; let i = index">
                     {{ tec.nombre }}<span *ngIf="tec.pivot?.nivel"> ({{ tec.pivot.nivel }})</span><span
                         *ngIf="i < oferta.tecnologias.length - 1">, </span>
@@ -88,7 +88,7 @@
 
     <!-- Opiniones -->
     <div class="col-lg-4">
-        <div class="row bg-white rounded-1 shadow p-4">
+        <div class="row bg-white rounded-2 shadow p-4">
             <h4 class="pb-3">Opiniones de alumnos</h4>
 
             <ng-container *ngIf="opinionesPaginadas.length > 0; else sinOpiniones">
@@ -116,12 +116,12 @@
 
                 <!-- Paginación -->
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                    <button class="btn btn-primary rounded-1 text-white btn-sm" [disabled]="paginaOpiniones === 1"
+                    <button class="btn btn-primary rounded-2 text-white btn-sm" [disabled]="paginaOpiniones === 1"
                         (click)="paginaAnterior()">
                         <i class="bi-arrow-left"></i>
                     </button>
                     <span class="text-muted small">Página {{ paginaOpiniones }} de {{ totalPaginas }}</span>
-                    <button class="btn btn-primary rounded-1 text-white  btn-sm" [disabled]="paginaOpiniones === totalPaginas"
+                    <button class="btn btn-primary rounded-2 text-white  btn-sm" [disabled]="paginaOpiniones === totalPaginas"
                         (click)="paginaSiguiente()">
                         <i class="bi bi-arrow-right"></i>
                     </button>

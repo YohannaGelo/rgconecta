@@ -1,4 +1,4 @@
-<div class="container py-4">
+<div class="container-xl pb-3">
 
     <!-- Card 1: Imagen + Datos personales -->
     <div class="card mb-4 shadow-sm">
@@ -130,7 +130,7 @@
                 </div>
 
                 <div class="col d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary rounded-1 text-white px-3 py-2 shadow-sm"
+                    <button type="button" class="btn btn-primary rounded-2 text-white px-3 py-2 shadow-sm"
                         (click)="agregarTitulo()">
                         <i class="bi bi-plus"></i> Añadir título
                     </button>
@@ -220,7 +220,7 @@
                 </div>
 
                 <div class="col-4 d-flex justify-content-end align-items-end">
-                    <button type="button" class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2 shadow-sm"
+                    <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
                         (click)="agregarExperiencia()">
                         <i class="bi bi-plus"></i> Añadir Experiencia
                     </button>
@@ -272,7 +272,7 @@
 
                 <!-- Botón solo si NO es "Otros" -->
                 <div class="col d-flex justify-content-end" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
-                    <button type="button" class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2 shadow-sm"
+                    <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
                         (click)="agregarTecnologia()">
                         <i class="bi bi-plus"></i> Añadir Habilidad
                     </button>
