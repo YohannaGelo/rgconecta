@@ -288,3 +288,85 @@ git push server develop
 ```
 
 Luego podemos hacer el push normalmente a gitHub desde Visual para tener el commit en ambos lugares.
+
+## RESUMEN DE MI APP
+
+### ✅ **Resumen general de tu aplicación**
+
+**Proyecto:** Plataforma educativa / profesional con gestión de usuarios, perfiles, opiniones, experiencias y administración de contenido.
+
+**Roles:**
+
+* `admin` (gestiona todo desde panel)
+* `profesor` (tiene perfil y publica ofertas)
+* `alumno` (registra su perfil, experiencias, deja opiniones)
+
+---
+
+### 🛠️ **Tecnologías y herramientas utilizadas**
+
+#### **Frontend (Angular):**
+
+* Angular (con TypeScript)
+* Bootstrap (UI y diseño responsivo)
+* `ngx-toastr` para notificaciones
+* `ng-bootstrap` para modales (`NgbModal`)
+* Image cropper (para subir foto de perfil)
+* Observables (`currentUser$`) para manejar sesión
+
+#### **Backend (Laravel):**
+
+* Laravel 10+
+* Sanctum para autenticación de API
+* Eloquent ORM y validaciones
+* Cloudinary (para subir y eliminar imágenes)
+* API RESTful separada para roles (`/api`, `/api/admin`)
+* Relación User ↔ Alumno / Profesor
+* Middleware para autenticación y control de acceso (`AdminMiddleware`)
+* Controladores específicos para administración (`Admin\`...)
+
+#### **Base de datos:**
+
+* MySQL o equivalente
+* Relaciones:
+
+  * `users` ↔ `profesores` y `alumnos` (1:1)
+  * `users` ↔ `opiniones`
+  * `alumnos` ↔ `experiencias`, `titulos`, `tecnologias`
+
+---
+
+### 🧩 Funcionalidades implementadas
+
+* CRUD completo para:
+
+  * Usuarios
+  * Profesores y alumnos
+  * Empresas y sectores
+  * Experiencias laborales
+  * Opiniones sobre empresas
+* Registro con experiencia y opinión asociada
+* Subida y eliminación de imagen de perfil
+* Modales personalizados de confirmación
+* Notificaciones visuales con Toastr
+
+---
+
+### ❗ Posibles puntos de partida para implementar **sistema de correos electrónicos**:
+
+1. **Motivos para enviar correos:**
+
+   * Confirmación de registro
+   * Aviso de validación de perfil
+   * Notificación de cambios importantes (contraseña, rol, etc.)
+   * Nuevas ofertas publicadas (para alumnos/profesores)
+
+2. **Tecnologías sugeridas:**
+
+   * Laravel Mail (con Blade templates)
+   * Configuración de SMTP (.env)
+   * Uso de colas para correos pesados
+   * Personalización por tipo de evento
+
+---
+

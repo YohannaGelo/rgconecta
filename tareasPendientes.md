@@ -5,7 +5,7 @@
 - Página perfil de profe y perfil de admin - REVISAR
 - Ver profes?... pestaña permanente para contacto y ver desde ahí?
 - Poner Otros en primera posición para crear nuevas cosas, que se pueda escribir en los select
-- Comprobar registros de e-mail repetidos??
+- Comprobar registros de e-mail repetidos?? -> si esta repetido que haya notficación
 - Volver a revisar el registro-alumno y las comprobaciones del formulario (no insertar fecha, insertar tecnologia y nivel)
 - Revisar página de no-verificado y ver el mail
 - Implemetar gestión de correos... avisos al registrar, verificar...

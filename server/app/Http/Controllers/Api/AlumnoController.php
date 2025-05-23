@@ -16,6 +16,12 @@ use Illuminate\Validation\Rule;
 
 use Cloudinary\Cloudinary;
 
+use App\Mail\AvisoNuevoAlumno;
+use App\Mail\BienvenidaAlumnoPendiente;
+use App\Mail\AlumnoVerificado;
+use App\Mail\AlumnoRechazado;
+use Illuminate\Support\Facades\Mail;
+
 class AlumnoController extends Controller
 {
     /**
@@ -198,6 +204,14 @@ class AlumnoController extends Controller
             }
 
             DB::commit();
+
+            // 1. Enviar correo al alumno
+            Mail::to($user->email)->send(new BienvenidaAlumnoPendiente($alumno));
+
+            // 2. Enviar aviso a profesores y admin
+            $destinatarios = User::whereIn('role', ['profesor', 'admin'])->pluck('email')->toArray();
+            Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno));
+
 
             return response()->json($alumno->load(['user', 'titulos', 'tecnologias', 'experiencias']), 201);
         } catch (\Exception $e) {
@@ -424,6 +438,9 @@ class AlumnoController extends Controller
         if (!$alumno->is_verified) {
             $alumno->is_verified = true;
             $alumno->save();
+
+            // Enviar correo de confirmación
+            Mail::to($alumno->user->email)->send(new AlumnoVerificado($alumno));
         }
 
         // Responder con éxito y los datos del alumno
@@ -451,6 +468,10 @@ class AlumnoController extends Controller
         }
 
         $alumno = Alumno::findOrFail($id);
+
+        // Enviar aviso antes de eliminar
+        Mail::to($alumno->user->email)->send(new AlumnoRechazado($alumno));
+
         $alumno->user()->delete(); // elimina también el usuario asociado
         $alumno->delete();         // y elimina el alumno
 
