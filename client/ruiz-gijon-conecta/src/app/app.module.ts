@@ -38,6 +38,7 @@ import { OfertasComponent as AdminOfertasComponent } from './admin/ofertas/ofert
 import { PanelComponent } from './admin/panel/panel.component';
 import { AlumnosComponent as AdminAlumnoComponent} from './admin/alumnos/alumnos.component';
 import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
+import { AutofocusDirective } from './shared/autofocus.directive';
 
 
 @NgModule({
@@ -70,7 +71,8 @@ import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profeso
     AdminOfertasComponent,
     PanelComponent,
     AdminAlumnoComponent,
-    AdminProfesoresComponent
+    AdminProfesoresComponent,
+    AutofocusDirective
   ],
   imports: [
     BrowserModule,

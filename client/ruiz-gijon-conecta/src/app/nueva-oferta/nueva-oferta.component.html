@@ -248,15 +248,34 @@
 
 <!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
 <ng-template #modalConfirmarSalida let-modal>
-    <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">Cambios sin guardar</h5>
-        <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <p>Has realizado cambios que no se han guardado. ¿Seguro que quieres salir?</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-warning" (click)="modal.dismiss()">Cancelar</button>
-        <button class="btn btn-danger" (click)="modal.close()">Salir sin guardar</button>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                Cambios sin guardar
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-box-arrow-left text-warning fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                Has realizado cambios que no se han guardado.<br>
+                ¿Seguro que quieres salir?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-warning px-4" (click)="modal.close()">
+                Salir sin guardar
+            </button>
+        </div>
+
     </div>
 </ng-template>
