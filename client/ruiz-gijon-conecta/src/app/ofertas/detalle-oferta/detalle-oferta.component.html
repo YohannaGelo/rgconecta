@@ -30,7 +30,8 @@
                     {{ oferta.empresa.web }}
                 </a>
             </p>
-            <p class="text-secondary small mt-1">Sector: {{ oferta.empresa.sector }}</p>
+            <p class="badge bg-primary bg-opacity-10 rounded-pill text-secondary mt-2 px-2"><i
+                    class="bi bi-box-fill me-2"></i>{{ oferta.empresa.sector?.nombre }}</p>
         </div>
 
         <!-- Descripción de la oferta -->
@@ -121,8 +122,8 @@
                         <i class="bi-arrow-left"></i>
                     </button>
                     <span class="text-muted small">Página {{ paginaOpiniones }} de {{ totalPaginas }}</span>
-                    <button class="btn btn-primary rounded-2 text-white  btn-sm" [disabled]="paginaOpiniones === totalPaginas"
-                        (click)="paginaSiguiente()">
+                    <button class="btn btn-primary rounded-2 text-white  btn-sm"
+                        [disabled]="paginaOpiniones === totalPaginas" (click)="paginaSiguiente()">
                         <i class="bi bi-arrow-right"></i>
                     </button>
                 </div>

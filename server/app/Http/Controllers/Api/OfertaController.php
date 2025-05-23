@@ -155,7 +155,7 @@ class OfertaController extends Controller
         return response()->json([ // Añadido mensaje de éxito
             'success' => true,
             'message' => 'Oferta obtenida correctamente.',
-            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name', 'titulacion']),
+            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name', 'titulacion', 'empresa.sector:id,nombre']),
         ]);
     }
 
