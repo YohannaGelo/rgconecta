@@ -367,77 +367,156 @@
 </ng-template>
 
 <!-- Modal Confirmación -->
-<ng-template #modalConfirmarEliminacion let-modal>
-    <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">¿Estás seguro?</h5>
-        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-        Esta acción eliminará el elemento de tu perfil. ¿Deseas continuar?
-    </div>
-    <div class="modal-footer justify-content-center">
-        <button class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancelar</button>
-        <button class="btn btn-danger" (click)="confirmarEliminacion(modal)">Eliminar</button>
+<ng-template #confirmacionModal let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                Confirmar eliminación
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-trash3 text-danger fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Estás seguro de que deseas eliminar este elemento?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger px-4" (click)="confirmarEliminacion(modal)">
+                Eliminar
+            </button>
+        </div>
+
     </div>
 </ng-template>
 
 <!-- MODAL: ¿Quieres opinar? -->
 <ng-template #modalConfirmarOpinion let-modal>
-    <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">¿Te gustaría dejar una opinión?</h5>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-        <p>Has añadido una nueva experiencia en <strong>{{ ultimaEmpresaAgregada?.nombre }}</strong>.</p>
-        <p>¿Quieres compartir tu opinión sobre ella?</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="modal.dismiss()">No</button>
-        <button class="btn btn-primary" (click)="abrirModalOpinion(modal)">Sí, opinar</button>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                ¿Te gustaría dejar una opinión?
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-chat-text-fill text-info fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mb-2">
+                Has añadido una nueva experiencia en <strong>{{ ultimaEmpresaAgregada?.nombre }}</strong>.
+            </p>
+            <p class="text-secondary fs-5 mt-0">¿Quieres compartir tu opinión sobre ella?</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">No</button>
+            <button class="btn btn-info px-4" (click)="abrirModalOpinion(modal)">Sí, opinar</button>
+        </div>
+
     </div>
 </ng-template>
 
+
 <!-- MODAL: Formulario de opinión -->
 <ng-template #modalFormularioOpinion let-modal>
-    <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Tu opinión sobre {{ ultimaEmpresaAgregada?.nombre }}</h5>
-        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <form #opinionForm="ngForm" (ngSubmit)="enviarOpinionDesdeModal(modal)" novalidate>
-            <div class="mb-3">
-                <label class="form-label">Opinión</label>
-                <textarea class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="opinion.contenido"
-                    name="contenido" rows="3" required></textarea>
-            </div>
+    <div class="modal-content shadow rounded-4 border-0">
 
-            <div class="mb-3">
-                <label class="form-label">Valoración</label>
-                <div class="d-flex align-items-center">
-                    <i *ngFor="let idx of [1, 2, 3, 4, 5]" class="bi" [ngClass]="{
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Tu opinión sobre {{ ultimaEmpresaAgregada?.nombre }}
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body">
+            <form #opinionForm="ngForm" (ngSubmit)="enviarOpinionDesdeModal(modal)" novalidate>
+
+                <!-- Años -->
+                <div class="mb-3">
+                    <label class="form-label d-flex justify-content-between align-items-center">
+                        <span>Años en la empresa</span>
+                        <span class="badge bg-primary rounded-pill">{{ opinion.anios_en_empresa || 0 }}</span>
+                    </label>
+                    <input type="range" class="form-range" min="0" max="50" step="1" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="opinion.anios_en_empresa" name="anios_en_empresa" disabled />
+                </div>
+
+                <!-- Contenido -->
+                <div class="mb-3">
+                    <label class="form-label">Opinión</label>
+                    <textarea class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="opinion.contenido"
+                        name="contenido" rows="3" required></textarea>
+                </div>
+
+                <!-- Valoración -->
+                <div class="mb-4">
+                    <label class="form-label">Valoración</label>
+                    <div class="d-flex align-items-center">
+                        <i *ngFor="let idx of [1, 2, 3, 4, 5]" class="bi" [ngClass]="{
                 'bi-star-fill text-warning': opinion.valoracion >= idx,
                 'bi-star text-muted': opinion.valoracion < idx
-            }" (click)="opinion.valoracion = idx" style="font-size: 1.5rem; cursor: pointer;"></i>
+                }" (click)="opinion.valoracion = idx" style="font-size: 1.5rem; cursor: pointer">
+                        </i>
+                    </div>
                 </div>
-            </div>
 
+                <!-- Botón enviar -->
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-4" [disabled]="!opinionForm.valid">
+                        Enviar opinión
+                    </button>
+                </div>
+            </form>
+        </div>
 
-            <button type="submit" class="btn btn-success" [disabled]="!opinionForm.form.valid">Enviar opinión</button>
-        </form>
     </div>
 </ng-template>
 
 <!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
 <ng-template #modalConfirmarSalida let-modal>
-    <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">Cambios sin guardar</h5>
-        <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <p>Has realizado cambios que no se han guardado. ¿Seguro que quieres salir?</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-warning" (click)="modal.dismiss()">Cancelar</button>
-        <button class="btn btn-danger" (click)="modal.close()">Salir sin guardar</button>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                Cambios sin guardar
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-box-arrow-left text-warning fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                Has realizado cambios que no se han guardado.<br>
+                ¿Seguro que quieres salir?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-warning px-4" (click)="modal.close()">
+                Salir sin guardar
+            </button>
+        </div>
+
     </div>
 </ng-template>
