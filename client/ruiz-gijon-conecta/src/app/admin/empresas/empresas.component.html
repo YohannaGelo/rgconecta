@@ -9,6 +9,22 @@
         </button>
     </div>
 
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <!-- <div class="row g-3 mb-4 col-md-6 "> -->
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <ng-select [items]="sectores" bindLabel="nombre" bindValue="id" placeholder="Filtrar por sector..."
+                    [(ngModel)]="filtroSectorId" [clearable]="true" [searchable]="true" class="">
+                </ng-select>
+            </div>
+        </div>
+    </section>
+
+
     <!-- Formulario para nueva empresa -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-4">
@@ -50,7 +66,7 @@
 
     <!-- Vista de tarjetas -->
     <div *ngIf="!vistaTabla && empresas.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" *ngFor="let empresa of empresas">
+        <div class="col" *ngFor="let empresa of empresasFiltradas()">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -77,7 +93,8 @@
                     <h4 class="card-title mb-1">{{ empresa.nombre }}</h4>
                     <p class="text-muted mb-2"><i class="bi bi-tag me-1"></i>{{ empresa.sector?.nombre || 'Sin sector'
                         }}</p>
-                    <p class="badge text-muted small mb-0 bg-light" *ngIf="empresa.web"><i class="bi bi-globe me-1"></i>{{ empresa.web
+                    <p class="badge text-muted small mb-0 bg-light" *ngIf="empresa.web"><i
+                            class="bi bi-globe me-1"></i>{{ empresa.web
                         }}</p>
 
                     <!-- Edición -->
@@ -89,6 +106,9 @@
                             <option [ngValue]="null" disabled>Selecciona un sector</option>
                             <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
                         </select>
+
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.web" placeholder="Web" />
+
 
                         <div class="d-grid gap-2">
                             <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
@@ -103,7 +123,6 @@
     </div>
 
     <!-- Vista de tabla -->
-    <!-- Vista de tabla -->
     <div *ngIf="vistaTabla && empresas.length > 0" class="card border-0 shadow-sm p-4">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -117,7 +136,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let empresa of empresas">
+                    <tr *ngFor="let empresa of empresasFiltradas()">
                         <td class="ps-4 fw-semibold text-muted">{{ empresa.id }}</td>
 
                         <!-- Nombre -->

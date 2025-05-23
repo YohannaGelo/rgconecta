@@ -8,6 +8,28 @@
         </button>
     </div>
 
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroPromocion"
+                    placeholder="Buscar por promoción..." />
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <select class="form-select" [(ngModel)]="filtroVerificadoString">
+                    <option value="">Verificaciones</option>
+                    <option value="true">Solo verificados</option>
+                    <option value="false">Solo no verificados</option>
+                </select>
+
+            </div>
+        </div>
+    </section>
+
+
     <div *ngIf="alumnos.length === 0" class="text-center text-muted py-5">
         <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
         <p class="mb-0">Aún no hay alumnos registrados.</p>
@@ -15,7 +37,7 @@
 
     <!-- Vista de tarjetas -->
     <div *ngIf="!vistaTabla && alumnos.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" *ngFor="let alumno of alumnos">
+        <div class="col" *ngFor="let alumno of alumnosFiltrados()">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -44,7 +66,8 @@
                         <p class="text-muted mb-1">
                             <i class="bi bi-envelope me-1"></i>{{ alumno.user?.email }}
                         </p>
-                        <p class="mb-1 badge bg-primary bg-opacity-10 text-primary"><i class="bi bi-mortarboard me-2"></i> {{ alumno.promocion }}</p>
+                        <p class="mb-1 badge bg-primary bg-opacity-10 text-primary"><i
+                                class="bi bi-mortarboard me-2"></i> {{ alumno.promocion }}</p>
                         <p class="mb-1"><strong>Situación:</strong> {{ alumno.situacion_laboral }}</p>
                         <span class="badge mt-auto" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
                             {{ alumno.is_verified ? 'Verificado' : 'No verificado' }}
@@ -91,12 +114,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let alumno of alumnos">
+                    <tr *ngFor="let alumno of alumnosFiltrados()">
                         <td class="ps-4">{{ alumno.id }}</td>
                         <td>{{ alumno.user?.name }}</td>
                         <td>{{ alumno.user?.email }}</td>
                         <td>
-                            <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">{{ alumno.promocion }}</div>
+                            <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">
+                                {{ alumno.promocion }}</div>
                             <input *ngIf="editando?.id === alumno.id" class="form-control form-control-sm"
                                 [(ngModel)]="editando.promocion" />
                         </td>
