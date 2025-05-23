@@ -4,7 +4,7 @@
     <div class="row  my-3 justify-content-between gap-3 flex-grow-1">
 
         <!-- Lista de opiniones -->
-        <section class="col bg-white rounded-1 shadow p-4">
+        <section class="col bg-white rounded-2 shadow p-4">
             <h3 class="card-title mt-2">Opiniones sobre empresas</h3>
 
             <div *ngIf="opinionesFiltradas.length === 0" class="text-muted mt-4">
@@ -51,9 +51,9 @@
         <div class="col-lg-4 d-flex flex-column">
 
             <!-- Filtro -->
-            <div class="row bg-white rounded-1 shadow p-4 me-2">
+            <div class="row bg-white rounded-2 shadow p-4 me-2">
                 <div class="p-0">
-                    <select class="form-select bg-white rounded-1" [(ngModel)]="filtroSeleccionado"
+                    <select class="form-select bg-white rounded-2" [(ngModel)]="filtroSeleccionado"
                         (change)="filtrarOpiniones()">
                         <option value="">-- Mostrar todos --</option>
                         <option *ngFor="let empresa of empresasUnicas" [value]="'empresa_' + empresa.id">
@@ -67,7 +67,7 @@
             <form (ngSubmit)="enviarOpinion()" #opinionForm="ngForm" class="needs-validation d-flex flex-column h-100"
                 novalidate>
                 <div [ngClass]="{ 'formulario-resaltado': resaltarFormulario }"
-                    class="row bg-white rounded-1 shadow p-4 px-2 mt-3 me-2">
+                    class="row bg-white rounded-2 shadow p-4 px-2 mt-3 me-2">
                     <legend>Nueva opinión</legend>
 
                     <!-- Empresa -->
@@ -150,7 +150,7 @@
 
                 <!-- Envío -->
                 <div
-                    class="row  me-2 bg-white rounded-1 shadow py-4 px-2 mt-3 align-items-center justify-content-center text-center">
+                    class="row  me-2 bg-white rounded-2 shadow py-4 px-2 mt-3 align-items-center justify-content-center text-center">
                     <div class="col-12 col-sm-6 col-lg-7 mb-3 mb-sm-0">
                         <h4 class="fw-bold mb-3">¿Listo para opinar?</h4>
                         <button type="submit" class="btn btn-primary rounded-5 py-1 px-3 shadow-sm"
@@ -166,7 +166,7 @@
 
     <!-- Flechas (podemos conectar a paginación en el futuro) -->
     <div class="mb-3 ">
-        <button class="btn btn-primary rounded-1 text-white px-3 py-2" [disabled]="paginaActual === 1"
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
             (click)="paginaAnterior()">
             <i class="bi bi-arrow-left"></i>
         </button>
@@ -174,7 +174,7 @@
         <small class="mx-2 text-secondary text-uppercase text-muted">Página {{ paginaActual }} de {{ totalPaginas
             }}</small>
 
-        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
             (click)="paginaSiguiente()">
             <i class="bi bi-arrow-right"></i>
         </button>

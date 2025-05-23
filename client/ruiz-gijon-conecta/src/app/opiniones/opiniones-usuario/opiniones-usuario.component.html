@@ -98,7 +98,7 @@
 
     <!-- Flechas (podemos conectar a paginación en el futuro) -->
     <div class="mb-3  mt-auto">
-        <button class="btn btn-primary rounded-1 text-white px-3 py-2" [disabled]="paginaActual === 1"
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
             (click)="paginaAnterior()">
             <i class="bi bi-arrow-left"></i>
         </button>
@@ -106,7 +106,7 @@
         <small class="mx-2 text-secondary text-uppercase text-muted">Página {{ paginaActual }} de {{ totalPaginas
             }}</small>
 
-        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
             (click)="paginaSiguiente()">
             <i class="bi bi-arrow-right"></i>
         </button>

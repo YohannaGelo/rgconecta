@@ -5,21 +5,21 @@
             <!-- Tecnología -->
             <div class="col-sm-4 col-md-3 p-0">
                 <ng-select [items]="tecnologias" bindLabel="" placeholder="💡 Habilidades"
-                    [(ngModel)]="filtroTecnologia" (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                    [(ngModel)]="filtroTecnologia" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
             </div>
 
             <!-- Experiencia -->
             <div class="col-sm-4 col-md-3 p-0">
                 <ng-select [items]="['más de 1 año', 'más de 5 años', 'más de 10 años']" placeholder="🎯 Experiencias"
-                    [(ngModel)]="filtroExperiencia" (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                    [(ngModel)]="filtroExperiencia" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
             </div>
 
             <!-- Situación -->
             <div class="col-sm-3 col-md-3 p-0">
                 <ng-select [items]="['Trabajando', 'Desempleado', 'Buscando empleo']" placeholder="💼 Situación"
-                    [(ngModel)]="filtroSituacion" (change)="aplicarFiltros()" class="shadow rounded-1 w-100">
+                    [(ngModel)]="filtroSituacion" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
             </div>
         </div>
@@ -75,7 +75,7 @@
 
     <!-- Flechas  -->
     <div class="ms-4">
-        <button class="btn btn-primary rounded-1 text-white px-3 py-2" [disabled]="currentPage === 1"
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="currentPage === 1"
             (click)="cambiarPagina(currentPage - 1)">
             <i class="bi bi-arrow-left"></i>
         </button>
@@ -84,7 +84,7 @@
             Página {{ currentPage }} de {{ lastPage }}
         </small>
 
-        <button class="btn btn-primary rounded-1 text-white ms-2 px-3 py-2" [disabled]="currentPage === lastPage"
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2" [disabled]="currentPage === lastPage"
             (click)="cambiarPagina(currentPage + 1)">
             <i class="bi bi-arrow-right"></i>
         </button>

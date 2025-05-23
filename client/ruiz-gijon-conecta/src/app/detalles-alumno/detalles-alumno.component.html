@@ -1,23 +1,24 @@
-<div *ngIf="alumno" class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1"  style="min-height: calc(100vh - 220px);">
+<div *ngIf="alumno" class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1"
+    style="min-height: calc(100vh - 220px);">
     <!-- info principal -->
-    <section class="col bg-white rounded-1 shadow p-4">
+    <section class="col bg-white rounded-2 shadow p-4">
         <!-- datos personales -->
-        <article class="d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between align-items-center text-center text-sm-start py-3">
+        <article
+            class="d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between align-items-center text-center text-sm-start py-3">
             <div class="d-flex flex-column flex-sm-row gap-3 align-items-center">
-              <img [src]="alumno.user.foto_perfil.startsWith('http') ? alumno.user.foto_perfil : 'assets/img/perfil.png'"
-                   alt="Imagen del usuario"
-                   class="img-fluid rounded-circle border border-2 shadow-sm"
-                   style="width: 6rem; height: 6rem; object-fit: cover;" />
-              <div>
-                <p [class]="getSituacionClase(alumno.situacion_laboral) + ' rounded-5 py-0 px-3 mb-2 pe-none'">
-                  {{ getSituacionTexto(alumno.situacion_laboral) }}
-                </p>
-                <p class="text-secondary mb-0 ms-md-2">{{ alumno.titulo_profesional }}</p>
-                <h3 class="card-title mt-0 ms-md-2">{{ alumno.user.name }}</h3>
-              </div>
+                <img [src]="alumno.user.foto_perfil.startsWith('http') ? alumno.user.foto_perfil : 'assets/img/perfil.png'"
+                    alt="Imagen del usuario" class="img-fluid rounded-circle border border-2 shadow-sm"
+                    style="width: 6rem; height: 6rem; object-fit: cover;" />
+                <div>
+                    <p [class]="getSituacionClase(alumno.situacion_laboral) + ' rounded-5 py-0 px-3 mb-2 pe-none'">
+                        {{ getSituacionTexto(alumno.situacion_laboral) }}
+                    </p>
+                    <p class="text-secondary mb-0 ms-md-2">{{ alumno.titulo_profesional }}</p>
+                    <h3 class="card-title mt-0 ms-md-2">{{ alumno.user.name }}</h3>
+                </div>
             </div>
-          </article>
-          
+        </article>
+
 
         <!-- estudios -->
         <div class="bg-light py-1 px-4">
@@ -84,7 +85,7 @@
     <!-- años y opiniones -->
     <div class="col-lg-4">
         <!-- años -->
-        <div class="row bg-white rounded-1 shadow">
+        <div class="row bg-white rounded-2 shadow">
             <div class="d-flex justify-content-evenly pt-2 pb-0">
                 <p>
                     <span class="text-primary fw-semibold fs-4">{{ calcularEdad(alumno.fecha_nacimiento) }}</span> años
@@ -97,7 +98,7 @@
         </div>
 
         <!-- opiniones -->
-        <div class="row bg-white rounded-1 shadow p-4 mt-3">
+        <div class="row bg-white rounded-2 shadow p-4 mt-3">
             <h4 class="pb-2">Opiniones sobre empresas</h4>
 
             <ng-container *ngIf="alumno.opiniones && alumno.opiniones.length > 0; else sinOpiniones">
