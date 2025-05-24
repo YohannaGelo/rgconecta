@@ -1,39 +1,93 @@
 <div class="container-xl">
-<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: calc(100vh - 200px);">
-    <div class="card shadow border-0 flex-grow-1 mb-3" style="max-width: 600px; border-radius: 8px;">
-        <div class="card-header bg-primary text-white py-4" style="border-radius: 8px 8px 0 0 !important;">
-            <div class="d-flex justify-content-center">
-                <i class="bi bi-shield-lock fs-1 me-3"></i>
-                <h2 class="card-title mb-0 align-self-center">Verificación Pendiente</h2>
-            </div>
-        </div>
-
-        <div class="card-body p-5 text-center">
-            <div class="mb-4">
-                <i class="bi bi-hourglass-split text-warning" style="font-size: 3rem;"></i>
-            </div>
-
-            <h3 class="text-danger mb-4">Tu cuenta está en proceso de verificación</h3>
-
-            <p class="lead mb-4">
-                Un profesor debe validar tu perfil antes de que puedas acceder al contenido completo de la plataforma.
-            </p>
-
-            <div class="alert alert-info d-flex align-items-center">
-                <i class="bi bi-info-circle-fill me-3"></i>
-                <div>
-                    Por favor, espera a que se revise tu registro. Recibirás una notificación cuando tu cuenta haya sido
-                    verificada.
+    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: calc(100vh - 200px);">
+        <div class="card shadow border-0 flex-grow-1 mb-3" style="max-width: 600px; border-radius: 8px;">
+            <div class="card-header bg-primary text-white py-4" style="border-radius: 8px 8px 0 0 !important;">
+                <div class="d-flex justify-content-center">
+                    <i class="bi bi-shield-lock fs-1 me-3"></i>
+                    <h2 class="card-title mb-0 align-self-center">Verificación Pendiente</h2>
                 </div>
             </div>
 
-            <div class="mt-5 pt-3 border-top">
-                <p class="text-muted small mb-2">¿Tienes alguna duda?</p>
-                <button class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="bi bi-envelope me-2"></i> Contactar con soporte
-                </button>
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-hourglass-split text-warning" style="font-size: 3rem;"></i>
+                </div>
+
+                <h3 class="text-danger mb-4">Tu cuenta está en proceso de verificación</h3>
+
+                <p class="lead mb-4">
+                    Un profesor debe validar tu perfil antes de que puedas acceder al contenido completo de la
+                    plataforma.
+                </p>
+
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-3"></i>
+                    <div>
+                        Por favor, espera a que se revise tu registro. Recibirás una notificación cuando tu cuenta haya
+                        sido
+                        verificada.
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-3 border-top">
+                    <p class="text-muted small mb-2">¿Tienes alguna duda?</p>
+                    <button class="btn btn-outline-primary rounded-pill px-4" (click)="abrirModalContacto()">
+                        <i class="bi bi-envelope me-2"></i> Contactar con soporte
+                    </button>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+
+<!-- Modal contacto -->
+<ng-template #modalContacto let-modal>
+    <div class="modal-content shadow rounded-2 border-0">
+        <div class="modal-header bg-light">
+            <h5 class="modal-title">Contactar con soporte</h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <form (ngSubmit)="enviarMensajeContacto(modal)">
+            <div class="modal-body">
+                <ng-container *ngIf="currentUser$ | async as currentUser">
+                    <div class="mb-3">
+                        <label class="form-label">Tu nombre</label>
+                        <input class="form-control" [value]="currentUser.name" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tu correo electrónico</label>
+                        <input type="email" class="form-control" [value]="currentUser.email" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mensaje</label>
+                        <textarea rows="4" class="form-control" [(ngModel)]="form.mensaje" name="mensaje" required
+                            minlength="10"></textarea>
+                    </div>
+
+                    <div class="text-muted small">
+                        Este mensaje se enviará directamente al equipo de soporte de Ruiz Gijón Conecta.
+                    </div>
+                </ng-container>
+
+                <!-- Fallback si no está el usuario cargado -->
+                <ng-container *ngIf="!(currentUser$ | async)">
+                    <p class="text-muted">Cargando tu perfil...</p>
+                </ng-container>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-secondary px-4 me-2" (click)="modal.dismiss()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary px-4"
+                    [disabled]="!form.mensaje || form.mensaje.length < 10">
+                    Enviar mensaje
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>

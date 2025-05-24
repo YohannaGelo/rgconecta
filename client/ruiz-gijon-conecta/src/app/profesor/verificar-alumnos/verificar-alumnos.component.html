@@ -79,17 +79,38 @@
     </div>
 </div>
 
+<!-- Modal confirmar rechazo -->
 <ng-template #modalConfirmarRechazo let-modal>
-    <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">Rechazar alumno</h5>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-        <p>¿Estás segura/o de que deseas rechazar este alumno? Esta acción no se puede deshacer y eliminará todos sus
-            datos.</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
-        <button class="btn btn-danger" (click)="confirmarRechazo(modal)">Rechazar</button>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Cabecera -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Rechazar alumno
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Estás segura/o de que deseas rechazar este alumno?
+            </p>
+            <p class="text-muted small mt-2 mb-0">
+                Esta acción no se puede deshacer y eliminará todos sus datos.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger px-4" (click)="confirmarRechazo(modal)">
+                Rechazar
+            </button>
+        </div>
+
     </div>
 </ng-template>

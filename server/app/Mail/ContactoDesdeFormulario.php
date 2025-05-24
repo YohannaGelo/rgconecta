@@ -9,27 +9,28 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AlumnoRechazado extends Mailable
+class ContactoDesdeFormulario extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $alumno)
-    {
-        $alumno->load('user');
-    }
+    public function __construct(
+        public string $nombre,
+        public string $email,
+        public string $mensaje
+    ) {}
 
     public function build()
     {
         $baseUrl = config('app.url');
 
-        return $this->subject('❌ Cuenta no verificada')
+        return $this->subject("📩 Nuevo mensaje RG Conecta")
             ->html("
         <div style='font-family: Arial, sans-serif; background-color: #eaeff4; padding: 15px;'>
 
-            <!-- Navbar (Card 1) -->
+            <!-- Cabecera (Card 1) -->
             <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
                         box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
                 <a href='{$baseUrl}'>
@@ -38,18 +39,21 @@ class AlumnoRechazado extends Mailable
                 </a>
             </div>
 
-            <!-- Body principal (Card 2) -->
+            <!-- Cuerpo principal (Card 2) -->
             <div style='background-color: #ffffff; color: #999ea2; margin: 0 auto; border-radius: 12px; padding: 20px;
                         box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                <h2 style='color: #2b4e84; text-align: center;'>Hola, {$this->alumno->user->name}.</h2>
-                <p style='margin: 1rem;'>Lamentamos informarte que <strong>no hemos podido verificar que estudiaste en el IES Ruiz Gijón</strong>.</p>
-                <p style='margin: 1rem;'>Si crees que se trata de un error, puedes contactar con el administrador de la plataforma para revisar tu caso.</p>
+                <h2 style='color: #2b4e84; text-align: center;'>Nuevo mensaje recibido</h2>
+
+                <p><strong>Nombre:</strong> {$this->nombre}</p>
+                <p><strong>Email:</strong> {$this->email}</p>
+                <hr style='margin: 20px 0;'>
+                <p style='margin-top:1rem; white-space: pre-line;'>{$this->mensaje}</p>
 
                 <div style='text-align: center; margin-top: 30px;'>
-                    <a href='{$baseUrl}/contacto'
+                    <a href='mailto:{$this->email}'
                     style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
                             text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
-                    Contactar
+                    Responder al remitente
                     </a>
                 </div>
             </div>
@@ -59,7 +63,7 @@ class AlumnoRechazado extends Mailable
                         box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 13px; color: #999; max-width: 500px;'>
                 Ruiz Gijón Conecta · IES Ruiz Gijón · © " . date('Y') . "
                 <p style='margin: 15px 0 0 0; color: #a0aec0; font-size: 12px;'>
-                    Este es un mensaje automático. Por favor no respondas a este correo.
+                    Este mensaje ha sido enviado desde el formulario de contacto de la plataforma.
                 </p>
             </div>
 
@@ -68,14 +72,13 @@ class AlumnoRechazado extends Mailable
     }
 
 
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '❌ Cuenta no verificada',
+            subject: '📩 Nuevo mensaje RG Conecta',
         );
     }
 

@@ -10,7 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { OfertasComponent } from './ofertas/ofertas.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
 import { RegistroComponent } from './auth/registro/registro.component';
@@ -24,7 +24,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PerfilAlumnoComponent } from './perfil-alumno/perfil-alumno.component';
 import { PerfilProfesorComponent } from './perfil-profesor/perfil-profesor.component';
 import { OpinionesUsuarioComponent } from './opiniones/opiniones-usuario/opiniones-usuario.component';
-import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { VerificarAlumnosComponent } from './profesor/verificar-alumnos/verificar-alumnos.component';
 import { OfertasUsuarioComponent } from './ofertas/ofertas-usuario/ofertas-usuario.component';
 import { DetalleOfertaComponent } from './ofertas/detalle-oferta/detalle-oferta.component';
@@ -41,6 +40,7 @@ import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profeso
 import { AutofocusDirective } from './shared/autofocus.directive';
 import { FloatingContactPanelComponent } from './shared/components/floating-contact-panel/floating-contact-panel.component';
 import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
+import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 
 
 @NgModule({
@@ -87,6 +87,7 @@ import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores
     ImageCropperModule,
     NgbModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     ToastrModule.forRoot({
       timeOut: 3000, // 3 segundos
       positionClass: 'toast-top-right', // arriba a la derecha

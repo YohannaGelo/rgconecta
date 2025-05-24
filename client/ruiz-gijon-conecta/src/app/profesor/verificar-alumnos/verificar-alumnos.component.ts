@@ -51,7 +51,6 @@ export class VerificarAlumnosComponent implements OnInit {
     return fotoPerfil;
   }
 
-  // ¡¡¡¡¡ HACERLO FUNCIONAL !!!!!!
   verificarAlumno(id: number): void {
     this.http
       .post(

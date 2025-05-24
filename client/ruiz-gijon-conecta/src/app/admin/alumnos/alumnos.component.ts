@@ -2,8 +2,6 @@ import { Component, Injector, OnInit } from '@angular/core';
 import { AlumnoService } from '../../services/alumno.service';
 import { PanelComponent } from '../panel/panel.component';
 import { NotificationService } from '../../core/services/notification.service';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-alumnos',
@@ -24,8 +22,6 @@ export class AlumnosComponent implements OnInit {
   private panel: PanelComponent;
 
   constructor(
-    private http: HttpClient,
-    private auth: AuthService,
     private alumnoService: AlumnoService,
     private notificationService: NotificationService,
     private injector: Injector
@@ -67,25 +63,6 @@ export class AlumnosComponent implements OnInit {
     if (this.filtroVerificadoString === 'true') return true;
     if (this.filtroVerificadoString === 'false') return false;
     return null;
-  }
-
-  verificarAlumno(id: number): void {
-    this.http
-      .post(
-        `http://localhost:8000/api/alumnos/${id}/verify`,
-        {},
-        this.auth.authHeader()
-      )
-      .subscribe({
-        next: () => {
-          this.notificationService.success('Alumno verificado correctamente');
-          this.alumnos = this.alumnos.filter((a) => a.id !== id);
-        },
-        error: (err) => {
-          console.error('Error al verificar alumno:', err);
-          this.notificationService.error('Error al verificar al alumno');
-        },
-      });
   }
 
   toggleVista(): void {
