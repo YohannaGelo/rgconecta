@@ -83,6 +83,9 @@
                         </select>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" [(ngModel)]="editando.is_verified" />
+                            <!-- <input class="form-check-input" type="checkbox" [checked]="editando.is_verified"
+                                (change)="onVerificacionChange($event)" /> -->
+
                             <label class="form-check-label">Verificado</label>
                         </div>
                         <div class="d-grid gap-2">

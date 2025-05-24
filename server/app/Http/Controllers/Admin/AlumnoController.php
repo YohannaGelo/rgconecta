@@ -33,7 +33,14 @@ class AlumnoController extends Controller
             'is_verified' => 'required|boolean',
         ]);
 
+        $verificando = !$alumno->is_verified && $validated['is_verified'];
+
         $alumno->update($validated);
+
+        if ($verificando) {
+            Mail::to($alumno->user->email)->send(new AlumnoVerificado($alumno));
+        }
+
 
         return response()->json([
             'success' => true,

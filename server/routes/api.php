@@ -12,6 +12,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\TituloController;
 use App\Http\Controllers\Api\TecnologiaController;
 use App\Http\Controllers\Api\SectorController;
+use App\Http\Controllers\ContactoController;
 
 use App\Http\Middleware\AdminMiddleware;
 // Admin
@@ -89,6 +90,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::patch('/profile/password', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
+    Route::post('/contacto', [ContactoController::class, 'enviar']);
+
 
     // Empresas
     // Route::get('/empresas', [EmpresaController::class, 'index']);
