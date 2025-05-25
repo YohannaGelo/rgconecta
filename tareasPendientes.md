@@ -16,6 +16,9 @@
 - En verificar alumnos, link mailto en los correos
 - Poder poner 0 años de experiencia
 - ¡ REVISAR LOS CONSOLE LOG Y QUITAR LOS DATOS !
+- Añadir en Admin y en perfiles la opción de modificar las preferencias
+- Revisar los enlaces de los mails
+- ¿Que pas con la fecha de expiracion de las ofertes (console)?
 
 ---
 
@@ -32,3 +35,4 @@
 ## MEJORAS NO IMPRESCINDIBLES
 
 - Mejorar la organizacion de carpetas
+- Mejorar las preferencias, poder elegir si recibir dudas segun cada oferta

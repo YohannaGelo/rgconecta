@@ -9,79 +9,81 @@ import { Observable } from 'rxjs';
   selector: 'app-no-verificado',
   standalone: false,
   templateUrl: './no-verificado.component.html',
-  styleUrl: './no-verificado.component.scss',
+  styleUrls: ['./no-verificado.component.scss'],
 })
 export class NoVerificadoComponent implements OnInit {
-  @ViewChild('modalContacto') modalContacto: any;
+  @ViewChild('modalContacto') modalContacto!: TemplateRef<any>;
 
-  currentUser$: Observable<any>;
-  
+  currentUser$!: Observable<any>;
+  currentUser: any = null;
+
   form = {
-    mensaje: ''
+    nombre: '',
+    email: '',
+    mensaje: '',
   };
-  
-  private currentUser: any = null;
-  
+
   constructor(
     private modalService: NgbModal,
     private authService: AuthService,
     private http: HttpClient,
     private notificationService: NotificationService
-  ) {
-    this.currentUser$ = this.authService.currentUser$;
-  }
-  
-  ngOnInit(): void {
-    // Cargar datos del usuario si no están aún disponibles
-    const current = this.authService.currentUser;
-    console.log('User observable:', current);
+  ) {}
 
-    if (current) {
-      this.currentUser = current;
-    } else {
-      this.authService.loadCurrentUser().subscribe({
-        next: (user) => {
-          this.currentUser = user;
-        },
-        error: () => {
-          this.notificationService.error('No se pudo cargar tu perfil');
-        },
-      });
-    }
+  ngOnInit(): void {
+    this.currentUser$ = this.authService.currentUser$;
+
+    this.currentUser$.subscribe((user) => {
+      if (user) {
+        this.currentUser = user;
+        this.form.nombre = user.name;
+        this.form.email = user.email;
+      }
+    });
   }
 
   abrirModalContacto(): void {
-    this.modalService.open(this.modalContacto, { centered: true });
-  }
-
-  enviarMensajeContacto(modal: any): void {
-    if (!this.form.mensaje || this.form.mensaje.length < 10) {
-      this.notificationService.warning('El mensaje debe tener al menos 10 caracteres');
-      return;
-    }
-
-    const user = this.currentUser || this.authService.currentUser;
-
-    if (!user) {
+    if (!this.currentUser) {
       this.notificationService.error('No se pudo obtener tu información');
       return;
     }
 
-    const payload = {
-      nombre: user.name,
-      email: user.email,
-      mensaje: this.form.mensaje
-    };
-
-    this.http.post('http://localhost:8000/api/contacto', payload).subscribe({
-      next: () => {
-        this.notificationService.success('Tu mensaje ha sido enviado con éxito.');
-        this.form.mensaje = '';
-        modal.close();
-      },
-      error: () => {
-        this.notificationService.error('No se pudo enviar el mensaje');
-      }
-    });
+    this.form.mensaje = ''; // limpiar campo
+    this.modalService.open(this.modalContacto, { centered: true });
   }
+
+  enviarMensajeContacto(modal: any, currentUser: any): void {
+    if (!this.form.mensaje || this.form.mensaje.length < 10) {
+      this.notificationService.warning(
+        'El mensaje debe tener al menos 10 caracteres'
+      );
+      return;
+    }
+
+    const nombre = currentUser.user?.name || currentUser.name;
+    const email = currentUser.user?.email || currentUser.email;
+
+    const payload = {
+      nombre,
+      email,
+      mensaje: this.form.mensaje,
+    };
+    const headers = this.authService.getHeaders();
+
+    this.http
+      .post('http://localhost:8000/api/contacto', payload, { headers })
+      .subscribe({
+        next: () => {
+          this.notificationService.success(
+            'Tu mensaje ha sido enviado con éxito.'
+          );
+          this.form.mensaje = '';
+          modal.close();
+        },
+        error: () => {
+          this.notificationService.error('No se pudo enviar el mensaje');
+        },
+      });
+  }
+
 }

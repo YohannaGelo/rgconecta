@@ -36,6 +36,10 @@
                         <p class="text-secondary text-center small mt-auto w-100">
                             <i class="bi bi-envelope me-1"></i>{{ profesor.user?.email }}
                         </p>
+                        <button class="btn btn-sm btn-outline-primary mt-2" (click)="abrirModalMensaje(profesor)">
+                            Contactar
+                        </button>
+
 
                     </div>
                 </div>
@@ -45,3 +49,42 @@
     </div>
 
 </div>
+
+<!-- Modal Mensaje -->
+<ng-template #modalMensajeProfesor let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Cabecera -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Contactar con el profesor
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <form (ngSubmit)="enviarMensajeProfesor(modal)">
+            <div class="modal-body text-center mt-3">
+                <i class="bi bi-envelope text-primary fs-1 pb-2"></i>
+                <p class="text-secondary fs-5 mt-2 mb-0">
+                    Escribe un mensaje breve al profesor. Tu nombre y correo se enviarán automáticamente.
+                </p>
+
+                <div class="mb-3 mt-4 text-start">
+                    <label class="form-label">Mensaje</label>
+                    <textarea class="form-control" [(ngModel)]="mensajeProfesor" name="mensajeProfesor" rows="4"
+                        required minlength="10" placeholder="Escribe tu consulta..."></textarea>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-secondary px-4 me-2"
+                    (click)="modal.dismiss()">Cancelar</button>
+                <button type="submit" class="btn btn-primary px-4" [disabled]="mensajeProfesor.length < 10">
+                    Enviar mensaje
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>

@@ -25,7 +25,7 @@ class BienvenidaAlumnoPendiente extends Mailable
     {
         $baseUrl = config('app.url');
 
-        return $this->subject('🎓 Registro recibido - En revisión')
+        return $this->subject('🪪 Registro recibido - En revisión - RG Conecta')
             ->html("
         <div style='font-family: Arial, sans-serif; background-color: #eaeff4; padding: 15px;'>
 
@@ -75,7 +75,7 @@ class BienvenidaAlumnoPendiente extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🎓 Registro recibido - En revisión',
+            subject: '🪪 Registro recibido - En revisión - RG Conecta',
         );
     }
 
