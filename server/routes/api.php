@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\TituloController;
 use App\Http\Controllers\Api\TecnologiaController;
 use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\PreferenciaNotificacionController;
 
 use App\Http\Middleware\AdminMiddleware;
 // Admin
@@ -67,6 +68,7 @@ Route::delete('/titulos/{titulo}', [TituloController::class, 'destroy']);
 Route::get('/tecnologias', [TecnologiaController::class, 'index']);
 Route::post('/tecnologias', [TecnologiaController::class, 'store']);
 
+Route::post('/contacto', [ContactoController::class, 'enviar']);
 
 
 // Rutas PROTEGIDAS
@@ -77,6 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/mis-ofertas', [OfertaController::class, 'misOfertas']);
     Route::put('/ofertas/{oferta}', [OfertaController::class, 'update']);
     Route::delete('/ofertas/{oferta}', [OfertaController::class, 'destroy']);
+
+    // Contacto
+    Route::post('/ofertas/{id}/contactar', [ContactoController::class, 'contactarAutorOferta']);
 
     // Alumnos
     Route::post('/alumnos/{alumno}/verify', [AlumnoController::class, 'verify']);
@@ -90,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::patch('/profile/password', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
-    Route::post('/contacto', [ContactoController::class, 'enviar']);
 
 
     // Empresas
@@ -110,9 +114,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profesores/{profesor}', [ProfesorController::class, 'show']);
     Route::put('/profesores/{profesor}', [ProfesorController::class, 'update']);
     Route::delete('/profesores/{profesor}', [ProfesorController::class, 'destroy']);
+
+    // Contacto
+    Route::post('/profesores/{id}/contactar', [ContactoController::class, 'contactarProfesor']);
+
+    // Preferencias de notificación
+    Route::get('/preferencias', [PreferenciaNotificacionController::class, 'index']);
+    Route::get('/preferencias/{id}', [PreferenciaNotificacionController::class, 'show']);
+    Route::put('/preferencias', [PreferenciaNotificacionController::class, 'update']);
 });
 
-// Rutas ADMIN
 // Rutas ADMIN
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('admin')

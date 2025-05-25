@@ -17,6 +17,9 @@ export class NuevaOfertaComponent implements OnInit {
   @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
   cambiosSinGuardar = false;
 
+  // Modal para confirmar notificaciones
+  @ViewChild('modalPreferencias') modalPreferencias!: TemplateRef<any>;
+
   titulo = '';
   descripcion = '';
   jornada = '';
@@ -305,6 +308,9 @@ export class NuevaOfertaComponent implements OnInit {
             console.log(
               '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
             );
+
+            this.modalService.open(this.modalPreferencias, { centered: true });
+
             this.router.navigate(['/ofertas']);
           },
           error: (err) => {
@@ -317,6 +323,21 @@ export class NuevaOfertaComponent implements OnInit {
       this.notificationService.error('Error al crear tecnologías nuevas');
     }
   }
+
+  actualizarPreferencia(acepta: boolean, modal: any): void {
+  this.http.put('http://localhost:8000/api/preferencias', {
+    responder_dudas: acepta
+  }, this.authService.authHeader()).subscribe({
+    next: () => {
+      this.notificationService.success('Preferencia actualizada');
+      modal.close();
+    },
+    error: () => {
+      this.notificationService.error('No se pudo actualizar la preferencia');
+    }
+  });
+}
+
 
   compareEmpresa = (a: any, b: any) => a?.nombre === b?.nombre;
 }

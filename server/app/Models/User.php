@@ -52,7 +52,11 @@ class User extends Authenticatable implements RoleCheck
     {
         return $this->hasMany(Opinion::class);
     }
-
+    
+    public function preferencias()
+    {
+        return $this->hasOne(PreferenciaNotificacion::class);
+    }
 
     // Verifica la foto de perfil
     public function getFotoPerfilAttribute($value)

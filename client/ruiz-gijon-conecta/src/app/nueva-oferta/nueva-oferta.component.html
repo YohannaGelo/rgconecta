@@ -1,6 +1,7 @@
 <div class="container-xl">
 
-    <form (ngSubmit)="enviarOferta()" class="needs-validation d-flex flex-column flex-grow-1  mx-2"  style="min-height: calc(100vh - 220px);" novalidate>
+    <form (ngSubmit)="enviarOferta()" class="needs-validation d-flex flex-column flex-grow-1  mx-2"
+        style="min-height: calc(100vh - 220px);" novalidate>
         <div class="row  mb-3 justify-content-between gap-3 flex-grow-1">
 
             <!-- CONTENIDO PRINCIPAL -->
@@ -283,3 +284,39 @@
         </div>
     </ng-template>
 </div>
+
+<!-- Aceptar notificaciones -->
+<ng-template #modalPreferencias let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Cabecera -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Recibir dudas sobre tu oferta
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-3">
+            <i class="bi bi-question-circle text-primary fs-1 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Te gustaría permitir que otros usuarios te envíen preguntas relacionadas con las ofertas que publiques?
+            </p>
+            <p class="text-muted small mt-2 mb-0">
+                Puedes cambiar esta preferencia más adelante desde tu perfil.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" (click)="actualizarPreferencia(false, modal)" appAutofocus>
+                No permitir
+            </button>
+            <button class="btn btn-primary px-4" (click)="actualizarPreferencia(true, modal)">
+                Permitir dudas
+            </button>
+        </div>
+
+    </div>
+</ng-template>

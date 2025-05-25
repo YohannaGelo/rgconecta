@@ -32,7 +32,6 @@ export class DetalleOfertaComponent implements OnInit {
     disenio: 'Diseño',
     otros: 'Otros',
   };
-  
 
   hoy = new Date().toISOString().split('T')[0]; // para comparar fechas de expiración
 
@@ -51,6 +50,7 @@ export class DetalleOfertaComponent implements OnInit {
     }
   }
 
+
   cargarOferta(id: number): void {
     const headers = this.authService.getHeaders();
 
@@ -59,13 +59,38 @@ export class DetalleOfertaComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.oferta = res.data;
+
+          // Cargar opiniones de la empresa si existe
           if (this.oferta?.empresa?.id) {
             this.cargarOpiniones(this.oferta.empresa.id);
+          }
+
+          // Cargar preferencias del autor si existe
+          const autorId = this.oferta?.user?.id;
+          if (autorId) {
+            this.cargarPreferenciasUsuario(autorId);
           }
         },
         error: (err) => {
           console.error('❌ Error al cargar la oferta', err);
           this.notificationService.error('No se pudo cargar la oferta.');
+        },
+      });
+  }
+
+  cargarPreferenciasUsuario(userId: number): void {
+    const headers = this.authService.getHeaders();
+
+    this.http
+      .get<any>(`http://localhost:8000/api/preferencias/${userId}`, { headers })
+      .subscribe({
+        next: (prefs) => {
+          if (this.oferta?.user) {
+            this.oferta.user.preferencias = prefs;
+          }
+        },
+        error: () => {
+          console.warn('No se pudo cargar las preferencias del usuario');
         },
       });
   }
@@ -134,22 +159,6 @@ export class DetalleOfertaComponent implements OnInit {
     return desc.length > max ? desc.slice(0, max) + '...' : desc;
   }
 
-  enviarMensaje(): void {
-    if (!this.mensajeContacto.trim()) {
-      this.notificationService.warning('Escribe un mensaje antes de enviarlo.');
-      return;
-    }
-
-    // ✉️ Esta función es de placeholder
-    console.log(
-      `Mensaje para ${this.oferta?.user?.name}:`,
-      this.mensajeContacto
-    );
-
-    this.notificationService.success('Mensaje enviado (simulado).');
-    this.mensajeContacto = '';
-  }
-
   verTodasOpiniones(): void {
     if (!this.oferta?.empresa?.id) return;
 
@@ -181,5 +190,40 @@ export class DetalleOfertaComponent implements OnInit {
     }
 
     return `${partesCap[0][0]}. ${partesCap.slice(1).join(' ')}`;
+  }
+
+  enviarMensaje(): void {
+    if (!this.mensajeContacto.trim()) {
+      this.notificationService.warning('Escribe un mensaje antes de enviarlo.');
+      return;
+    }
+
+    const url = `http://localhost:8000/api/ofertas/${this.oferta.id}/contactar`;
+
+    this.http
+      .post(
+        url,
+        { mensaje: this.mensajeContacto },
+        this.authService.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          this.notificationService.success(
+            'Mensaje enviado al autor de la oferta.'
+          );
+          this.mensajeContacto = '';
+        },
+        error: (err) => {
+          if (err.status === 403) {
+            this.notificationService.error('El autor no acepta mensajes.');
+          } else if (err.status === 422) {
+            this.notificationService.error(
+              'El mensaje debe tener al menos 10 caracteres.'
+            );
+          } else {
+            this.notificationService.error('No se pudo enviar el mensaje.');
+          }
+        },
+      });
   }
 }

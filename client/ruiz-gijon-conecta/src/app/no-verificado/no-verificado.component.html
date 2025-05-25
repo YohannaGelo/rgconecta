@@ -49,23 +49,24 @@
             <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
         </div>
 
-        <form (ngSubmit)="enviarMensajeContacto(modal)">
+        <form (ngSubmit)="enviarMensajeContacto(modal, currentUser)">
             <div class="modal-body">
                 <ng-container *ngIf="currentUser$ | async as currentUser">
                     <div class="mb-3">
                         <label class="form-label">Tu nombre</label>
-                        <input class="form-control" [value]="currentUser.name" readonly />
+                        <input class="form-control" [value]="currentUser.user?.name || currentUser.name" readonly />
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Tu correo electrónico</label>
-                        <input type="email" class="form-control" [value]="currentUser.email" readonly />
+                        <input type="email" class="form-control" [value]="currentUser.user?.email || currentUser.email"
+                            readonly />
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Mensaje</label>
                         <textarea rows="4" class="form-control" [(ngModel)]="form.mensaje" name="mensaje" required
-                            minlength="10"></textarea>
+                            minlength="10" placeholder="Escribe tu duda o comentario..."></textarea>
                     </div>
 
                     <div class="text-muted small">
@@ -73,7 +74,7 @@
                     </div>
                 </ng-container>
 
-                <!-- Fallback si no está el usuario cargado -->
+                <!-- Cargando usuario -->
                 <ng-container *ngIf="!(currentUser$ | async)">
                     <p class="text-muted">Cargando tu perfil...</p>
                 </ng-container>

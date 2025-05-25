@@ -25,45 +25,45 @@ class AlumnoRechazado extends Mailable
     {
         $baseUrl = config('app.url');
 
-        return $this->subject('❌ Cuenta no verificada')
+        return $this->subject('❌ Cuenta no verificada - RG Conecta')
             ->html("
-        <div style='font-family: Arial, sans-serif; background-color: #eaeff4; padding: 15px;'>
+                <div style='font-family: Arial, sans-serif; background-color: #eaeff4; padding: 15px;'>
 
-            <!-- Navbar (Card 1) -->
-            <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                <a href='{$baseUrl}'>
-                    <img src='https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/banner_RG_web_veaxjr.png'
-                        alt='Ruiz Gijón Conecta' style='max-width: 160px; height: auto;' />
-                </a>
-            </div>
+                    <!-- Navbar (Card 1) -->
+                    <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
+                        <a href='{$baseUrl}'>
+                            <img src='https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/banner_RG_web_veaxjr.png'
+                                alt='Ruiz Gijón Conecta' style='max-width: 160px; height: auto;' />
+                        </a>
+                    </div>
 
-            <!-- Body principal (Card 2) -->
-            <div style='background-color: #ffffff; color: #999ea2; margin: 0 auto; border-radius: 12px; padding: 20px;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                <h2 style='color: #2b4e84; text-align: center;'>Hola, {$this->alumno->user->name}.</h2>
-                <p style='margin: 1rem;'>Lamentamos informarte que <strong>no hemos podido verificar que estudiaste en el IES Ruiz Gijón</strong>.</p>
-                <p style='margin: 1rem;'>Si crees que se trata de un error, puedes contactar con el administrador de la plataforma para revisar tu caso.</p>
+                    <!-- Body principal (Card 2) -->
+                    <div style='background-color: #ffffff; color: #999ea2; margin: 0 auto; border-radius: 12px; padding: 20px;
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
+                        <h2 style='color: #2b4e84; text-align: center;'>Hola, {$this->alumno->user->name}.</h2>
+                        <p style='margin: 1rem;'>Lamentamos informarte que <strong>no hemos podido verificar que estudiaste en el IES Ruiz Gijón</strong>.</p>
+                        <p style='margin: 1rem;'>Si crees que se trata de un error, puedes contactar con el administrador de la plataforma para revisar tu caso.</p>
 
-                <div style='text-align: center; margin-top: 30px;'>
-                    <a href='{$baseUrl}/contacto'
-                    style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
-                            text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
-                    Contactar
-                    </a>
+                        <div style='text-align: center; margin-top: 30px;'>
+                            <a href='{$baseUrl}/contacto'
+                            style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
+                                    text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
+                            Contactar
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Footer (Card 3) -->
+                    <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 13px; color: #999; max-width: 500px;'>
+                        Ruiz Gijón Conecta · IES Ruiz Gijón · © " . date('Y') . "
+                        <p style='margin: 15px 0 0 0; color: #a0aec0; font-size: 12px;'>
+                            Este es un mensaje automático. Por favor no respondas a este correo.
+                        </p>
+                    </div>
+
                 </div>
-            </div>
-
-            <!-- Footer (Card 3) -->
-            <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 13px; color: #999; max-width: 500px;'>
-                Ruiz Gijón Conecta · IES Ruiz Gijón · © " . date('Y') . "
-                <p style='margin: 15px 0 0 0; color: #a0aec0; font-size: 12px;'>
-                    Este es un mensaje automático. Por favor no respondas a este correo.
-                </p>
-            </div>
-
-        </div>
     ");
     }
 
@@ -75,7 +75,7 @@ class AlumnoRechazado extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '❌ Cuenta no verificada',
+            subject: '❌ Cuenta no verificada - RG Conecta',
         );
     }
 

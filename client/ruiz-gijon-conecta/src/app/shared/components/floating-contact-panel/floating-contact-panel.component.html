@@ -14,17 +14,56 @@
             <button class="btn-close" (click)="cerrarPanel()"></button>
         </div>
 
-        <form (ngSubmit)="enviarFormulario()" class="mb-4">
+        <form (ngSubmit)="enviarFormulario(currentUser)" *ngIf="currentUser$ | async as currentUser; else sinUsuario">
             <div class="mb-3">
                 <label class="form-label">Tu nombre</label>
-                <input class="form-control" [(ngModel)]="form.nombre" name="nombre" required />
+                <input class="form-control" [value]="currentUser.user?.name || currentUser.name" readonly />
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tu correo electrónico</label>
+                <input class="form-control" [value]="currentUser.user?.email || currentUser.email" readonly />
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Mensaje</label>
-                <textarea class="form-control" [(ngModel)]="form.mensaje" name="mensaje" rows="3" required></textarea>
+                <textarea class="form-control" [(ngModel)]="form.mensaje" name="mensaje" rows="3" required
+                    minlength="10" placeholder="Escribe tu mensaje..."></textarea>
             </div>
-            <button class="btn btn-primary w-100" type="submit">Enviar</button>
+
+            <button class="btn btn-primary w-100" type="submit" [disabled]="!form.mensaje || form.mensaje.length < 10">
+                Enviar
+            </button>
         </form>
+
+        <!-- FORMULARIO SIN USUARIO -->
+        <ng-template #sinUsuario>
+            <form (ngSubmit)="enviarFormulario(null)">
+                <div class="mb-3">
+                    <label class="form-label">Tu nombre</label>
+                    <input class="form-control" [(ngModel)]="form.nombre" name="nombre" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tu correo electrónico</label>
+                    <input class="form-control" [(ngModel)]="form.email" name="email" type="email" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mensaje</label>
+                    <textarea class="form-control" [(ngModel)]="form.mensaje" name="mensaje" rows="3" required
+                        minlength="10" placeholder="Escribe tu mensaje..."></textarea>
+                </div>
+
+                <button class="btn btn-primary w-100" type="submit"
+                    [disabled]="!form.nombre || !form.email || !form.mensaje || form.mensaje.length < 10">
+                    Enviar
+                </button>
+            </form>
+        </ng-template>
+
+
+
 
         <hr />
         <p class="text-muted small">¿Necesitas contactar con un profesor en particular?</p>
