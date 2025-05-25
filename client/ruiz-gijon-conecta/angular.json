@@ -50,6 +50,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/rgconecta/public_html/browser/",
               "budgets": [
                 {
                   "type": "initial",
