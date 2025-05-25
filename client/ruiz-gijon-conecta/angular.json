@@ -24,10 +24,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "../../",
+            "outputPath": "dist/ruiz-gijon-conecta",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "baseHref": "/rgconecta/",
             "polyfills": [
               "zone.js",
               "@angular/localize/init"
