@@ -3,6 +3,8 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationService } from '../../core/services/notification.service';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-profesores-vista',
@@ -33,7 +35,7 @@ export class ProfesoresVistaComponent implements OnInit {
   cargarProfesores(): void {
     this.http
       .get<any>(
-        'http://localhost:8000/api/profesores',
+        `${environment.apiUrl}/profesores`,
         this.authService.authHeader()
       )
       .subscribe({
@@ -78,7 +80,7 @@ export class ProfesoresVistaComponent implements OnInit {
 
     this.http
       .post(
-        `http://localhost:8000/api/profesores/${this.profesorDestinoId}/contactar`,
+        `${environment.apiUrl}/profesores/${this.profesorDestinoId}/contactar`,
         { mensaje: this.mensajeProfesor },
         this.authService.authHeader()
       )

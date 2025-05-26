@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-alumnos',
@@ -32,7 +33,7 @@ export class AlumnosComponent implements OnInit {
     if (this.filtroSituacion) params.situacion = this.filtroSituacion;
 
     this.http
-      .get<any>('http://localhost:8000/api/alumnos', { params })
+      .get<any>(`${environment.apiUrl}/alumnos`, { params })
       .subscribe({
         next: (response) => {
           //console.log('Respuesta:', response);

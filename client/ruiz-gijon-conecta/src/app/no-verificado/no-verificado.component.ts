@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-no-verificado',
@@ -71,7 +72,7 @@ export class NoVerificadoComponent implements OnInit {
     const headers = this.authService.getHeaders();
 
     this.http
-      .post('http://localhost:8000/api/contacto', payload, { headers })
+      .post(`${environment.apiUrl}/contacto`, payload, { headers })
       .subscribe({
         next: () => {
           this.notificationService.success(

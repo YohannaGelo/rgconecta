@@ -7,6 +7,7 @@ import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { SectorService } from '../services/sector.service';
+import { environment } from '../../environments/environment';
 
 interface EmpresaForm {
   nombre: string;
@@ -341,7 +342,7 @@ export class PerfilAlumnoComponent implements OnInit {
   }
 
   cargarTitulos(): void {
-    this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/titulos`).subscribe(
       (response) => {
         this.titulosDisponibles = response.map((titulo) => ({
           ...titulo,
@@ -357,7 +358,7 @@ export class PerfilAlumnoComponent implements OnInit {
   }
 
   cargarTecnologias(): void {
-    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         this.tecnologiasDisponibles = data.map((tec) => ({
           nombre: tec.nombre,
@@ -386,7 +387,7 @@ export class PerfilAlumnoComponent implements OnInit {
     }
   }
   cargarEmpresas(): void {
-    this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
+    this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
           this.empresasDisponibles = [
@@ -736,7 +737,7 @@ export class PerfilAlumnoComponent implements OnInit {
     };
 
     this.http
-      .post('http://localhost:8000/api/opiniones', payload, { headers })
+      .post(`${environment.apiUrl}/opiniones`, payload, { headers })
       .subscribe({
         next: () => {
           this.notificationService.success('Opinión enviada correctamente');

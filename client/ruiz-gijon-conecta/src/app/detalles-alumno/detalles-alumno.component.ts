@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { NotificationService } from '../core/services/notification.service';
+import { environment } from '../../environments/environment';
 
 
 
@@ -39,7 +40,7 @@ export class DetallesAlumnoComponent implements OnInit {
     });
 
     this.http
-      .get<any>(`http://localhost:8000/api/alumnos/${id}`, { headers })
+      .get<any>(`${environment.apiUrl}/alumnos/${id}`, { headers })
       .subscribe({
         next: (response) => {
           console.log('Alumno cargado:', response);

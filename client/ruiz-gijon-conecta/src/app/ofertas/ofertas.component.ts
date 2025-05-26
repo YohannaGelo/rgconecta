@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
 
 @Component({
   selector: 'app-ofertas',
@@ -30,7 +32,7 @@ export class OfertasComponent implements OnInit {
 
   cargarLocalizaciones(): void {
     this.http
-      .get<string[]>('http://localhost:8000/api/ofertas/localizaciones')
+      .get<string[]>(`${environment.apiUrl}/ofertas/localizaciones`)
       .subscribe({
         next: (res) => {
           this.localizacionesDisponibles = res;
@@ -42,7 +44,7 @@ export class OfertasComponent implements OnInit {
   }
 
   cargarCategorias(): void {
-    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe({
       next: (res) => {
         const tiposUnicos = Array.from(new Set(res.map((t) => t.tipo)));
         this.categorias = tiposUnicos.sort();
@@ -63,7 +65,7 @@ export class OfertasComponent implements OnInit {
     this.loading = true;
 
     this.http
-      .get<any>(`http://localhost:8000/api/ofertas`, { params })
+      .get<any>(`${environment.apiUrl}/ofertas`, { params })
       .subscribe({
         next: (res) => {
           this.ofertas = res.data;
