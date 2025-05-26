@@ -4,6 +4,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-ofertas-usuario',
@@ -70,7 +72,7 @@ export class OfertasUsuarioComponent implements OnInit {
   }
 
   cargarTitulos(): void {
-    this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/titulos`).subscribe({
       next: (res) => (this.titulosDisponibles = res),
       error: (err) => console.error('Error al cargar títulos', err),
     });
@@ -79,7 +81,7 @@ export class OfertasUsuarioComponent implements OnInit {
   cargarMisOfertas(): void {
     const headers = this.authService.getHeaders();
     this.http
-      .get<any>('http://localhost:8000/api/mis-ofertas', { headers })
+      .get<any>(`${environment.apiUrl}/mis-ofertas`, { headers })
       .subscribe({
         next: (res) => {
           this.ofertas = res.data || [];
@@ -126,7 +128,7 @@ export class OfertasUsuarioComponent implements OnInit {
 
     this.http
       .put<any>(
-        `http://localhost:8000/api/ofertas/${this.ofertaEditando.id}`,
+        `${environment.apiUrl}/ofertas/${this.ofertaEditando.id}`,
         datosActualizados,
         { headers }
       )
@@ -145,7 +147,7 @@ export class OfertasUsuarioComponent implements OnInit {
 
 
   cargarTecnologias(): void {
-    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         this.tecnologiasDisponibles = data.map((tec) => ({
           id: tec.id,
@@ -236,7 +238,7 @@ export class OfertasUsuarioComponent implements OnInit {
   confirmarEliminar(modal: any): void {
     const headers = this.authService.getHeaders();
     this.http
-      .delete(`http://localhost:8000/api/ofertas/${this.ofertaAEliminarId}`, {
+      .delete(`${environment.apiUrl}/ofertas/${this.ofertaAEliminarId}`, {
         headers,
       })
       .subscribe({

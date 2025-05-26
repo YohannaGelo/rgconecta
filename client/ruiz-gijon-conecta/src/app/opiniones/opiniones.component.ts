@@ -4,6 +4,7 @@ import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SectorService } from '../services/sector.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-opiniones',
@@ -91,7 +92,7 @@ export class OpinionesComponent implements OnInit {
   }
 
   cargarOpiniones(): void {
-    this.http.get<any>('http://localhost:8000/api/opiniones').subscribe(
+    this.http.get<any>(`${environment.apiUrl}/opiniones`).subscribe(
       (res) => {
         this.opiniones = res.data || [];
         this.opinionesFiltradas = [...this.opiniones];
@@ -113,7 +114,7 @@ export class OpinionesComponent implements OnInit {
   cargarOpinionesPorEmpresa(empresaId: number): void {
     console.log('Cargando opiniones para empresa:', empresaId);
     this.http
-      .get<any>(`http://localhost:8000/api/empresas/${empresaId}/opiniones`)
+      .get<any>(`${environment.apiUrl}/empresas/${empresaId}/opiniones`)
       .subscribe({
         next: (res) => {
           this.opiniones = res.data || [];
@@ -137,7 +138,7 @@ export class OpinionesComponent implements OnInit {
     e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
 
   cargarEmpresas(): void {
-    this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
+    this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
           this.empresasDisponibles = [
@@ -228,7 +229,7 @@ export class OpinionesComponent implements OnInit {
     console.log(payload);
 
     this.http
-      .post('http://localhost:8000/api/opiniones', payload, { headers })
+      .post(`${environment.apiUrl}/opiniones`, payload, { headers })
       .subscribe(
         (res) => {
           this.notificationService.success('Opinión enviada correctamente');

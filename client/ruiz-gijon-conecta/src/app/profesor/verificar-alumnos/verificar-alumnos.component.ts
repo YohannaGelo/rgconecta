@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-verificar-alumnos',
@@ -30,7 +32,7 @@ export class VerificarAlumnosComponent implements OnInit {
   cargarAlumnos(): void {
     this.http
       .get(
-        'http://localhost:8000/api/alumnos/no-verificados',
+        `${environment.apiUrl}/alumnos/no-verificados`,
         this.auth.authHeader()
       )
       .subscribe({
@@ -54,7 +56,7 @@ export class VerificarAlumnosComponent implements OnInit {
   verificarAlumno(id: number): void {
     this.http
       .post(
-        `http://localhost:8000/api/alumnos/${id}/verify`,
+        `${environment.apiUrl}/alumnos/${id}/verify`,
         {},
         this.auth.authHeader()
       )
@@ -111,7 +113,7 @@ export class VerificarAlumnosComponent implements OnInit {
 
     this.http
       .post(
-        `http://localhost:8000/api/alumnos/${id}/rechazar`,
+        `${environment.apiUrl}/alumnos/${id}/rechazar`,
         {},
         this.auth.authHeader()
       )
@@ -137,7 +139,7 @@ export class VerificarAlumnosComponent implements OnInit {
 
     this.http
       .post(
-        `http://localhost:8000/api/alumnos/${this.alumnoARechazarId}/rechazar`,
+        `${environment.apiUrl}/alumnos/${this.alumnoARechazarId}/rechazar`,
         {},
         this.auth.authHeader()
       )

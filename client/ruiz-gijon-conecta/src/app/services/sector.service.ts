@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SectorService {
-  private basePublicUrl = 'http://localhost:8000/api/sectores';
-  private baseAdminUrl = 'http://localhost:8000/api/admin/sectores';
+  private basePublicUrl = `${environment.apiUrl}/sectores`;
+  private baseAdminUrl = `${environment.apiUrl}/admin/sectores`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

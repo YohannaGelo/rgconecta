@@ -5,6 +5,7 @@ import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SectorService } from '../services/sector.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-nueva-oferta',
@@ -131,7 +132,7 @@ export class NuevaOfertaComponent implements OnInit {
 
   cargarEmpresas(): void {
     this.http
-      .get<{ data: any[] }>('http://localhost:8000/api/empresas')
+      .get<{ data: any[] }>(`${environment.apiUrl}/empresas`)
       .subscribe({
         next: (res) => {
           this.empresasDisponibles = [...res.data, { nombre: 'Otras' }];
@@ -141,7 +142,7 @@ export class NuevaOfertaComponent implements OnInit {
   }
 
   cargarTitulos(): void {
-    this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/titulos`).subscribe({
       next: (res) => (this.titulosDisponibles = res),
       error: (err) => console.error('Error al cargar títulos', err),
     });
@@ -155,7 +156,7 @@ export class NuevaOfertaComponent implements OnInit {
 
   // #region 💻 TECNOLOGÍAS (Habilidades de cara al usuario)
   cargarTecnologias(): void {
-    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
         this.tecnologiasDisponibles = data.map((tec) => ({
@@ -247,7 +248,7 @@ export class NuevaOfertaComponent implements OnInit {
 
     const peticiones = nuevasTec.map((tec) =>
       this.http
-        .post<any>('http://localhost:8000/api/tecnologias', {
+        .post<any>(`${environment.apiUrl}/tecnologias`, {
           nombre: tec.nombre,
           tipo: tec.tipo,
         })
@@ -298,7 +299,7 @@ export class NuevaOfertaComponent implements OnInit {
       const headers = this.authService.getHeaders();
 
       this.http
-        .post('http://localhost:8000/api/ofertas', payload, { headers })
+        .post(`${environment.apiUrl}/ofertas`, payload, { headers })
         .subscribe({
           next: (res) => {
             this.notificationService.success('Oferta publicada correctamente');
@@ -325,7 +326,7 @@ export class NuevaOfertaComponent implements OnInit {
   }
 
   actualizarPreferencia(acepta: boolean, modal: any): void {
-  this.http.put('http://localhost:8000/api/preferencias', {
+  this.http.put(`${environment.apiUrl}/preferencias`, {
     responder_dudas: acepta
   }, this.authService.authHeader()).subscribe({
     next: () => {

@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewChild } from '@angular/core';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-opiniones-usuario',
@@ -46,7 +48,7 @@ export class OpinionesUsuarioComponent implements OnInit {
   cargarMisOpiniones(): void {
     const headers = this.authService.getHeaders();
     this.http
-      .get<any>('http://localhost:8000/api/mis-opiniones', { headers })
+      .get<any>(`${environment.apiUrl}/mis-opiniones`, { headers })
       .subscribe(
         (res) => {
           this.opiniones = res.data || [];
@@ -74,7 +76,7 @@ export class OpinionesUsuarioComponent implements OnInit {
 
     this.http
       .put(
-        `http://localhost:8000/api/opiniones/${id}`,
+        `${environment.apiUrl}/opiniones/${id}`,
         { contenido, valoracion },
         { headers }
       )
@@ -104,7 +106,7 @@ export class OpinionesUsuarioComponent implements OnInit {
 
     this.http
       .delete(
-        `http://localhost:8000/api/opiniones/${this.opinionAEliminarId}`,
+        `${environment.apiUrl}/opiniones/${this.opinionAEliminarId}`,
         { headers }
       )
       .subscribe(
@@ -127,7 +129,7 @@ export class OpinionesUsuarioComponent implements OnInit {
     if (!confirm('¿Estás seguro de que deseas eliminar esta opinión?')) return;
 
     this.http
-      .delete(`http://localhost:8000/api/opiniones/${id}`, { headers })
+      .delete(`${environment.apiUrl}/opiniones/${id}`, { headers })
       .subscribe(
         () => {
           this.notificationService.success('Opinión eliminada');

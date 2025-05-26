@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-detalle-oferta',
@@ -55,7 +57,7 @@ export class DetalleOfertaComponent implements OnInit {
     const headers = this.authService.getHeaders();
 
     this.http
-      .get<any>(`http://localhost:8000/api/ofertas/${id}`, { headers })
+      .get<any>(`${environment.apiUrl}/ofertas/${id}`, { headers })
       .subscribe({
         next: (res) => {
           this.oferta = res.data;
@@ -82,7 +84,7 @@ export class DetalleOfertaComponent implements OnInit {
     const headers = this.authService.getHeaders();
 
     this.http
-      .get<any>(`http://localhost:8000/api/preferencias/${userId}`, { headers })
+      .get<any>(`${environment.apiUrl}/preferencias/${userId}`, { headers })
       .subscribe({
         next: (prefs) => {
           if (this.oferta?.user) {
@@ -99,7 +101,7 @@ export class DetalleOfertaComponent implements OnInit {
     const headers = this.authService.getHeaders();
 
     this.http
-      .get<any>(`http://localhost:8000/api/empresas/${empresaId}/opiniones`, {
+      .get<any>(`${environment.apiUrl}/empresas/${empresaId}/opiniones`, {
         headers,
       })
       .subscribe({
@@ -198,7 +200,7 @@ export class DetalleOfertaComponent implements OnInit {
       return;
     }
 
-    const url = `http://localhost:8000/api/ofertas/${this.oferta.id}/contactar`;
+    const url = `${environment.apiUrl}/ofertas/${this.oferta.id}/contactar`;
 
     this.http
       .post(

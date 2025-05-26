@@ -9,6 +9,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewChild } from '@angular/core';
 import { SectorService } from '../../services/sector.service';
+import { environment } from '../../../environments/environment';
 interface EmpresaData {
   nombre: string;
   sector_id: number | null;
@@ -224,7 +225,7 @@ export class RegistroComponent implements OnInit {
 
   // #region 🎓 TÍTULOS
   cargarTitulos(): void {
-    this.http.get<any[]>('http://localhost:8000/api/titulos').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/titulos`).subscribe(
       (response) => {
         this.titulosDisponibles = response.map((titulo) => ({
           ...titulo,
@@ -288,7 +289,7 @@ export class RegistroComponent implements OnInit {
 
   // #region 💻 TECNOLOGÍAS (Habilidades de cara al usuario)
   cargarTecnologias(): void {
-    this.http.get<any[]>('http://localhost:8000/api/tecnologias').subscribe(
+    this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
         this.tecnologiasDisponibles = data.map((tec) => ({
@@ -381,7 +382,7 @@ export class RegistroComponent implements OnInit {
     e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
 
   cargarEmpresas(): void {
-    this.http.get<any>('http://localhost:8000/api/empresas').subscribe(
+    this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
           this.empresasDisponibles = [
@@ -768,7 +769,7 @@ export class RegistroComponent implements OnInit {
       console.log('📤 Enviando opinión:', payload);
 
       this.http
-        .post('http://localhost:8000/api/opiniones', payload, { headers })
+        .post(`${environment.apiUrl}/opiniones`, payload, { headers })
         .subscribe({
           next: () => {
             this.notificationService.success(

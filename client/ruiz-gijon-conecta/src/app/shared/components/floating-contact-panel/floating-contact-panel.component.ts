@@ -4,6 +4,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-floating-contact-panel',
@@ -92,7 +93,7 @@ export class FloatingContactPanelComponent implements OnInit {
 
     this.http
       .post(
-        'http://localhost:8000/api/contacto',
+        `${environment.apiUrl}/contacto`,
         payload
       )
       .subscribe({
