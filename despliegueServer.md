@@ -45,24 +45,38 @@ if [[ $ref = refs/heads/$BRANCH ]]; then
   echo ">>> Desplegando rama '$BRANCH'..."
 
   if [ ! -d "$WORK_TREE/.git" ]; then
+    echo ">>> Clonando repo por primera vez..."
     git clone --branch $BRANCH $REPO_DIR $WORK_TREE
   else
+    echo ">>> Actualizando código..."
     git --work-tree=$WORK_TREE --git-dir=$REPO_DIR checkout -f $BRANCH
   fi
 
   echo ">>> Backend (Laravel)..."
   cd $WORK_TREE/server
   composer install --no-dev --optimize-autoloader
-  php artisan config:cache
   php artisan migrate --force
+  php artisan config:clear
+  chmod -R 777 storage bootstrap/cache
 
   echo ">>> Frontend (Angular)..."
   cd $WORK_TREE/client/ruiz-gijon-conecta
   npm install
-  ng build --configuration=production --output-path=/var/www/yohannagelo/rgconecta
+  ng build --configuration=production
+
+  if [ -d "dist/ruiz-gijon-conecta/browser" ]; then
+    echo "✅ Copiando build Angular a raíz del proyecto..."
+    cp -r dist/ruiz-gijon-conecta/browser/* $WORK_TREE/
+  else
+    echo "❌ ERROR: Build de Angular no encontrado en dist/ruiz-gijon-conecta/browser"
+  fi
+
+  echo ">>> Corrigiendo permisos finales..."
+  chmod -R 755 $WORK_TREE
 fi
 
 echo "✅ Despliegue completo."
+
 ```
 
 Dar permisos de ejecución:
@@ -89,7 +103,7 @@ git push server develop
 ### build > options:
 
 ```json
-"outputPath": "../../",
+"outputPath": "dist/ruiz-gijon-conecta",
 "baseHref": "/rgconecta/"
 ```
 
@@ -164,6 +178,38 @@ php artisan migrate --force
 ---
 
 ✅ Tu despliegue está listo para ser actualizado automáticamente con cada `git push server develop`.
+
+---
+
+Hacer el Api funcional
+```bash
+cd /var/www/yohannagelo
+ln -s rgconecta/server/public rgc_api
+
+```
+
+Ajustar archivo environments.prod.ts:
+```js
+export const environment = {
+  production: true,
+  apiUrl: 'https://yohannagelo.ruix.iesruizgijon.es/rgc_api/api'
+};
+
+```
+
+Funciona -> https://yohannagelo.ruix.iesruizgijon.es/rgc_api/api/ofertas
+
+y el .env -> APP_URL=https://yohannagelo.ruix.iesruizgijon.es/rgc_api
+
+Hacer push en el server o lanzar:
+
+```bash
+cd /var/www/yohannagelo/rgconecta/server
+php artisan config:clear
+
+```
+
+---
 
 ## INTENTO 2
 
