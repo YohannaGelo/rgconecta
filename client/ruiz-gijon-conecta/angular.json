@@ -50,7 +50,7 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/rgconecta/public_html/browser/",
+              "baseHref": "/ruiz-gijon-conecta/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

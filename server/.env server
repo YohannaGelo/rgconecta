@@ -2,7 +2,7 @@ APP_NAME=Server
 APP_ENV=local
 APP_KEY=base64:AMTsUYipseDl4vtmNZloBkaT6FLvCJ9G+tMAYBhI8y8=
 APP_DEBUG=true
-APP_URL=https://yohannagelo.ruix.iesruizgijon.es/rgconecta
+APP_URL=https://yohannagelo.ruix.iesruizgijon.es/ruiz-gijon-conecta
 
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en
