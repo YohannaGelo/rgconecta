@@ -1,16 +1,16 @@
 <ng-container *ngIf="user && user.name">
 
-  <div class="container-xl py-2"  style="min-height: calc(100vh - 220px);">
+  <div class="d-flex flex-column mx-2"  style="min-height: calc(100dvh - 220px);">
 
     <!-- Card: Imagen + Datos personales -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card shadow-sm">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">👤 Datos personales</h5>
       </div>
-      <div class="card-body d-flex">
+      <div class="card-body d-flex flex-column flex-sm-row gap-3">
 
         <!-- Imagen -->
-        <div class="me-4 text-center col-md-4">
+        <div class="me-4 text-center">
           <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
                 style="width: 150px; height: 150px; object-fit: cover;"> -->
           <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Datos personales -->
-        <div class="flex-grow-1">
+        <div class="flex-grow-1 col-sm-6">
 
           <div class="mb-3">
             <label class="form-label">Nombre</label>
@@ -66,7 +66,7 @@
     </div>
 
     <!-- Botón Guardar -->
-    <div class="text-center mt-4">
+    <div class="text-center mt-3">
       <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
         <i class="bi bi-save me-2"></i> Guardar perfil
       </button>
