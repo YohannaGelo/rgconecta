@@ -89,7 +89,7 @@
         <div class="row">
           <div class="col-md-6">
             <label for="select_titulo" class="form-label text-uppercase text-secondary">Ciclo y especialidad</label>
-            <select id="select_titulo" class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="titulo"
+            <select id="select_titulo" class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="titulo" [ngClass]="{ 'text-muted': !titulo, 'text-dark': titulo }"
               name="titulo" required>
               <option [ngValue]="null" disabled selected>Selecciona</option>
               <option *ngFor="let titulo of titulosDisponibles" [ngValue]="titulo">
@@ -112,15 +112,15 @@
         </div>
 
         <!-- Institución + botón añadir -->
-        <div class="row mt-2 align-items-end">
-          <div class="col-md-9">
+        <div class="row mt-2 align-items-end justify-content-between">
+          <div class="col-9 col-sm-10 col-lg-11">
             <label for="input_institucion" class="form-label text-uppercase text-secondary">Institución</label>
             <input type="text" id="input_institucion" class="form-control" (ngModelChange)="onFormChange()"
               [(ngModel)]="empresa" name="empresa" placeholder="IES Ejemplo" required>
           </div>
-          <div class="col-md-3 d-flex justify-content-end">
+          <div class="col-1 d-flex justify-content-end">
             <button type="button" class="btn btn-primary mt-4" (click)="agregarTitulo()">
-              <i class="bi bi-plus"></i> Añadir título
+              <i class="bi bi-plus"></i>
             </button>
           </div>
         </div>
@@ -187,28 +187,27 @@
         </div>
 
         <!-- Comienzo, Fin y Botón para agregar experiencia -->
-        <div class="row mt-2">
-          <div class="col-4 col-md-2">
+        <div class="row mt-2 justify-content-between">
+          <div class="col-sm-6 col-md-2">
             <label for="input_ageStartExp" class="form-label text-uppercase text-secondary">Comienzo</label>
             <input type="text" class="form-control" id="input_ageStartExp" placeholder="2022"
               (ngModelChange)="onFormChange()" [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia" required />
           </div>
-          <div class="col-4 col-md-2">
+          <div class="col-sm-6 col-md-2">
             <label for="input_ageFinishExp" class="form-label text-uppercase text-secondary">Fin</label>
             <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
               (ngModelChange)="onFormChange()" [(ngModel)]="finExperiencia" name="finExperiencia" required />
           </div>
 
-          <div class="col-md-4">
+          <div class="col-9 col-sm-10 col-md-6">
             <label class="form-label text-uppercase text-secondary">Puesto</label>
             <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="puestoExperiencia"
               name="puestoExperiencia" placeholder="Ej: Desarrollador Frontend" required />
           </div>
 
-          <div class="col-4  d-flex justify-content-end align-items-end">
-            <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
-              (click)="agregarExperiencia()">
-              <i class="bi bi-plus"></i> Añadir Experiencia
+          <div class="col-1 d-flex justify-content-end align-items-end">
+            <button type="button" class="btn btn-primary mt-4" (click)="agregarExperiencia()">
+              <i class="bi bi-plus"></i>
             </button>
           </div>
         </div>
@@ -267,8 +266,8 @@
       <div class="row bg-white rounded-2 shadow p-4 px-2">
 
         <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
-        <div class="row d-flex align-items-end">
-          <div class="col-12 col-md-9">
+        <div class="col d-flex align-items-end justify-content-between"> 
+          <div class="col-9 col-sm-10 col-md-11 col-lg-9 col-xl-10">
             <label for="input-tec" class="form-label text-uppercase text-secondary">Habilidades</label>
             <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
               [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
@@ -276,8 +275,8 @@
             </ng-select>
 
             <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
-            <div class="row mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
-              <div class="col-md-9">
+            <div class="mt-2" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+              <div class="">
                 <label class="form-label text-uppercase text-secondary">Nivel</label>
                 <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nivelSeleccionado"
                   name="nivelSeleccionado">
@@ -291,9 +290,8 @@
             </div>
           </div>
 
-          <div class="col d-flex justify-content-end">
-            <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
-              (click)="agregarTecnologia()">
+          <div class="col-1 d-flex justify-content-end align-items-end">
+            <button type="button" class="btn btn-primary" style="margin-top: 1.8rem;" (click)="agregarTecnologia()">
               <i class="bi bi-plus"></i>
             </button>
           </div>

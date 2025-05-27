@@ -1,4 +1,4 @@
-<div class="row d-flex flex-column mx-2" style="min-height: calc(100vh - 220px);">
+<div class="row d-flex flex-column mx-2" style="min-height: calc(100dvh - 220px);">
     <!-- Contenedor principal -->
     <div class="bg-white rounded-2 p-3 shadow flex-grow-1 mb-3">
         <!-- Encabezado -->
@@ -260,7 +260,7 @@
 </div>
 
 <!-- Modal eliminar oferta (se mantiene igual) -->
-<ng-template #modalConfirmarEliminacion let-modal>
+<!-- <ng-template #modalConfirmarEliminacion let-modal>
     <div class="modal-header bg-danger text-white">
         <h5 class="modal-title">Eliminar oferta</h5>
         <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="modal.dismiss()"></button>
@@ -271,5 +271,36 @@
     <div class="modal-footer justify-content-center">
         <button class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
         <button class="btn btn-danger" (click)="confirmarEliminar(modal)">Eliminar</button>
+    </div>
+</ng-template> -->
+<ng-template #modalConfirmarEliminacion let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Eliminar oferta
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-trash3-fill text-danger fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Estás seguro de que deseas eliminar esta oferta?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger px-4" (click)="confirmarEliminar(modal)">
+                <i class="bi bi-check-lg me-1"></i>Eliminar
+            </button>
+        </div>
+
     </div>
 </ng-template>

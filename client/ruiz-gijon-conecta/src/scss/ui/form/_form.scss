@@ -12,12 +12,19 @@
 }
 
 // Cambiar el color de las letras del select
-.form-select {
-    color: cus.$gris;
+.form-select:invalid {
+  color: cus.$gris;
 }
+
+.form-select:valid {
+  color: cus.$oscuro;
+}
+
 
 .form-control {
     border: 1px solid rgba(146, 146, 146, 0.299);
+    color: cus.$oscuro !important;
+
 
 }
 

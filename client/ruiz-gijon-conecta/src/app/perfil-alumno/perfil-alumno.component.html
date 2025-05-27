@@ -1,13 +1,13 @@
-<div class="container-xl pb-3">
+<div class="d-flex flex-column mx-2">
 
     <!-- Card 1: Imagen + Datos personales -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card shadow-sm mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">👤 Datos personales</h5>
         </div>
-        <div class="card-body d-flex">
+        <div class="card-body d-flex flex-column flex-sm-row gap-3">
             <!-- Imagen -->
-            <div class="me-4 text-center col-md-4">
+            <div class="me-4 text-center">
                 <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
                     style="width: 150px; height: 150px; object-fit: cover;"> -->
                 <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
@@ -32,7 +32,7 @@
 
 
             <!-- Datos personales -->
-            <div class="flex-grow-1">
+            <div class="flex-grow-1 col-sm-6">
 
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
@@ -44,7 +44,7 @@
                     <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
                         name="email" readonly>
                 </div>
-                <div class="mb-3 d-flex align-items-center gap-2">
+                <div class="mb-3 d-flex align-items-center justify-content-start gap-2">
                     <span class="fw-bold">Contraseña</span>
                     <button class="btn btn-sm btn-outline-primary" (click)="openChangePasswordModal()">
                         Cambiar contraseña
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Card 2: Títulos -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">🎓 Títulos</h5>
         </div>
@@ -100,8 +100,8 @@
 
             </ul>
             <!-- Formulario añadir título -->
-            <div class="row d-flex align-items-end mb-2">
-                <div class="col-md-3">
+            <div class="row d-flex align-items-end justify-content-between mb-2">
+                <div class="col-md-8">
                     <label class="form-label text-uppercase text-secondary">Título</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="titulo" name="titulo">
                         <option [ngValue]="null" disabled selected>Selecciona título</option>
@@ -111,28 +111,28 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label text-uppercase text-secondary">Inicio</label>
                     <input type="text" class="form-control" placeholder="Ej: 2020" (ngModelChange)="onFormChange()"
                         [(ngModel)]="comienzoEstudios" name="comienzoEstudios">
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label text-uppercase text-secondary">Fin</label>
                     <input type="text" class="form-control" placeholder="Ej: 2022" (ngModelChange)="onFormChange()"
                         [(ngModel)]="finEstudios" name="finEstudios">
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-10 col-md-11 mt-3">
                     <label class="form-label text-uppercase text-secondary">Institución</label>
                     <input type="text" class="form-control" placeholder="Ej: IES Ruiz Gijón"
                         (ngModelChange)="onFormChange()" [(ngModel)]="empresa" name="empresa">
                 </div>
 
-                <div class="col d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary rounded-2 text-white px-3 py-2 shadow-sm"
+                <div class="col-1 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary"
                         (click)="agregarTitulo()">
-                        <i class="bi bi-plus"></i> Añadir título
+                        <i class="bi bi-plus"></i>
                     </button>
                 </div>
             </div>
@@ -142,7 +142,7 @@
     </div>
 
     <!-- Card 3: Experiencias -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">🏢 Experiencias</h5>
         </div>
@@ -200,29 +200,29 @@
             </div>
 
             <!-- Comienzo, Fin y Botón para agregar experiencia -->
-            <div class="row mt-2">
-                <div class="col-4 col-md-2">
+            <div class="row mt-2 justify-content-between">
+                <div class="col-6 col-md-2">
                     <label for="input_ageStartExp" class="form-label text-uppercase text-secondary">Comienzo</label>
                     <input type="text" class="form-control" id="input_ageStartExp" placeholder="2022"
                         (ngModelChange)="onFormChange()" [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia"
                         required />
                 </div>
-                <div class="col-4 col-md-2">
+                <div class="col-6 col-md-2">
                     <label for="input_ageFinishExp" class="form-label text-uppercase text-secondary">Fin</label>
                     <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
                         (ngModelChange)="onFormChange()" [(ngModel)]="finExperiencia" name="finExperiencia" required />
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-10 col-md-7">
                     <label class="form-label text-uppercase text-secondary">Puesto</label>
                     <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="puestoExperiencia"
                         name="puestoExperiencia" placeholder="Ej: Desarrollador Frontend" required />
                 </div>
 
-                <div class="col-4 d-flex justify-content-end align-items-end">
-                    <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
+                <div class="col-1 d-flex justify-content-end align-items-end">
+                    <button type="button" class="btn btn-primary"
                         (click)="agregarExperiencia()">
-                        <i class="bi bi-plus"></i> Añadir Experiencia
+                        <i class="bi bi-plus"></i> 
                     </button>
                 </div>
             </div>
@@ -230,7 +230,7 @@
     </div>
 
     <!-- Card 4: Tecnologías -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">💻 Tecnologías</h5>
         </div>
@@ -248,8 +248,8 @@
                 </li>
             </ul>
             <!-- Formulario añadir tecnología -->
-            <div class="row d-flex align-items-end mb-2">
-                <div class="col-12 col-md-4">
+            <div class="row d-flex align-items-end justify-content-between mb-2">
+                <div class="col-10 col-md-11">
                     <label for="input-tec" class="form-label text-uppercase text-secondary">Habilidades</label>
                     <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
                         [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
@@ -258,7 +258,7 @@
                 </div>
 
                 <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
-                <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+                <div class="col-10 col-md-11" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nivelSeleccionado"
                         name="nivelSeleccionado">
@@ -271,16 +271,16 @@
                 </div>
 
                 <!-- Botón solo si NO es "Otros" -->
-                <div class="col d-flex justify-content-end" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
-                    <button type="button" class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2 shadow-sm"
+                <div class="col-1 d-flex justify-content-end" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
+                    <button type="button" class="btn btn-primary"
                         (click)="agregarTecnologia()">
-                        <i class="bi bi-plus"></i> Añadir Habilidad
+                        <i class="bi bi-plus"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Si se selecciona 'Otros', mostrar campos para nueva tecnología -->
-            <div class="row mt-3" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
+            <div class="row mt-3 justify-content-between" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Tipo</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.tipo"
@@ -296,7 +296,7 @@
                     <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.nombre"
                         name="nombreTecnologia" placeholder="Ej: Figma" required>
                 </div>
-                <div class="col-md-3">
+                <div class="col-10 col-md-3">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
                     <select class="form-select" (ngModelChange)="onFormChange()"
                         [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia" required>
@@ -307,7 +307,7 @@
                         </option>
                     </select>
                 </div>
-                <div class="col d-flex align-items-end justify-content-end">
+                <div class="col-1 d-flex align-items-end justify-content-end">
                     <button type="button" class="btn btn-success" (click)="agregarNuevaTecnologiaLocal()">
                         <i class="bi bi-plus"></i>
                     </button>
@@ -319,7 +319,7 @@
     </div>
 
     <!-- Card 5: Botón Guardar -->
-    <div class="text-center mt-4">
+    <div class="text-center mb-3">
         <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
             <i class="bi bi-save me-2"></i> Guardar perfil
         </button>
@@ -359,7 +359,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" appAutofocus>Cancelar</button>
         <button type="button" class="btn btn-primary"
             [disabled]="!passwordValid || newPassword !== confirmNewPassword || !currentPassword"
             (click)="submitNewPassword(modal)">Guardar</button>
