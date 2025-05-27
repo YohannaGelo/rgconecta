@@ -41,6 +41,7 @@ import { AutofocusDirective } from './shared/autofocus.directive';
 import { FloatingContactPanelComponent } from './shared/components/floating-contact-panel/floating-contact-panel.component';
 import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
+import { AyudaComponent } from './ayuda/ayuda.component';
 
 
 @NgModule({
@@ -76,7 +77,8 @@ import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
     AdminProfesoresComponent,
     AutofocusDirective,
     FloatingContactPanelComponent,
-    ProfesoresVistaComponent
+    ProfesoresVistaComponent,
+    AyudaComponent
   ],
   imports: [
     BrowserModule,

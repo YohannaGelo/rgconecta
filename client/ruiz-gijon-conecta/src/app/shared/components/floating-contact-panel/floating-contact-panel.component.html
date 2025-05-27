@@ -1,6 +1,11 @@
 <!-- Botón flotante -->
-<div class="floating-button d-flex flex-column justify-content-center" (click)="togglePanel()" *ngIf="!abierto">
-    <i class="bi bi-envelope-fill fs-6"></i>
+<div class="floating-button d-flex flex-column justify-content-center align-items-center small" (click)="togglePanel()" *ngIf="!abierto">
+    <i class="bi bi-envelope-fill"></i>
+</div>
+
+<!-- Nueva pestaña: ayuda -->
+<div class="floating-button floating-help d-flex flex-column justify-content-center align-items-center bg-black" (click)="irAAyuda()">
+    <i class="bi bi-question-lg fs-6"></i>
 </div>
 
 <!-- Capa de fondo para cerrar al hacer clic fuera -->
