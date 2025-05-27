@@ -164,3 +164,176 @@ php artisan migrate --force
 ---
 
 ✅ Tu despliegue está listo para ser actualizado automáticamente con cada `git push server develop`.
+
+## INTENTO 2
+
+Perfecto. Aquí va una **guía completa paso a paso** para:
+
+1. ✅ Hacer el primer despliegue de tu app (Angular + Laravel API)
+2. 🔁 Poder seguir trabajando en local y desplegar cambios fácilmente
+
+---
+
+## 🧱 1. ESTRUCTURA DEL PROYECTO LOCAL
+
+```
+/rgconecta
+├── client/ruiz-gijon-conecta     ← Angular
+└── server/                       ← Laravel
+```
+
+---
+
+## 📁 2. ESTRUCTURA EN EL SERVIDOR
+
+Vamos a subir todo a:
+
+```
+/var/www/yohannagelo/rgconecta/
+├── server/                      ← Laravel API
+│   ├── public/                  ← aquí irá el frontend Angular (build)
+├── public/  → enlace simbólico a server/public/
+```
+
+Para que la URL sea:
+
+```
+https://yohannagelo.ruix.iesruizgijon.es/rgconecta/
+```
+
+---
+
+## 🧰 3. CONFIGURAR EL SERVIDOR (una vez)
+
+Conéctate por SSH:
+
+```bash
+ssh coliney@ruizgijon.ddns.net
+```
+
+Y ejecuta esto solo una vez:
+
+```bash
+mkdir -p /var/www/yohannagelo/rgconecta
+cd /var/www/yohannagelo/rgconecta
+
+# El enlace simbólico al public de Laravel
+ln -s server/public public
+```
+
+Esto hace que el navegador acceda directamente al `public/` de Laravel, donde Angular colocará sus archivos compilados.
+
+---
+
+## ⚙️ 4. SCRIPT DE DESPLIEGUE LOCAL
+
+Crea un archivo en la raíz del proyecto local `/rgconecta/deploy.sh`:
+
+```bash
+#!/bin/bash
+
+# === CONFIGURACIÓN ===
+USER=coliney
+HOST=ruizgijon.ddns.net
+REMOTE_BASE=/var/www/yohannagelo/rgconecta
+REMOTE_PUBLIC=$REMOTE_BASE/server/public
+
+echo "==============================="
+echo "🚀 DEPLOYING RG CONECTA"
+echo "==============================="
+
+# === 1. Construir Frontend Angular ===
+echo "📦 Construyendo Angular..."
+cd client/ruiz-gijon-conecta || exit
+npm install
+ng build --configuration=production
+cd ../../
+
+# === 2. Subir Frontend ===
+echo "📤 Subiendo frontend Angular al servidor..."
+ssh $USER@$HOST "rm -rf $REMOTE_PUBLIC/*"
+rsync -avz ./client/ruiz-gijon-conecta/dist/ruiz-gijon-conecta/browser/ \
+  $USER@$HOST:$REMOTE_PUBLIC/
+
+# === 3. Subir Backend Laravel ===
+echo "📤 Subiendo backend Laravel..."
+rsync -avz --delete \
+  --exclude vendor \
+  --exclude node_modules \
+  ./server/ $USER@$HOST:$REMOTE_BASE/server/
+
+# === 4. Ejecutar configuración en servidor ===
+echo "🔧 Configurando backend en el servidor..."
+ssh $USER@$HOST << EOF
+  cd $REMOTE_BASE/server
+  composer install --no-dev --optimize-autoloader
+  npm install
+  npm run build
+  rm -rf node_modules
+  chmod -R 775 storage/ bootstrap/cache/
+EOF
+
+echo "✅ DEPLOY COMPLETADO CON ÉXITO"
+
+```
+
+### 📌 Hazlo ejecutable:
+
+```bash
+chmod +x deploy.sh
+```
+
+---
+
+## 🚀 5. CÓMO DESPLEGAR CAMBIOS
+
+Cuando trabajes en local y quieras subir cambios:
+
+### 1. Asegúrate de estar en la rama `develop`:
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
+### 2. Ejecuta el script:
+
+```bash
+./deploy.sh
+```
+
+Este script:
+
+* Sube cambios del backend (Laravel)
+* Hace `ng build` del frontend y lo sube al `public/` del backend
+* Ejecuta los comandos necesarios en el servidor para instalar dependencias y preparar Laravel
+
+---
+
+## 🔄 6. FLUJO DE TRABAJO DIARIO (RECOMENDADO)
+
+1. Trabajas en ramas `feature/*`
+2. Haces `merge` a `develop`
+3. Ejecutas `./deploy.sh` para desplegar a producción
+
+---
+
+## ✅ VERIFICACIÓN FINAL
+
+Cuando abras en navegador:
+
+```
+https://yohannagelo.ruix.iesruizgijon.es/rgconecta/
+```
+
+Deberías ver tu frontend funcionando, y cuando Angular haga peticiones como:
+
+```
+GET /api/usuarios
+```
+
+Laravel responderá correctamente.
+
+---
+
+¿Quieres que te cree yo ese `deploy.sh` con nombres adaptados y te lo deje listo para copiar/pegar?
