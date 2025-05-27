@@ -91,25 +91,24 @@ export class FloatingContactPanelComponent implements OnInit {
       mensaje,
     };
 
-    this.http
-      .post(
-        `${environment.apiUrl}/contacto`,
-        payload
-      )
-      .subscribe({
-        next: () => {
-          this.notification.success('Tu mensaje ha sido enviado');
-          this.form = { nombre: '', email: '', mensaje: '' };
-          this.cerrarPanel();
-        },
-        error: () => {
-          this.notification.error('No se pudo enviar el mensaje');
-        },
-      });
+    this.http.post(`${environment.apiUrl}/contacto`, payload).subscribe({
+      next: () => {
+        this.notification.success('Tu mensaje ha sido enviado');
+        this.form = { nombre: '', email: '', mensaje: '' };
+        this.cerrarPanel();
+      },
+      error: () => {
+        this.notification.error('No se pudo enviar el mensaje');
+      },
+    });
   }
 
   irAVistaProfesores(): void {
     this.cerrarPanel();
     this.router.navigate(['/profesores']);
+  }
+
+  irAAyuda(): void {
+    this.router.navigate(['/ayuda']);
   }
 }

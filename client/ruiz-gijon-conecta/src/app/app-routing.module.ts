@@ -30,6 +30,7 @@ import { OpinionesComponent as AdminOpinionesComponent } from './admin/opiniones
 import { AlumnosComponent as AdminAlumnosComponent } from './admin/alumnos/alumnos.component';
 import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
 import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
+import { AyudaComponent } from './ayuda/ayuda.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -94,6 +95,7 @@ const routes: Routes = [
     component: ProfesoresVistaComponent,
     canActivate: [AuthGuard],
   },
+  { path: 'ayuda', component: AyudaComponent },
   {
     path: 'admin',
     component: PanelComponent,
