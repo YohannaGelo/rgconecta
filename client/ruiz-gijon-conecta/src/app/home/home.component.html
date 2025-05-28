@@ -5,7 +5,8 @@
         <div class="text-center mb-5">
             <h1 class="text-primary fw-bold">Bienvenido a Ruiz Gijón Conecta</h1>
             <p class="text-secondary fs-5 mt-3">
-                Una plataforma para conectar alumnado y profesorado del IES Ruiz Gijón para compartir oportunidades laborales.
+                Una plataforma para conectar alumnado y profesorado del IES Ruiz Gijón para compartir oportunidades
+                laborales.
             </p>
         </div>
 
@@ -119,7 +120,7 @@
             <div class="container">
                 <h2 class="mb-3">¿Listo para comenzar?</h2>
                 <p class="lead mb-4">Únete a nuestra comunidad educativa-profesional</p>
-                <a routerLink="/registro" class="btn btn-light btn-lg px-4 fw-semibold">
+                <a (click)="redirigir()" class="btn btn-light btn-lg px-4 fw-semibold">
                     Regístrate ahora
                 </a>
             </div>
@@ -127,3 +128,35 @@
 
     </div>
 </div>
+
+<!-- MODAL -->
+<ng-template #selectorRegistro let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Cabecera -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-3">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                ¿Qué tipo de cuenta quieres crear?
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center py-4">
+            <p class="text-muted mb-4">Selecciona el tipo de usuario para continuar con el registro</p>
+
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-outline-primary px-4 py-2 rounded-pill" [routerLink]="'/registro'" appAutofocus
+                    (click)="modal.close()">
+                    👨‍🎓 Antiguo Alumno
+                </button>
+
+                <button class="btn btn-outline-success px-4 py-2 rounded-pill" [routerLink]="'/registro-profes'"
+                    (click)="modal.close()">
+                    👩‍🏫 Profesor
+                </button>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

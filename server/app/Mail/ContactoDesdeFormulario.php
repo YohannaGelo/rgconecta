@@ -24,7 +24,7 @@ class ContactoDesdeFormulario extends Mailable
 
     public function build()
     {
-        $baseUrl = config('app.url');
+        $frontendUrl = env('FRONTEND_URL');
 
         return $this->subject("📩 Nuevo mensaje - RG Conecta")
             ->html("
@@ -33,7 +33,7 @@ class ContactoDesdeFormulario extends Mailable
                     <!-- Cabecera (Card 1) -->
                     <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
                                 box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                        <a href='{$baseUrl}'>
+                        <a href='{$frontendUrl}'>
                             <img src='https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/banner_RG_web_veaxjr.png'
                                 alt='Ruiz Gijón Conecta' style='max-width: 160px; height: auto;' />
                         </a>

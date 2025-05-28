@@ -23,7 +23,7 @@ class BienvenidaAlumnoPendiente extends Mailable
 
     public function build()
     {
-        $baseUrl = config('app.url');
+        $frontendUrl = env('FRONTEND_URL');
 
         return $this->subject('🪪 Registro recibido - En revisión - RG Conecta')
             ->html("
@@ -32,7 +32,7 @@ class BienvenidaAlumnoPendiente extends Mailable
             <!-- Navbar (Card 1) -->
             <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
                         box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                <a href='{$baseUrl}'>
+                <a href='{$frontendUrl}'>
                     <img src='https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/banner_RG_web_veaxjr.png'
                         alt='Ruiz Gijón Conecta' style='max-width: 160px; height: auto;' />
                 </a>
@@ -47,7 +47,7 @@ class BienvenidaAlumnoPendiente extends Mailable
                 <p style='margin: 1rem;'>Te enviaremos un correo cuando tu cuenta haya sido verificada.</p>
 
                 <div style='text-align: center; margin-top: 30px;'>
-                    <a href='{$baseUrl}'
+                    <a href='{$frontendUrl}'
                     style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
                             text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
                     Ir a la plataforma

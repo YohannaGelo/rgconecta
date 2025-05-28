@@ -2,9 +2,9 @@
     <!-- Contenedor principal -->
     <div class="bg-white rounded-2 p-3 shadow flex-grow-1 mb-3">
         <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
             <h3 class="card-title mt-2">Mis ofertas publicadas</h3>
-            <button class="btn btn-success d-flex align-items-center px-3 py-2" (click)="irANuevaOferta()"
+            <button class="btn btn-success d-flex align-items-center px-3 py-2 mt-3 mt-sm-0" (click)="irANuevaOferta()"
                 *ngIf="ofertas.length > 0">
                 <i class="bi bi-pencil-square me-2"></i> Crear nueva oferta
             </button>
@@ -14,8 +14,8 @@
         <ng-container *ngIf="ofertas.length > 0; else sinOfertas">
             <div *ngFor="let oferta of ofertasPaginadas" class="bg-light p-3 mb-3 rounded shadow-sm">
                 <!-- Cabecera y botones -->
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="flex-grow-1 me-3">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+                    <div class="flex-grow-1 me-3 col-12 col-md-8">
                         <!-- Vista normal -->
                         <div *ngIf="ofertaEditando?.id !== oferta.id">
                             <h4 class="mb-1 text-secondary">{{ oferta.titulo }}</h4>
@@ -34,10 +34,9 @@
                     </div>
 
                     <!-- Botones de acción -->
-                    <div class="d-flex flex-column flex-sm-row">
+                    <div class="d-flex flex-sm-row mt-2 mt-md-0">
                         <ng-container *ngIf="ofertaEditando?.id !== oferta.id">
-                            <button class="btn btn-sm btn-outline-primary me-2 mb-2 mb-sm-0"
-                                (click)="activarEdicion(oferta)">
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="activarEdicion(oferta)">
                                 <i class="bi bi-pencil-fill"></i> Editar
                             </button>
                             <button class="btn btn-sm btn-outline-danger"
@@ -47,7 +46,7 @@
                         </ng-container>
 
                         <ng-container *ngIf="ofertaEditando?.id === oferta.id">
-                            <button class="btn btn-sm btn-success me-2 mb-2 mb-sm-0" (click)="guardarEdicion()">
+                            <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">
                                 <i class="bi bi-check-lg"></i> Guardar
                             </button>
                             <button class="btn btn-sm btn-secondary" (click)="cancelarEdicion()">
@@ -160,31 +159,34 @@
 
                         <!-- Selector de tecnología -->
                         <div class="row g-2 align-items-end">
-                            <div class="col-md-4">
-                                <label class="form-label text-secondary small">Tecnología</label>
-                                <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre"
-                                    [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada"
-                                    placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
-                                </ng-select>
-                            </div>
+                            <div class="col-9 col-sm-10 col-md-11">
 
-                            <!-- Nivel -->
-                            <div class="col-md-3" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
-                                <label class="form-label text-secondary small">Nivel</label>
-                                <select class="form-select form-select" [(ngModel)]="nivelSeleccionado">
-                                    <option value="" disabled selected>Selecciona nivel</option>
-                                    <option
-                                        *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
-                                        [value]="nivel">
-                                        {{ nivel | titlecase }}
-                                    </option>
-                                </select>
-                            </div>
+                                <div class="">
+                                    <label class="form-label text-secondary small">Tecnología</label>
+                                    <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre"
+                                        [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada"
+                                        placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
+                                    </ng-select>
+                                </div>
 
+                                <!-- Nivel -->
+                                <div class=""
+                                    *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+                                    <label class="form-label text-secondary small">Nivel</label>
+                                    <select class="form-select form-select" [(ngModel)]="nivelSeleccionado">
+                                        <option value="" disabled selected>Selecciona nivel</option>
+                                        <option
+                                            *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
+                                            [value]="nivel">
+                                            {{ nivel | titlecase }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
                             <!-- Botón añadir -->
                             <div class="col d-flex justify-content-end"
                                 *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
-                                <button class="btn btn-sm btn-primary" (click)="agregarTecnologia()">
+                                <button class="btn btn-primary" (click)="agregarTecnologia()">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>

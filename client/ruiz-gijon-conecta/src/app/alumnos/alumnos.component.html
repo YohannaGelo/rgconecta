@@ -11,16 +11,18 @@
 
             <!-- Experiencia -->
             <div class="col-sm-4 col-md-3 p-0">
-                <ng-select [items]="['más de 1 año', 'más de 5 años', 'más de 10 años']" placeholder="🎯 Experiencias"
+                <ng-select [items]="experienciaOptions" bindLabel="label" bindValue="value" placeholder="🎯 Experiencia"
                     [(ngModel)]="filtroExperiencia" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
+
             </div>
 
             <!-- Situación -->
             <div class="col-sm-3 col-md-3 p-0">
-                <ng-select [items]="['Trabajando', 'Desempleado', 'Buscando empleo']" placeholder="💼 Situación"
+                <ng-select [items]="situacionOptions" bindLabel="label" bindValue="value" placeholder="💼 Situación"
                     [(ngModel)]="filtroSituacion" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
+
             </div>
         </div>
     </section>
@@ -41,7 +43,7 @@
                             <p class="text-secondary">{{ calcularEdad(alumno.fecha_nacimiento) }} años</p>
                         </div>
                         <!-- Nombre -->
-                        <h5 class="card-title text-center" >
+                        <h5 class="card-title text-center">
                             {{ acortarNombre(alumno.user.name) }}
                         </h5>
                         <!-- Descripción -->
