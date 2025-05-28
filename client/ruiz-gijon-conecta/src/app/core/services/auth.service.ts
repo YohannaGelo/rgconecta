@@ -9,7 +9,9 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}`;
-  private token: string | null = sessionStorage.getItem('token');
+  // private token: string | null = sessionStorage.getItem('token');
+  private token: string | null = this.getToken(); // usa el getter centralizado
+
   private isAuthenticatedSubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(!!this.token);
   private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
@@ -21,6 +23,10 @@ export class AuthService {
       // Si hay token al iniciar, intenta cargar el usuario actual
       this.loadCurrentUser().subscribe();
     }
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
   }
 
   get currentUser(): any {
@@ -45,20 +51,46 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Observable<any> {
+  login(
+    email: string,
+    password: string,
+    recordar: boolean = false
+  ): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap((response) => {
           if (response.token) {
-            sessionStorage.setItem('token', response.token);
+            if (recordar) {
+              localStorage.setItem('token', response.token);
+              sessionStorage.removeItem('token');
+            } else {
+              sessionStorage.setItem('token', response.token);
+              localStorage.removeItem('token');
+            }
+
             this.token = response.token;
             this.isAuthenticatedSubject.next(true);
-            this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
+            this.loadCurrentUser().subscribe();
           }
         })
       );
   }
+
+  // login(email: string, password: string): Observable<any> {
+  //   return this.http
+  //     .post<any>(`${this.apiUrl}/login`, { email, password })
+  //     .pipe(
+  //       tap((response) => {
+  //         if (response.token) {
+  //           sessionStorage.setItem('token', response.token);
+  //           this.token = response.token;
+  //           this.isAuthenticatedSubject.next(true);
+  //           this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
+  //         }
+  //       })
+  //     );
+  // }
 
   updatePassword(
     currentPassword: string,
@@ -77,9 +109,20 @@ export class AuthService {
   }
 
   setToken(newToken: string): void {
-    sessionStorage.setItem('token', newToken);
+    // Reemplaza en ambos para seguridad: solo uno estará activo
+    if (localStorage.getItem('token')) {
+      localStorage.setItem('token', newToken);
+    } else {
+      sessionStorage.setItem('token', newToken);
+    }
+
     this.token = newToken;
   }
+
+  // setToken(newToken: string): void {
+  //   sessionStorage.setItem('token', newToken);
+  //   this.token = newToken;
+  // }
 
   setCurrentUser(user: any): void {
     this.currentUserSubject.next(user);
@@ -124,11 +167,20 @@ export class AuthService {
 
   logout() {
     sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
     this.token = null;
     this.isAuthenticatedSubject.next(false);
-    this.currentUserSubject.next(null); // 👈 Limpiamos el usuario al hacer logout
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
+
+  // logout() {
+  //   sessionStorage.removeItem('token');
+  //   this.token = null;
+  //   this.isAuthenticatedSubject.next(false);
+  //   this.currentUserSubject.next(null); // 👈 Limpiamos el usuario al hacer logout
+  //   this.router.navigate(['/login']);
+  // }
 
   getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -145,8 +197,4 @@ export class AuthService {
       }),
     };
   }
-
-  // getHeaders() {
-  //   return new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-  // }
 }
