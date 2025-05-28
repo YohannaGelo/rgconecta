@@ -19,6 +19,18 @@ export class AlumnosComponent implements OnInit {
 
   tecnologias: string[] = [];
 
+  experienciaOptions = [
+    { label: 'Más de 1 año', value: 1 },
+    { label: 'Más de 5 años', value: 5 },
+    { label: 'Más de 10 años', value: 10 },
+  ];
+
+  situacionOptions = [
+    { label: 'Trabajando', value: 'trabajando' },
+    { label: 'Desempleado', value: 'desempleado' },
+    { label: 'Buscando empleo', value: 'buscando_empleo' },
+  ];
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -32,27 +44,58 @@ export class AlumnosComponent implements OnInit {
     if (this.filtroExperiencia) params.experiencia = this.filtroExperiencia;
     if (this.filtroSituacion) params.situacion = this.filtroSituacion;
 
-    this.http
-      .get<any>(`${environment.apiUrl}/alumnos`, { params })
-      .subscribe({
-        next: (response) => {
-          //console.log('Respuesta:', response);
-          this.alumnos = response.data;
-          this.tecnologias = response.stats.tecnologias;
+    console.log('📤 Filtros aplicados:', params);
 
-          // Asegura valores por defecto si no vienen
-          this.currentPage = response.pagination?.current_page ?? 1;
-          this.lastPage = response.pagination?.last_page ?? 1;
-        },
-        error: (error) => {
-          console.error('Error al cargar alumnos', error);
-        },
-      });
+    this.http.get<any>(`${environment.apiUrl}/alumnos`, { params }).subscribe({
+      next: (response) => {
+        //console.log('Respuesta:', response);
+        this.alumnos = response.data;
+        this.tecnologias = response.stats.tecnologias;
+
+        // Asegura valores por defecto si no vienen
+        this.currentPage = response.pagination?.current_page ?? 1;
+        this.lastPage = response.pagination?.last_page ?? 1;
+      },
+      error: (error) => {
+        console.error('Error al cargar alumnos', error);
+      },
+    });
   }
 
   aplicarFiltros(): void {
     this.cargarAlumnos(1); // Reinicia a página 1 al aplicar filtros
   }
+
+  // aplicarFiltros(): void {
+  //   const experienciaMap: { [key: string]: number } = {
+  //     'más de 1 año': 1,
+  //     'más de 5 años': 5,
+  //     'más de 10 años': 10,
+  //   };
+
+  //   const params: any = {};
+
+  //   if (this.filtroTecnologia) params.tecnologia = this.filtroTecnologia;
+  //   if (this.filtroSituacion) params.situacion = this.filtroSituacion?.trim();
+  //   if (this.filtroExperiencia) {
+  //     const valorNumerico = experienciaMap[this.filtroExperiencia];
+  //     if (valorNumerico) {
+  //       params.experiencia = valorNumerico;
+  //     }
+  //   }
+
+  //   this.http.get<any>(`${environment.apiUrl}/alumnos`, { params }).subscribe({
+  //     next: (response) => {
+  //       this.alumnos = response.data;
+  //       this.tecnologias = response.stats.tecnologias;
+  //       this.currentPage = response.pagination?.current_page ?? 1;
+  //       this.lastPage = response.pagination?.last_page ?? 1;
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al aplicar filtros', error);
+  //     },
+  //   });
+  // }
 
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.lastPage) {

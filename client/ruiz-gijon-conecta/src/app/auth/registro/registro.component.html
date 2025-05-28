@@ -34,7 +34,7 @@
         <!-- 🔒 CONTRASEÑA -->
         <div class="mt-3 row">
           <!-- 🔒 CONTRASEÑA -->
-          <div class="col">
+          <div class="col-sm-6">
             <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña</label>
             <input type="password" class="form-control text-secondary" id="input-password" placeholder="********"
               required (ngModelChange)="onFormChange()" [(ngModel)]="password" name="password" #passwordInput="ngModel"
@@ -54,7 +54,7 @@
           </div>
 
           <!-- 🔒 CONFIRMAR CONTRASEÑA -->
-          <div class="col">
+          <div class="col-sm-6 mt-3 mt-sm-0">
             <label for="input-confirm-password" class="form-label text-uppercase text-secondary">Confirmar
               contraseña</label>
             <input type="password" class="form-control text-secondary" id="input-confirm-password"
@@ -98,13 +98,13 @@
             </select>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 mt-3 mt-md-0">
             <label for="input_inicio" class="form-label text-uppercase text-secondary">Año inicio</label>
             <input type="text" id="input_inicio" class="form-control" (ngModelChange)="onFormChange()"
               [(ngModel)]="comienzoEstudios" name="comienzoEstudios" placeholder="2020" required>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 mt-3 mt-md-0">
             <label for="input_fin" class="form-label text-uppercase text-secondary">Año fin</label>
             <input type="text" id="input_fin" class="form-control" (ngModelChange)="onFormChange()"
               [(ngModel)]="finEstudios" name="finEstudios" placeholder="2022" required>
@@ -112,7 +112,7 @@
         </div>
 
         <!-- Institución + botón añadir -->
-        <div class="row mt-2 align-items-end justify-content-between">
+        <div class="row mt-3 align-items-end justify-content-between">
           <div class="col-9 col-sm-10 col-lg-11">
             <label for="input_institucion" class="form-label text-uppercase text-secondary">Institución</label>
             <input type="text" id="input_institucion" class="form-control" (ngModelChange)="onFormChange()"
@@ -187,19 +187,19 @@
         </div>
 
         <!-- Comienzo, Fin y Botón para agregar experiencia -->
-        <div class="row mt-2 justify-content-between">
+        <div class="row mt-3 justify-content-between">
           <div class="col-sm-6 col-md-2">
             <label for="input_ageStartExp" class="form-label text-uppercase text-secondary">Comienzo</label>
             <input type="text" class="form-control" id="input_ageStartExp" placeholder="2022"
               (ngModelChange)="onFormChange()" [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia" required />
           </div>
-          <div class="col-sm-6 col-md-2">
+          <div class="col-sm-6 col-md-2 mt-3 mt-sm-0">
             <label for="input_ageFinishExp" class="form-label text-uppercase text-secondary">Fin</label>
             <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
               (ngModelChange)="onFormChange()" [(ngModel)]="finExperiencia" name="finExperiencia" required />
           </div>
 
-          <div class="col-9 col-sm-10 col-md-6">
+          <div class="col-9 col-sm-10 col-md-6 mt-3 mt-md-0">
             <label class="form-label text-uppercase text-secondary">Puesto</label>
             <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="puestoExperiencia"
               name="puestoExperiencia" placeholder="Ej: Desarrollador Frontend" required />
@@ -248,7 +248,7 @@
           </div>
 
           <!-- 🎉 FECHA NACIMIENTO -->
-          <div class="col-md-6">
+          <div class="col-md-6 mt-3 mt-md-0">
             <label for="input_date" class="form-label text-uppercase text-secondary">Fecha de nacimiento</label>
             <input type="date" class="form-control" id="input_date" required (ngModelChange)="onFormChange()"
               [(ngModel)]="fechaNacimiento" name="fechaNacimiento">

@@ -1,16 +1,17 @@
 <div class="d-flex mx-2 mb-3" style="min-height: calc(100dvh - 220px);">
     <div class="card shadow border-0 col-12">
         <!-- Cabecera de la card -->
-        <div class="card-header bg-primary text-white py-3">
-            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-center">
-                <h3 class="mb-0">
+        <div class="card-header bg-white pt-3">
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-start">
+                <h3 class="mb-0 mt-1">
                     <i class="bi bi-people-fill me-2"></i>Alumnos pendientes de verificación
                 </h3>
-                <span class="badge bg-warning text-dark fs-6 py-2 px-3">
+                <span class="badge bg-warning text-dark fs-6 py-2 px-3 mt-1">
                     {{alumnos.length}} pendientes
                 </span>
             </div>
         </div>
+        <hr class="">
 
         <!-- Cuerpo de la card -->
         <div class="card-body p-4">
@@ -24,14 +25,15 @@
             <!-- Lista de alumnos -->
             <div class="row row-cols-1 row-cols-lg-2 g-4 ">
                 <div class="col" *ngFor="let alumno of alumnos">
+                    
                     <div class="h-100 shadow-sm border-start border-2 border-warning bg-light">
                         <div class="card-body">
-                            <div class="d-flex align-items-start">
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start">
                                 <img [src]="getUserImage(alumno.user.foto_perfil)" alt="Foto de perfil"
                                     class="rounded-circle me-3 me-lg-4"
                                     style="width: 80px; height: 80px; object-fit: cover;">
 
-                                <div class="flex-grow-1 overflow-hidden">
+                                <div class="flex-grow-1 overflow-hidden text-center text-sm-start mt-3 mt-sm-0">
                                     <h5 class="card-title mb-1">{{ acortarNombre(alumno.user.name) }}</h5>
                                     <p class="card-text text-muted small mb-2">
                                         <i class="bi bi-envelope me-1"></i> {{ alumno.user.email }}
@@ -50,11 +52,11 @@
                             </div>
                         </div>
 
-                        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
-                            <small class="text-muted col-4 col-lg-6">
+                        <div class="card-footer bg-transparent d-flex flex-column flex-sm-row justify-content-between align-items-center">
+                            <small class="text-muted  col-lg-6">
                                 Registrado el: {{ alumno.created_at | date:'dd/MM/yyyy' }}
                             </small>
-                            <div>
+                            <div class="mt-2 mt-sm-0">
                                 <button class="btn btn-sm btn-outline-danger me-2 col"
                                     (click)="abrirModalRechazo(alumno.id)">
                                     Rechazar
@@ -69,8 +71,10 @@
             </div>
         </div>
 
+        <hr class="mb-0">
+
         <!-- Pie de la card (opcional) -->
-        <div class="card-footer bg-light text-muted small">
+        <div class="card-footer bg-white text-muted small">
             <div class="d-flex justify-content-between align-items-center">
                 <span>Total de solicitudes: {{ alumnos.length }}</span>
                 <!-- <span>Última actualización: {{ hoy | date:'dd/MM/yyyy HH:mm' }}</span> -->

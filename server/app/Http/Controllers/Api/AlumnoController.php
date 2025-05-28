@@ -35,6 +35,9 @@ class AlumnoController extends Controller
             'tecnologias:nombre',
             'experiencias:id,alumno_id,fecha_inicio,fecha_fin'
         ])
+            ->whereHas('user', function ($q) {
+                $q->where('is_verified', 1);
+            })
             ->select(['id', 'user_id', 'situacion_laboral', 'fecha_nacimiento', 'titulo_profesional']);
 
         if ($request->filled('tecnologia')) {
@@ -44,8 +47,9 @@ class AlumnoController extends Controller
         }
 
         if ($request->filled('situacion')) {
-            $query->where('situacion_laboral', $request->situacion);
+            $query->whereRaw('LOWER(situacion_laboral) = ?', [strtolower(trim($request->situacion))]);
         }
+
 
         if ($request->filled('experiencia')) {
             $query->whereHas('experiencias', function ($q) use ($request) {

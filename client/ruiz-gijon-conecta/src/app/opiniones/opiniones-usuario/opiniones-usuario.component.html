@@ -2,21 +2,22 @@
 
     <div class="bg-white rounded-2 p-3 shadow flex-grow-1 mb-3">
         <!-- Encabezado + botón -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
+
             <h3 class="card-title mt-2">Mis opiniones</h3>
-            <button class="btn btn-success d-flex align-items-center px-3 py-2" (click)="irANuevaOpinion()">
+            <button class="btn btn-success d-flex align-items-center px-3 py-2 mt-3 mt-sm-0" (click)="irANuevaOpinion()">
                 <i class="bi bi-pencil-square me-2"></i> Dejar nueva opinión
             </button>
         </div>
 
         <!-- Lista de opiniones -->
         <ng-container *ngIf="opiniones.length > 0; else sinOpiniones">
-            <div *ngFor="let opinion of opinionesPaginadas" class="bg-light p-3 pt-3 mb-3 rounded">
+            <div *ngFor="let opinion of opinionesPaginadas" class="bg-light p-3 pb-2 mb-3 rounded">
 
                 <!-- Vista normal -->
                 <ng-container *ngIf="opinionEditando?.id !== opinion.id">
-                    <div class="d-flex justify-content-between">
-                        <div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1 me-3">
                             <h5 class="fw-light text-secondary mb-1">
                                 Empresa: <span class="fw-semibold fs-5">{{ opinion.empresa?.nombre }}</span>
                             </h5>
@@ -41,13 +42,13 @@
                         </div>
 
                         <!-- Botones -->
-                        <div class="text-end">
+                        <div class="d-flex flex-sm-row mt-2 mt-md-0">
                             <button class="btn btn-sm btn-outline-primary me-2" (click)="activarEdicion(opinion)">
-                                <i class="bi bi-pencil-fill"></i>
+                                <i class="bi bi-pencil-fill"></i> Editar
                             </button>
                             <button class="btn btn-sm btn-outline-danger"
                                 (click)="abrirModalEliminar(opinion.id, $event)">
-                                <i class="bi bi-trash3-fill"></i>
+                                <i class="bi bi-trash3-fill"></i> Eliminar
                             </button>
 
                         </div>
@@ -59,14 +60,15 @@
                     <h5 class="fw-light text-secondary mb-2">
                         Empresa: <span class="fw-semibold">{{ opinion.empresa?.nombre }}</span>
                     </h5>
-                    <h6 class="fw-light text-secondary" title="Los años se calculan a partir de la fecha de inicio y fin de tu experiencia laboral registrada en el perfil.">
+                    <h6 class="fw-light text-secondary"
+                        title="Los años se calculan a partir de la fecha de inicio y fin de tu experiencia laboral registrada en el perfil.">
                         Experiencia en la empresa:
                         <span class="fw-semibold">
                             {{ pluralizarAnios(opinion.anios_en_empresa) }}
                         </span>
                     </h6>
 
-                    <textarea class="form-control mb-2" [(ngModel)]="opinionEditando.contenido"></textarea>
+                    <textarea class="form-control mb-2" rows="4" [(ngModel)]="opinionEditando.contenido"></textarea>
 
                     <!-- Estrellas editables en amarillo -->
                     <div class="d-flex align-items-center mt-2 mb-3">

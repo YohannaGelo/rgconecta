@@ -24,7 +24,7 @@ class MensajeOfertaMail extends Mailable
 
     public function build()
     {
-        $baseUrl = config('app.url');
+        $frontendUrl = env('FRONTEND_URL');
 
         return $this->subject("🧑🏻‍💻 Nueva consulta sobre tu oferta - RG Conecta")
             ->html("
@@ -33,7 +33,7 @@ class MensajeOfertaMail extends Mailable
                     <!-- Cabecera (Card 1) -->
                     <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
                                         box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-                        <a href='{$baseUrl}'>
+                        <a href='{$frontendUrl}'>
                             <img src='https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/banner_RG_web_veaxjr.png'
                                 alt='Ruiz Gijón Conecta' style='max-width: 160px; height: auto;' />
                         </a>
@@ -57,7 +57,7 @@ class MensajeOfertaMail extends Mailable
                         <p style='font-size: 14px; color: #888;'>Fecha de publicación: {$this->oferta->created_at->format('d/m/Y')}</p>
 
                         <div style='text-align: center; margin-top: 30px;'>
-                            <a href='{$baseUrl}/ofertas/{$this->oferta->id}' style='background-color: #2b4e84; color: white; padding: 10px 20px;
+                            <a href='{$frontendUrl}/ofertas/{$this->oferta->id}' style='background-color: #2b4e84; color: white; padding: 10px 20px;
                                                 border-radius: 6px; text-decoration: none; font-weight: bold;'>
                                 Ver oferta
                             </a>
