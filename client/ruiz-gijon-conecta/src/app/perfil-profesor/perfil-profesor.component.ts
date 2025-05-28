@@ -173,7 +173,8 @@ export class PerfilProfesorComponent implements OnInit {
 
           if (newToken && updatedUser) {
             // ✅ Guardar el nuevo token
-            sessionStorage.setItem('token', newToken);
+            // sessionStorage.setItem('token', newToken);
+            // this.authService.setToken(newToken);
             this.authService.setToken(newToken);
 
             // ✅ Actualizar el usuario en el AuthService

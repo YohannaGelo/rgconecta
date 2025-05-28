@@ -18,6 +18,8 @@ export class LoginComponent {
 
   email: string = '';
   password: string = '';
+  recordarme: boolean = false;
+
 
   constructor(private authService: AuthService, private router: Router, private modalService: NgbModal, private notificationService: NotificationService) { }
 
@@ -27,7 +29,7 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    this.authService.login(this.email, this.password).subscribe(
+    this.authService.login(this.email, this.password, this.recordarme).subscribe(
       response => {
         // console.log('Login exitoso', response); // Debug
         this.notificationService.success('¡Bienvenido de nuevo!');
