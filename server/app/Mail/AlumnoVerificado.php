@@ -52,7 +52,7 @@ class AlumnoVerificado extends Mailable
                         </ul>
 
                         <div style='text-align: center; margin-top: 30px;'>
-                            <a href='{$frontendUrl}/iniciar-sesion'
+                            <a href='{$frontendUrl}/login'
                             style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
                                     text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
                             Ir a la plataforma
