@@ -209,12 +209,16 @@ class AlumnoController extends Controller
 
             DB::commit();
 
+            // Enviar correo de verificación
+            $user->sendEmailVerificationNotification();
+
+
             // 1. Enviar correo al alumno
-            Mail::to($user->email)->send(new BienvenidaAlumnoPendiente($alumno));
+            // Mail::to($user->email)->send(new BienvenidaAlumnoPendiente($alumno));
 
             // 2. Enviar aviso a profesores y admin
-            $destinatarios = User::whereIn('role', ['profesor', 'admin'])->pluck('email')->toArray();
-            Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno));
+            // $destinatarios = User::whereIn('role', ['profesor', 'admin'])->pluck('email')->toArray();
+            // Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno));
 
 
             return response()->json($alumno->load(['user', 'titulos', 'tecnologias', 'experiencias']), 201);

@@ -31,6 +31,7 @@ import { AlumnosComponent as AdminAlumnosComponent } from './admin/alumnos/alumn
 import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profesores/profesores.component';
 import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
 import { AyudaComponent } from './ayuda/ayuda.component';
+import { VerificarComponent } from './auth/verificar/verificar.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -96,6 +97,8 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   { path: 'ayuda', component: AyudaComponent },
+  { path: 'verificar', component: VerificarComponent }, // Ruta para verificar el email
+
   {
     path: 'admin',
     component: PanelComponent,

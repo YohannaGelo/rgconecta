@@ -11,6 +11,8 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
+        $emailVerifiedAt = now();
+
         // Admin
         $admin = User::create([
             'name' => 'Admin',
@@ -19,6 +21,8 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'foto_perfil' => 'default.jpg',
             'foto_perfil_public_id' => null,
+            'email_verified_at' => $emailVerifiedAt,
+
         ]);
 
         // Profesores
@@ -29,6 +33,8 @@ class UserSeeder extends Seeder
             'role' => 'profesor',
             'foto_perfil' => 'default.jpg',
             'foto_perfil_public_id' => null,
+            'email_verified_at' => $emailVerifiedAt,
+
         ]);
 
         Profesor::create([
@@ -43,6 +49,8 @@ class UserSeeder extends Seeder
             'role' => 'profesor',
             'foto_perfil' => 'default.jpg',
             'foto_perfil_public_id' => null,
+            'email_verified_at' => $emailVerifiedAt,
+
         ]);
 
         Profesor::create([
@@ -84,6 +92,7 @@ class UserSeeder extends Seeder
                 'role' => $alumnoData['role'],
                 'foto_perfil' => 'default.jpg',
                 'foto_perfil_public_id' => null,
+                'email_verified_at' => $emailVerifiedAt,
             ]);
 
             Alumno::create([
@@ -93,6 +102,7 @@ class UserSeeder extends Seeder
                 'is_verified' => $alumnoData['is_verified'],
                 'promocion' => $alumnoData['promocion'],
                 'titulo_profesional' => $alumnoData['titulo_profesional'],
+
             ]);
         }
     }

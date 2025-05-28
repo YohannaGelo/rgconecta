@@ -41,7 +41,7 @@ class AuthController extends Controller
 
         if ($user->role === 'alumno') {
             $alumno = $user->alumno()->with([
-                'user:id,name,email,foto_perfil,role',
+                'user:id,name,email,foto_perfil,role,email_verified_at',
                 'titulos',
                 'tecnologias',
                 'opiniones.empresa:id,nombre',
@@ -56,7 +56,7 @@ class AuthController extends Controller
 
         if ($user->role === 'profesor') {
             $profesor = $user->profesor()->with([
-                'user:id,name,email,foto_perfil,role'
+                'user:id,name,email,foto_perfil,role,email_verified_at'
             ])->first();
 
             return response()->json($profesor);
