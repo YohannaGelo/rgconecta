@@ -89,6 +89,9 @@ class ProfesorController extends Controller
 
             DB::commit();
 
+            // Enviar correo de verificación
+            $user->sendEmailVerificationNotification();
+
             return response()->json($profesor->load('user'), 201);
         } catch (\Exception $e) {
             DB::rollBack();

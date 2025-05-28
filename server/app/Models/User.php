@@ -2,18 +2,23 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 use App\Interfaces\RoleCheck;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
+use App\Notifications\CustomVerifyEmail;
 
 /**
  * @method bool isAdmin()
  */
-class User extends Authenticatable implements RoleCheck
+class User extends Authenticatable implements MustVerifyEmail, RoleCheck
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -52,7 +57,7 @@ class User extends Authenticatable implements RoleCheck
     {
         return $this->hasMany(Opinion::class);
     }
-    
+
     public function preferencias()
     {
         return $this->hasOne(PreferenciaNotificacion::class);
@@ -92,6 +97,10 @@ class User extends Authenticatable implements RoleCheck
         'password' => 'hashed',
     ];
 
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
 
     /**
      * Verificar si el usuario es un administrador.

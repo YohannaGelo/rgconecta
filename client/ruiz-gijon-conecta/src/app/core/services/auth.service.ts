@@ -197,4 +197,12 @@ export class AuthService {
       }),
     };
   }
+
+  // En tu servicio AuthService
+  verifyEmail(id: string, hash: string): Observable<any> {
+    return this.http.get(
+      `${environment.apiUrl}/email/verify/${id}/${hash}`,
+      { withCredentials: true } // Esto es crucial
+    );
+  }
 }

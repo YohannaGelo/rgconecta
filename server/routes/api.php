@@ -28,6 +28,10 @@ use App\Http\Controllers\Admin\ProfesorController as AdminProfesorController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
 use App\Http\Controllers\Admin\SectorController as AdminSectorController;
 
+// Verificación mail
+use Illuminate\Auth\Events\Verified;
+use App\Models\User;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +43,8 @@ use App\Http\Controllers\Admin\SectorController as AdminSectorController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
 
 // Rutas PÚBLICAS
 Route::post('/login', [AuthController::class, 'login']);
@@ -162,3 +168,32 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         Route::apiResource('alumnos', AdminAlumnoController::class)
             ->parameters(['alumnos' => 'alumno']);
     });
+
+
+// Ruta para reenviar el correo de verificación
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return response()->json(['status' => 'verification-link-sent']);
+})->middleware(['auth:sanctum', 'throttle:6,1']);
+
+
+Route::post('/resend-verification', function (Request $request) {
+    $validated = Validator::make($request->all(), [
+        'email' => 'required|email|exists:users,email',
+    ]);
+
+    if ($validated->fails()) {
+        return response()->json(['message' => 'Correo no válido'], 422);
+    }
+
+    $user = User::where('email', $request->email)->first();
+
+    if ($user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Este correo ya está verificado.'], 409);
+    }
+
+    $user->sendEmailVerificationNotification();
+
+    return response()->json(['message' => 'Enlace de verificación reenviado.']);
+});
+
