@@ -24,7 +24,7 @@ class MensajeOfertaMail extends Mailable
 
     public function build()
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
 
         return $this->subject("🧑🏻‍💻 Nueva consulta sobre tu oferta - RG Conecta")
             ->html("
