@@ -15,7 +15,7 @@ class UsuarioController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => User::select('id', 'foto_perfil', 'name', 'email', 'role', 'created_at')->orderBy('id')->get()
+            'data' => User::select('id', 'foto_perfil', 'name', 'email', 'role', 'created_at', 'email_verified_at')->orderBy('id')->get()
         ]);
     }
 

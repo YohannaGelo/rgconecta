@@ -110,4 +110,17 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Sesión cerrada']);
     }
+
+    public function verificarClaveProfe(Request $request)
+    {
+        $claveIntroducida = $request->input('clave');
+        $claveCorrecta = config('app.clave_profesor');
+
+
+        if ($claveIntroducida === $claveCorrecta) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['message' => 'Clave incorrecta'], 401);
+    }
 }

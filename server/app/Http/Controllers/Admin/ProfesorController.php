@@ -17,7 +17,7 @@ class ProfesorController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Profesor::with('user:id,name,email,role')->orderBy('id')->get()
+            'data' => Profesor::with('user:id,name,email,role,email_verified_at')->orderBy('id')->get()
         ]);
     }
 

@@ -129,6 +129,18 @@ export class RegistroComponent implements OnInit {
     default: ['basico', 'intermedio', 'avanzado'],
   };
 
+  nivelesEtiquetas: { [key: string]: string } = {
+    basico: 'Básico',
+    intermedio: 'Intermedio',
+    avanzado: 'Avanzado',
+    A1: 'A1',
+    A2: 'A2',
+    B1: 'B1',
+    B2: 'B2',
+    C1: 'C1',
+    C2: 'C2',
+  };
+
   // Nivel seleccionado asociado a la nueva tecnología
   nivelSeleccionado: string = '';
 
@@ -309,6 +321,14 @@ export class RegistroComponent implements OnInit {
       this.finEstudios &&
       this.empresa
     ) {
+      
+      if (parseInt(this.finEstudios) < parseInt(this.comienzoEstudios)) {
+        this.notificationService.warning(
+          'El año de fin no puede ser menor que el de inicio.'
+        );
+        return;
+      }
+
       this.titulosSeleccionados.push({
         titulo: this.titulo,
         comienzoEstudios: this.comienzoEstudios,
@@ -336,16 +356,21 @@ export class RegistroComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
-        this.tecnologiasDisponibles = data.map((tec) => ({
-          nombre: tec.nombre,
-          tipo: tec.tipo,
-          pivot: tec.pivot || { nivel: '' }, // Incluimos pivot si no existe
-        }));
-        this.tecnologiasDisponibles.push({
-          nombre: 'Otros',
+        const otros = {
+          nombre: 'Otros (añadir nueva tecnología)',
           tipo: 'otros',
           pivot: { nivel: '' },
-        });
+        };
+
+        const tecnologias = data
+          .filter((tec) => tec.nombre !== otros.nombre) // evita duplicado si ya existe
+          .map((tec) => ({
+            nombre: tec.nombre,
+            tipo: tec.tipo,
+            pivot: tec.pivot || { nivel: '' },
+          }));
+
+        this.tecnologiasDisponibles = [otros, ...tecnologias];
       },
       (error) => console.error('Error al cargar tecnologías', error)
     );
@@ -464,32 +489,6 @@ export class RegistroComponent implements OnInit {
   compareEmpresa = (e1: any, e2: any) =>
     e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
 
-  // cargarEmpresas(): void {
-  //   this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
-  //     (response) => {
-  //       if (response && Array.isArray(response.data)) {
-  //         this.empresasDisponibles = [
-  //           ...response.data.map((e: any) => ({
-  //             nombre: e.nombre,
-  //             sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
-  //             web: e.web || '', // si falta web, pone vacío
-  //           })),
-  //           { nombre: 'Otras' }, // opción para crear nueva empresa
-  //         ];
-  //       } else {
-  //         console.error(
-  //           'Formato inesperado en la respuesta de empresas',
-  //           response
-  //         );
-  //         this.empresasDisponibles = [{ nombre: 'Otras' }];
-  //       }
-  //     },
-  //     (error) => {
-  //       console.error('Error al cargar empresas', error);
-  //       this.empresasDisponibles = [{ nombre: 'Otras' }];
-  //     }
-  //   );
-  // }
   cargarEmpresas(): void {
     this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
@@ -548,8 +547,8 @@ export class RegistroComponent implements OnInit {
     puestoInput.control.markAsTouched();
 
     // const creandoNuevaEmpresa = this.empresaSeleccionada?.nombre === 'Otras';
-    const creandoNuevaEmpresa = this.empresaSeleccionada?.nombre.startsWith('Otras');
-
+    const creandoNuevaEmpresa =
+      this.empresaSeleccionada?.nombre.startsWith('Otras');
 
     // Marcar y validar inputs de empresa nueva si aplican
     if (creandoNuevaEmpresa) {
@@ -583,26 +582,33 @@ export class RegistroComponent implements OnInit {
     let empresaData: EmpresaData;
 
     // Si es una empresa nueva
-    if (this.empresaSeleccionada?.nombre === 'Otras') {
-      if (
-        !this.nuevaEmpresa.nombre ||
-        !this.nuevaEmpresa.sector_id ||
-        !this.nuevaEmpresa.web
-      ) {
+    // if (this.empresaSeleccionada?.nombre === 'Otras') {
+    if (this.empresaSeleccionada?.nombre?.startsWith('Otras')) {
+      const { nombre, sector_id, web, descripcion } = this.nuevaEmpresa;
+
+      if (!nombre || !web || !sector_id) {
         this.notificationService.warning(
           'Debes introducir el nombre, sector y web de la nueva empresa.'
         );
         return;
       }
 
-      const sectorObj = this.sectores.find(
-        (s) => s.id === this.nuevaEmpresa.sector_id
-      );
+      const sectorObj = this.sectores.find((s) => s.id == sector_id);
 
       empresaData = {
-        ...this.nuevaEmpresa,
-        sector: sectorObj ?? { id: 0, nombre: 'Desconocido' }, // Fallback
+        nombre,
+        web,
+        sector_id,
+        descripcion,
+        sector: sectorObj ?? { id: 0, nombre: 'Desconocido' },
       };
+
+      if (parseInt(this.finExperiencia) < parseInt(this.comienzoExperiencia)) {
+        this.notificationService.warning(
+          'El año de fin no puede ser menor que el de inicio.'
+        );
+        return;
+      }
 
       this.empresasNuevas.push(empresaData);
     }
@@ -635,6 +641,13 @@ export class RegistroComponent implements OnInit {
         fecha_inicio: this.comienzoExperiencia,
         fecha_fin: this.finExperiencia,
       };
+
+      if (parseInt(this.finExperiencia) < parseInt(this.comienzoExperiencia)) {
+        this.notificationService.warning(
+          'El año de fin no puede ser menor que el de inicio.'
+        );
+        return;
+      }
 
       this.experiencias.push(nuevaExp);
 
@@ -688,11 +701,38 @@ export class RegistroComponent implements OnInit {
 
   // #region 🏞️ IMAGEN DE PERFIL
   // Método para manejar el cambio de imagen
+  // fileChangeEvent(event: any): void {
+  //   this.imageChangedEvent = event;
+  //   this.showCropper = true;
+
+  //   this.onFormChange(); // Marca como cambio pendiente
+  // }
+  // 📌 Solo se permiten estos formatos
+  private formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
   fileChangeEvent(event: any): void {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const esHEIC =
+      file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+    const esFormatoValido = this.formatosPermitidos.includes(file.type);
+
+    if (esHEIC) {
+      this.notificationService.warning(
+        'El formato HEIC no es compatible. Usa JPG, PNG o WebP.'
+      );
+      return;
+    }
+
+    if (!esFormatoValido) {
+      this.notificationService.warning('Formato de imagen no válido.');
+      return;
+    }
+
     this.imageChangedEvent = event;
     this.showCropper = true;
-
-    this.onFormChange(); // Marca como cambio pendiente
+    this.onFormChange(); // Marca el formulario como modificado
   }
 
   imageCropped(event: ImageCroppedEvent) {

@@ -29,6 +29,9 @@ class EmpresaController extends Controller
         // Ordenar por más activas
         if ($request->has('sort')) {
             $query->orderBy($request->sort, 'desc');
+        } else {
+            // Por defecto: ordenar alfabéticamente por nombre
+            $query->orderBy('nombre');
         }
 
         $empresas = $query->paginate(8);

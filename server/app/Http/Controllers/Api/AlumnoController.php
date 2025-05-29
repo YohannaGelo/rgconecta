@@ -506,6 +506,9 @@ class AlumnoController extends Controller
 
         $alumnos = Alumno::with('user')
             ->where('is_verified', 0)
+            ->whereHas('user', function ($query) {
+                $query->whereNotNull('email_verified_at');
+            })
             ->orderByDesc('created_at')
             ->get();
 

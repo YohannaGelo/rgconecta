@@ -76,6 +76,9 @@ Route::post('/tecnologias', [TecnologiaController::class, 'store']);
 
 Route::post('/contacto', [ContactoController::class, 'enviar']);
 
+Route::post('/verificar-clave-profe', [AuthController::class, 'verificarClaveProfe']);
+
+
 
 // Rutas PROTEGIDAS
 Route::middleware('auth:sanctum')->group(function () {
@@ -196,4 +199,3 @@ Route::post('/resend-verification', function (Request $request) {
 
     return response()->json(['message' => 'Enlace de verificación reenviado.']);
 });
-

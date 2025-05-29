@@ -1,7 +1,6 @@
 <div class="container py-4">
     <!-- Encabezado -->
-    <div
-        class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
+    <div class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
         <h2 class="mb-0 col-9">Gestión de Usuarios</h2>
         <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
             <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
@@ -76,9 +75,13 @@
                     <!-- Vista o edición -->
                     <div *ngIf="editando?.id !== usuario.id">
                         <h4 class="card-title mb-1">{{ usuario.name }}</h4>
+                        <p *ngIf="!usuario.email_verified_at" class="my-2 small">
+                            <span class="badge bg-danger ">Email no verificado</span>
+                        </p>
                         <p class="text-muted mb-2">
                             <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
                         </p>
+
                         <p class="mb-0">
                             <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">
                                 <i class="bi bi-person-badge me-2"></i>
@@ -132,9 +135,13 @@
                                 [(ngModel)]="editando.name" />
                         </td>
                         <td>
-                            <div *ngIf="editando?.id !== usuario.id">{{ usuario.email }}</div>
+
+                            <div *ngIf="editando?.id !== usuario.id"><span *ngIf="!usuario.email_verified_at" class="my-2 small">
+                                <span class="badge bg-danger ">Email no verificado</span>
+                            </span> {{ usuario.email }} </div>
                             <input *ngIf="editando?.id === usuario.id" type="email" class="form-control form-control-sm"
                                 [(ngModel)]="editando.email" />
+                            
                         </td>
                         <td>
                             <div *ngIf="editando?.id !== usuario.id">

@@ -22,8 +22,9 @@
             Iniciar sesión
           </button>
 
-          <div class="form-check form-switch mt-3 d-flex justify-content-end" >
-            <input class="form-check-input me-3" type="checkbox" id="recordarme"  style="cursor: pointer;" [(ngModel)]="recordarme" name="recordarme">
+          <div class="form-check form-switch mt-3 d-flex justify-content-end">
+            <input class="form-check-input me-3" type="checkbox" id="recordarme" style="cursor: pointer;"
+              [(ngModel)]="recordarme" name="recordarme">
             <label class="form-check-label" for="recordarme">Recordarme</label>
           </div>
 
@@ -65,11 +66,44 @@
           👨‍🎓 Antiguo Alumno
         </button>
 
-        <button class="btn btn-outline-success px-4 py-2 rounded-pill" [routerLink]="'/registro-profes'"
-          (click)="modal.close()">
+        <button class="btn btn-outline-success px-4 py-2 rounded-pill" 
+          (click)="abrirModalClaveProfe(modal)">
           👩‍🏫 Profesor
         </button>
       </div>
+    </div>
+
+  </div>
+</ng-template>
+
+
+<!-- MODAL: Clave de acceso para profesores -->
+<ng-template #modalClaveProfesor let-modal>
+  <div class="modal-content shadow rounded-4 border-0">
+
+    <!-- Header -->
+    <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+      <h5 class="modal-title text-dark d-flex align-items-center fs-6">
+        <i class="bi bi-shield-lock-fill me-2 text-primary"></i>
+        Acceso para profesores
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body text-center">
+      <p class="text-muted mb-3">Introduce la clave que te ha proporcionado el centro para continuar con el registro
+        como profesor.</p>
+      <input type="password" class="form-control text-center shadow-sm" [(ngModel)]="claveProfesor"
+        placeholder="🔒 Clave de acceso" (keydown.enter)="enviarClave(modal)" />
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer border-0 justify-content-center pb-4">
+      <button class="btn btn-outline-secondary px-4 me-2" (click)="modal.dismiss()" appAutofocus>Cancelar</button>
+      <button class="btn btn-primary px-4" (click)="enviarClave(modal)">
+        <i class="bi bi-check-lg me-1"></i>Continuar
+      </button>
     </div>
 
   </div>
