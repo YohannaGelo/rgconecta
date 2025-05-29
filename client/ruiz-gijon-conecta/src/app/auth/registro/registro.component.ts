@@ -1,4 +1,10 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  TemplateRef,
+  ViewChildren,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -10,6 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewChild } from '@angular/core';
 import { SectorService } from '../../services/sector.service';
 import { environment } from '../../../environments/environment';
+import { NgForm, NgModel } from '@angular/forms';
 interface EmpresaData {
   nombre: string;
   sector_id: number | null;
@@ -25,6 +32,19 @@ interface EmpresaData {
   styleUrl: './registro.component.scss',
 })
 export class RegistroComponent implements OnInit {
+  @ViewChild('registroForm') registroForm!: NgForm;
+
+  @ViewChildren('nombreEmpresaInput, webEmpresaInput, sectorEmpresaInput')
+  empresaInputs!: QueryList<NgModel>;
+
+  @ViewChildren('tipoTecInput, nombreTecInput, nivelTecInput')
+  tecnologiaInputs!: QueryList<NgModel>;
+  @ViewChild('nivelExistenteInput') nivelExistenteInput!: NgModel;
+
+  // verEstadoFormulario() {
+  //   console.log(this.registroForm);
+  // }
+
   @ViewChild('confirmacionModal') confirmacionModal: any;
   itemAEliminar: { tipo: string; index: number } | null = null;
 
@@ -258,7 +278,31 @@ export class RegistroComponent implements OnInit {
   }
 
   // Método para agregar un título a la lista de títulos seleccionados
-  agregarTitulo(): void {
+  agregarTitulo(
+    tituloInput: NgModel,
+    inicioInput: NgModel,
+    finInput: NgModel,
+    empresaInput: NgModel
+  ): void {
+    // Marca todos como "touched"
+    tituloInput.control.markAsTouched();
+    inicioInput.control.markAsTouched();
+    finInput.control.markAsTouched();
+    empresaInput.control.markAsTouched();
+
+    // Si algo es inválido, no continuar
+    if (
+      !this.titulo ||
+      !this.comienzoEstudios ||
+      !this.finEstudios ||
+      !this.empresa
+    ) {
+      this.notificationService.warning(
+        'Por favor, completa todos los campos antes de añadir un título.'
+      );
+      return;
+    }
+
     if (
       this.titulo &&
       this.comienzoEstudios &&
@@ -318,6 +362,40 @@ export class RegistroComponent implements OnInit {
   }
 
   agregarTecnologia(): void {
+    if (!this.tecnologiaSeleccionada) {
+      this.notificationService.warning(
+        'Selecciona o crea una tecnología antes de continuar.'
+      );
+      return;
+    }
+
+    // Si es una tecnología EXISTENTE (≠ Otros)
+    if (this.tecnologiaSeleccionada.nombre !== 'Otros') {
+      this.nivelExistenteInput.control.markAsTouched();
+
+      if (!this.nivelSeleccionado) {
+        this.notificationService.warning(
+          'Selecciona un nivel para la tecnología.'
+        );
+        return;
+      }
+
+      const yaExiste = this.tecnologiasSeleccionadas.some(
+        (tec) => tec.nombre === this.tecnologiaSeleccionada.nombre
+      );
+
+      if (!yaExiste) {
+        const tecnologiaConNivel = {
+          ...this.tecnologiaSeleccionada,
+          pivot: { nivel: this.nivelSeleccionado },
+        };
+        this.tecnologiasSeleccionadas.push(tecnologiaConNivel);
+      }
+
+      this.tecnologiaSeleccionada = null;
+      this.nivelSeleccionado = '';
+    }
+
     if (
       this.tecnologiaSeleccionada &&
       this.tecnologiaSeleccionada.nombre !== 'Otros'
@@ -340,7 +418,12 @@ export class RegistroComponent implements OnInit {
   }
 
   agregarNuevaTecnologiaLocal(): void {
-    console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
+    // console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
+    // Marcar campos de nueva tecnología como tocados
+    this.tecnologiaInputs.forEach((input) => {
+      input.control.markAsTouched();
+      input.control.updateValueAndValidity();
+    });
 
     if (
       this.nuevaTecnologia.nombre &&
@@ -381,35 +464,68 @@ export class RegistroComponent implements OnInit {
   compareEmpresa = (e1: any, e2: any) =>
     e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
 
+  // cargarEmpresas(): void {
+  //   this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
+  //     (response) => {
+  //       if (response && Array.isArray(response.data)) {
+  //         this.empresasDisponibles = [
+  //           ...response.data.map((e: any) => ({
+  //             nombre: e.nombre,
+  //             sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
+  //             web: e.web || '', // si falta web, pone vacío
+  //           })),
+  //           { nombre: 'Otras' }, // opción para crear nueva empresa
+  //         ];
+  //       } else {
+  //         console.error(
+  //           'Formato inesperado en la respuesta de empresas',
+  //           response
+  //         );
+  //         this.empresasDisponibles = [{ nombre: 'Otras' }];
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('Error al cargar empresas', error);
+  //       this.empresasDisponibles = [{ nombre: 'Otras' }];
+  //     }
+  //   );
+  // }
   cargarEmpresas(): void {
     this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
-          this.empresasDisponibles = [
-            ...response.data.map((e: any) => ({
+          const otras = {
+            nombre: 'Otras (crear nueva empresa)',
+          };
+
+          const empresas = response.data
+            .filter((e: any) => e.nombre !== otras.nombre)
+            .map((e: any) => ({
               nombre: e.nombre,
-              sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
-              web: e.web || '', // si falta web, pone vacío
-            })),
-            { nombre: 'Otras' }, // opción para crear nueva empresa
-          ];
+              sector_id: e.sector_id || 'otros',
+              web: e.web || '',
+            }));
+
+          this.empresasDisponibles = [otras, ...empresas];
         } else {
           console.error(
             'Formato inesperado en la respuesta de empresas',
             response
           );
-          this.empresasDisponibles = [{ nombre: 'Otras' }];
+          this.empresasDisponibles = [
+            { nombre: 'Otras (crear nueva empresa)' },
+          ];
         }
       },
       (error) => {
         console.error('Error al cargar empresas', error);
-        this.empresasDisponibles = [{ nombre: 'Otras' }];
+        this.empresasDisponibles = [{ nombre: 'Otras (crear nueva empresa)' }];
       }
     );
   }
 
   onEmpresaChange(): void {
-    if (this.empresaSeleccionada !== 'Otras') {
+    if (!this.empresaSeleccionada?.nombre.startsWith('Otras')) {
       this.nuevaEmpresa = {
         nombre: '',
         sector_id: null,
@@ -419,7 +535,51 @@ export class RegistroComponent implements OnInit {
     }
   }
 
-  agregarExperiencia(): void {
+  agregarExperiencia(
+    selEmpInput: NgModel,
+    inicioInput: NgModel,
+    finInput: NgModel,
+    puestoInput: NgModel
+  ): void {
+    // Marcar campos básicos
+    selEmpInput.control.markAsTouched();
+    inicioInput.control.markAsTouched();
+    finInput.control.markAsTouched();
+    puestoInput.control.markAsTouched();
+
+    // const creandoNuevaEmpresa = this.empresaSeleccionada?.nombre === 'Otras';
+    const creandoNuevaEmpresa = this.empresaSeleccionada?.nombre.startsWith('Otras');
+
+
+    // Marcar y validar inputs de empresa nueva si aplican
+    if (creandoNuevaEmpresa) {
+      this.empresaInputs.forEach((input) => {
+        input.control.markAsTouched();
+      });
+
+      if (
+        !this.nuevaEmpresa.nombre ||
+        !this.nuevaEmpresa.web ||
+        !this.nuevaEmpresa.sector_id
+      ) {
+        this.notificationService.warning(
+          'Completa los datos de la nueva empresa.'
+        );
+        return;
+      }
+    }
+
+    // Validación de campos de experiencia
+    if (
+      !this.empresaSeleccionada ||
+      !this.comienzoExperiencia ||
+      !this.finExperiencia ||
+      !this.puestoExperiencia
+    ) {
+      this.notificationService.warning('Completa los datos de la experiencia.');
+      return;
+    }
+
     let empresaData: EmpresaData;
 
     // Si es una empresa nueva
@@ -560,6 +720,18 @@ export class RegistroComponent implements OnInit {
   // #region ✅ onSubmit()
   // Enviar datos de registro
   onSubmit(): void {
+    // Validar campos obligatorios
+    if (this.registroForm.invalid) {
+      Object.values(this.registroForm.controls).forEach((control) => {
+        control.markAsTouched();
+        control.updateValueAndValidity(); // fuerza renderizado de errores
+      });
+
+      this.notificationService.warning(
+        'Por favor, corrige los errores del formulario.'
+      );
+      return;
+    }
     const promocionRegex = /^\d{4}\/\d{4}$/;
     if (!promocionRegex.test(this.promocion)) {
       this.notificationService.warning(
