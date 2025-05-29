@@ -631,7 +631,7 @@ export class RegistroComponent implements OnInit {
         // Llamar al login automático
         this.authService.login(this.email, this.password).subscribe(
           (loginRes) => {
-            console.log('Login automático exitoso', loginRes);
+            //console.log('Login automático exitoso', loginRes);
             this.notificationService.success('¡Registro completado con éxito!');
             // this.router.navigate(['/ofertas']);
             // 👇 Si hay opinión pendiente, abre el modal

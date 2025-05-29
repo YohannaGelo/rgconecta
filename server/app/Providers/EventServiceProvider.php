@@ -9,10 +9,11 @@ use App\Listeners\NotificarNuevoAlumnoVerificado;
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        Verified::class => [
-            NotificarNuevoAlumnoVerificado::class,
+        \Illuminate\Auth\Events\Verified::class => [
+            \App\Listeners\NotificarNuevoAlumnoVerificado::class,
         ],
     ];
+
 
     /**
      * Register services.

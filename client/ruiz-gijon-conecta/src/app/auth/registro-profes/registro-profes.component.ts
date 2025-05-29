@@ -149,7 +149,7 @@ export class RegistroProfesorComponent {
         // Llamar al login automático
         this.authService.login(this.email, this.password).subscribe(
           (loginRes) => {
-            console.log('Login automático exitoso', loginRes);
+            //console.log('Login automático exitoso', loginRes);
             this.notificationService.success('¡Registro completado con éxito!');
 
             // Reseteamos cambios

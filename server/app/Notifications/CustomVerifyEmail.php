@@ -38,6 +38,24 @@ class CustomVerifyEmail extends Notification
     /**
      * Get the mail representation of the notification.
      */
+    // public function toMail($notifiable)
+    // {
+    //     $verificationUrl = URL::temporarySignedRoute(
+    //         'verification.verify',
+    //         Carbon::now()->addMinutes(60),
+    //         [
+    //             'id' => $notifiable->getKey(),
+    //             'hash' => sha1($notifiable->getEmailForVerification()),
+    //         ]
+    //     );
+
+    //     return (new MailMessage)
+    //         ->subject('📮 Verifica tu dirección de correo')
+    //         ->view('vendor.notifications.email', [ // Usa tu propia vista
+    //             'url' => $verificationUrl,
+    //             'user' => $notifiable,
+    //         ]);
+    // }
     public function toMail($notifiable)
     {
         $verificationUrl = URL::temporarySignedRoute(
@@ -51,11 +69,13 @@ class CustomVerifyEmail extends Notification
 
         return (new MailMessage)
             ->subject('📮 Verifica tu dirección de correo')
-            ->view('vendor.notifications.email', [ // Usa tu propia vista
-                'url' => $verificationUrl,
-                'user' => $notifiable,
+            ->view('emails.verify', [ // Ahora usa tu vista personalizada
+                'verificationUrl' => $verificationUrl,
+                'url' => env('FRONTEND_URL'),
+                'nombre' => $notifiable->name,
             ]);
     }
+
 
 
 
