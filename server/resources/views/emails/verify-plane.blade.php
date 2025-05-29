@@ -1,8 +1,8 @@
-Hola {{ $user->name }},
+Hola {{ $nombre }},
 
 Gracias por registrarte en Ruiz Gijón Conecta.
 
 Verifica tu correo haciendo clic aquí:
-{{ $url }}
+{{ $verificationUrl  }}
 
 Si no creaste esta cuenta, puedes ignorar este correo.

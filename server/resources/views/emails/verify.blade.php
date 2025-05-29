@@ -19,18 +19,18 @@
 
         <div style='background-color: #ffffff; color: #999ea2; margin: 0 auto; border-radius: 12px; padding: 20px;
                     box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; max-width: 500px;'>
-            <h2 style='color: #2b4e84; text-align: center;'>¡Hola, {{ $user->name }}!</h2>
+            <h2 style='color: #2b4e84; text-align: center;'>¡Hola, {{ $nombre }}!</h2>
             <p style='margin: 1rem;'>Gracias por registrarte en <strong>Ruiz Gijón Conecta</strong>.</p>
             <p style='margin: 1rem;'>Confirma tu dirección de correo haciendo clic en el botón:</p>
             <div style='text-align: center; margin-top: 30px;'>
-                <a href="{{ $url }}"
+                <a href="{{ $verificationUrl  }}"
                     style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
                             text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
                     Verificar correo
                 </a>
             </div>
 
-            <p style='margin-top: 2rem; word-break: break-word; font-size: 13px;'>O copia y pega esta URL en tu navegador:<br>{{ $url }}</p>
+            <p style='margin-top: 2rem; word-break: break-word; font-size: 13px;'>O copia y pega esta URL en tu navegador:<br>{{ $verificationUrl  }}</p>
         </div>
 
         <div style='background-color: #ffffff; margin: 0 auto; border-radius: 12px; padding: 20px; text-align: center;
