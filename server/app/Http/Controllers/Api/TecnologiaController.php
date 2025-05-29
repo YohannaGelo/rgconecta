@@ -11,7 +11,9 @@ class TecnologiaController extends Controller
     // Listar todas las tecnologías
     public function index()
     {
-        return Tecnologia::all();
+        // return Tecnologia::all();
+        return response()->json(Tecnologia::orderBy('nombre')->get());
+
     }
 
     // Crear una nueva tecnología (si no existe)

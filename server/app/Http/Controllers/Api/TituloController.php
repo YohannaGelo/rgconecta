@@ -12,7 +12,7 @@ class TituloController extends Controller
     // Listar todos los títulos
     public function index()
     {
-        return response()->json(Titulo::all());
+        return response()->json(Titulo::orderBy('nombre')->get());
     }
 
     // Crear un nuevo título (relacionado con un alumno)

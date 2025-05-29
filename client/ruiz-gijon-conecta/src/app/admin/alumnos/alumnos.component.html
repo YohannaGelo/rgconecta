@@ -63,6 +63,9 @@
 
                     <div *ngIf="editando?.id !== alumno.id">
                         <h5 class="card-title mb-1">{{ alumno.user?.name }}</h5>
+                        <p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
+                            <span class="badge bg-danger ">Email no verificado</span>
+                        </p>
                         <p class="text-muted mb-1">
                             <i class="bi bi-envelope me-1"></i>{{ alumno.user?.email }}
                         </p>
@@ -120,7 +123,9 @@
                     <tr *ngFor="let alumno of alumnosFiltrados()">
                         <td class="ps-4">{{ alumno.id }}</td>
                         <td>{{ alumno.user?.name }}</td>
-                        <td>{{ alumno.user?.email }}</td>
+                        <td><p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
+                            <span class="badge bg-danger ">Email no verificado</span>
+                        </p>{{ alumno.user?.email }}</td>
                         <td>
                             <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">
                                 {{ alumno.promocion }}</div>
