@@ -56,7 +56,13 @@ if [[ $ref = refs/heads/$BRANCH ]]; then
   cd $WORK_TREE/server
   composer install --no-dev --optimize-autoloader
   php artisan migrate --force
-  php artisan config:clear
+
+  # Limpieza y recompilación de caché
+  php artisan optimize:clear
+  php artisan migrate --force
+  php artisan optimize
+
+  # Permisos
   chmod -R 777 storage bootstrap/cache
 
   echo ">>> Frontend (Angular)..."
@@ -73,6 +79,7 @@ if [[ $ref = refs/heads/$BRANCH ]]; then
 
   echo ">>> Corrigiendo permisos finales..."
   chmod -R 755 $WORK_TREE
+  chmod -R 777 storage bootstrap/cache
 fi
 
 echo "✅ Despliegue completo."
@@ -121,26 +128,28 @@ Esto asegura que los archivos generados se ubiquen directamente en la carpeta se
    git checkout develop
    git merge feature/frontend
    ```
+
 4. Subir al servidor:
 
    ```bash
    git push server develop
    ```
+
 5. El servidor actualizará frontend y backend automáticamente.
 
 ---
 
 ## 🚫 Posibles errores y soluciones
 
-* **403 Forbidden:** Archivos sin permisos. Ejecutar:
+- **403 Forbidden:** Archivos sin permisos. Ejecutar:
 
   ```bash
   chmod -R 755 /var/www/yohannagelo/rgconecta
   ```
 
-* **Pantalla en blanco / Solo fondo:** Angular no encuentra `baseHref`. Verificar `angular.json`.
+- **Pantalla en blanco / Solo fondo:** Angular no encuentra `baseHref`. Verificar `angular.json`.
 
-* **No se ve nada tras el push:** Verificar que el hook esté en la rama `develop` y que el `WORK_TREE` sea correcto.
+- **No se ve nada tras el push:** Verificar que el hook esté en la rama `develop` y que el `WORK_TREE` sea correcto.
 
 ---
 
@@ -182,6 +191,7 @@ php artisan migrate --force
 ---
 
 Hacer el Api funcional
+
 ```bash
 cd /var/www/yohannagelo
 ln -s rgconecta/server/public rgc_api
@@ -189,12 +199,12 @@ ln -s rgconecta/server/public rgc_api
 ```
 
 Ajustar archivo environments.prod.ts:
+
 ```js
 export const environment = {
   production: true,
-  apiUrl: 'https://yohannagelo.ruix.iesruizgijon.es/rgc_api/api'
+  apiUrl: "https://yohannagelo.ruix.iesruizgijon.es/rgc_api/api",
 };
-
 ```
 
 Funciona -> https://yohannagelo.ruix.iesruizgijon.es/rgc_api/api/ofertas
@@ -350,9 +360,9 @@ git pull origin develop
 
 Este script:
 
-* Sube cambios del backend (Laravel)
-* Hace `ng build` del frontend y lo sube al `public/` del backend
-* Ejecuta los comandos necesarios en el servidor para instalar dependencias y preparar Laravel
+- Sube cambios del backend (Laravel)
+- Hace `ng build` del frontend y lo sube al `public/` del backend
+- Ejecuta los comandos necesarios en el servidor para instalar dependencias y preparar Laravel
 
 ---
 
