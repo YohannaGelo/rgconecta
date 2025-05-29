@@ -23,7 +23,7 @@ class AlumnoVerificado extends Mailable
 
     public function build()
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
 
         return $this->subject('✅ Cuenta verificada - RG Conecta')
             ->html("

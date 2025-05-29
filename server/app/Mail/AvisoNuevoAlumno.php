@@ -23,7 +23,7 @@ class AvisoNuevoAlumno extends Mailable
 
     public function build()
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
 
         return $this->subject('👤 Nuevo alumno registrado - RG Conecta')
             ->html("

@@ -23,7 +23,7 @@ class AlumnoRechazado extends Mailable
 
     public function build()
     {
-        $frontendUrl = env('FRONTEND_URL');
+        $frontendUrl = config('app.frontend_url');
         $adminEmail = env('MAIL_CONTACT_ADMIN');
 
         return $this->subject('❌ Cuenta no verificada - RG Conecta')
