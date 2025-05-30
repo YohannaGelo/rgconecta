@@ -56,7 +56,7 @@
                     <div *ngIf="editando?.id !== profesor.id">
                         <h5 class="card-title mb-1">{{ profesor.user?.name }}</h5>
                         <p *ngIf="!profesor.user?.email_verified_at" class="my-2 small">
-                            <span class="badge bg-danger ">Email no verificado</span>
+                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
                         </p>
                         <p class="text-muted mb-1">
                             <i class="bi bi-envelope me-1"></i>{{ profesor.user?.email }}
@@ -100,7 +100,7 @@
                         <td class="ps-4">{{ profesor.id }}</td>
                         <td>{{ profesor.user?.name }}</td>
                         <td><p *ngIf="!profesor.user?.email_verified_at" class="my-2 small">
-                            <span class="badge bg-danger ">Email no verificado</span>
+                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
                         </p> {{ profesor.user?.email }}</td>
                         <td>
                             <div *ngIf="editando?.id !== profesor.id"

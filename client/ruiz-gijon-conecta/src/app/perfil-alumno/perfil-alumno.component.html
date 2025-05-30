@@ -14,18 +14,26 @@
                     class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
 
 
-                <input type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
+                <input #fileInput type="file" class="form-control mt-2" (change)="fileChangeEvent($event)"
+                    accept="image/*" />
 
                 <div *ngIf="showCropper" class="mt-2">
                     <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
-                        [aspectRatio]="1" [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)"
+                        [aspectRatio]="1" format="jpeg" [resizeToWidth]="250" [resizeToHeight]="250"
+                        [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)"
                         style="max-height: 200px;">
                     </image-cropper>
 
                     <div class="mt-2 d-flex gap-2 justify-content-center">
-                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateLeft()">Rotar izquierda</button>
-                        <button class="btn btn-outline-secondary btn-sm" (click)="rotateRight()">Rotar derecha</button>
-                        <button class="btn btn-outline-danger btn-sm" (click)="cancelarImagen()">Cancelar</button>
+                        <button type="button" class="btn btn-outline-primary" (click)="rotateLeft()">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" (click)="rotateRight()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" (click)="cancelarImagen()">
+                            <i class="bi bi-x"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -40,7 +48,9 @@
                         name="name">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Correo electrónico</label>
+                    <label class="form-label">Correo electrónico <i class="bi bi-info-circle text-warning"
+                            placement="top"
+                            ngbTooltip="Si necesitas modificar el correo electrónico, contacta con soporte a través de la pestaña lateral de contacto."></i></label>
                     <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
                         name="email" readonly>
                 </div>
@@ -88,7 +98,8 @@
             <ul class="list-group mb-3">
                 <li *ngFor="let t of titulosSeleccionados; let i = index"
                     class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ t.nombre }} ({{ t.tipo }}) - {{ t.pivot.fecha_inicio }} a {{ t.pivot.fecha_fin }} - {{
+                    {{ t.nombre }} ({{ formatearTipo(t.tipo) }}) - {{ t.pivot.fecha_inicio }} a {{ t.pivot.fecha_fin }}
+                    - {{
                     t.pivot.institucion }}
                     <!-- <button class="btn btn-sm btn-danger" (click)="eliminarTitulo(i)"><i
                             class="bi bi-trash"></i></button> -->
@@ -103,22 +114,24 @@
             <div class="row d-flex align-items-end justify-content-between mb-2">
                 <div class="col-md-8">
                     <label class="form-label text-uppercase text-secondary">Título</label>
-                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="titulo" name="titulo">
-                        <option [ngValue]="null" disabled selected>Selecciona título</option>
-                        <option *ngFor="let t of titulosDisponibles" [ngValue]="t">
-                            {{ t.tipo }} - {{ t.nombre }}
-                        </option>
-                    </select>
+                    <ng-select [items]="titulosDisponibles" bindLabel="nombre" [(ngModel)]="titulo" name="titulo"
+                        #tituloInput="ngModel" [searchable]="true" [clearable]="false"
+                        placeholder="Selecciona o busca un ciclo" (change)="onFormChange()"
+                        [ngClass]="{ 'ng-invalid': tituloInput.invalid && tituloInput.touched }">
+                        <ng-template ng-option-tmp let-item="item">
+                            {{ item.tipo | titlecase }} - {{ item.nombre }}
+                        </ng-template>
+                    </ng-select>
                 </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label text-uppercase text-secondary">Inicio</label>
+                <div class="col-sm-6 col-md-2">
+                    <label class="form-label text-uppercase text-secondary mt-3 mt-md-0">Inicio</label>
                     <input type="text" class="form-control" placeholder="Ej: 2020" (ngModelChange)="onFormChange()"
                         [(ngModel)]="comienzoEstudios" name="comienzoEstudios">
                 </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label text-uppercase text-secondary">Fin</label>
+                <div class="col-sm-6 col-md-2">
+                    <label class="form-label text-uppercase text-secondary mt-3 mt-md-0">Fin</label>
                     <input type="text" class="form-control" placeholder="Ej: 2022" (ngModelChange)="onFormChange()"
                         [(ngModel)]="finEstudios" name="finEstudios">
                 </div>
@@ -130,8 +143,7 @@
                 </div>
 
                 <div class="col-1 d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary"
-                        (click)="agregarTitulo()">
+                    <button type="button" class="btn btn-primary" (click)="agregarTitulo()">
                         <i class="bi bi-plus"></i>
                     </button>
                 </div>
@@ -170,60 +182,105 @@
 
                     <ng-select [items]="empresasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
                         [(ngModel)]="empresaSeleccionada" [compareWith]="compareEmpresa" name="empresaSeleccionada"
-                        placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()">
+                        placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()"
+                        #selEmpInput="ngModel">
+
+                        <!-- ✅ Plantilla personalizada para el dropdown -->
+                        <ng-template ng-option-tmp let-item="item">
+                            <div [ngStyle]="{
+                                        'border-bottom': item.nombre?.startsWith('Otras') ? '1px solid #ccc' : '',
+                                        'padding-bottom': item.nombre?.startsWith('Otras') ? '4px' : ''
+                                        }">
+                                {{ item.nombre }}
+                            </div>
+                        </ng-template>
                     </ng-select>
+                    <div *ngIf="selEmpInput.invalid && selEmpInput.touched" class="invalid-feedback d-block">
+                        Seleccione o cree una empresa
+                    </div>
                 </div>
             </div>
 
             <!-- Campos para nueva empresa (si selecciona "Otras") -->
-            <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre === 'Otras'">
+            <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre?.startsWith('Otras')">
+
+
                 <div class="col-md-4">
                     <label class="form-label text-uppercase text-secondary">Nombre</label>
-                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.nombre"
-                        name="nombreEmpresa" placeholder="Ej: GestiónPro" required />
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.nombre" name="nombreEmpresa"
+                        #nombreEmpresaInput="ngModel" placeholder="Ej: GestiónPro" required />
+                    <div *ngIf="nombreEmpresaInput.invalid && nombreEmpresaInput.touched"
+                        class="invalid-feedback d-block">
+                        El nombre de la empresa es obligatorio
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label text-uppercase text-secondary">Web</label>
-                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.web"
-                        name="webEmpresa" placeholder="https://empresa.com" />
+                    <label class="form-label text-uppercase text-secondary mt-3 mt-md-0">Web</label>
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
+                        #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com" required
+                        pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})(\/\S*)?$" />
+                    <div *ngIf="webEmpresaInput.invalid && webEmpresaInput.touched" class="invalid-feedback d-block">
+                        Introduce una URL válida. Ej: https://empresa.com o www.empresa.com
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label text-uppercase text-secondary">Sector</label>
-                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.sector_id"
-                        name="sectorEmpresa" required>
-                        <option value="" disabled selected>Selecciona un sector</option>
+                    <label class="form-label text-uppercase text-secondary mt-3 mt-md-0">Sector</label>
+                    <select class="form-select" [(ngModel)]="nuevaEmpresa.sector_id" name="sectorEmpresa"
+                        #sectorEmpresaInput="ngModel" (ngModelChange)="onFormChange()">
+                        <option value="" disabled>Selecciona un sector</option>
                         <option *ngFor="let s of sectores" [value]="s.id">
                             {{ s.nombre }}
                         </option>
                     </select>
+                    <div *ngIf="sectorEmpresaInput.invalid && sectorEmpresaInput.touched"
+                        class="invalid-feedback d-block ">
+                        El sector es obligatorio
+                    </div>
                 </div>
             </div>
 
             <!-- Comienzo, Fin y Botón para agregar experiencia -->
-            <div class="row mt-2 justify-content-between">
-                <div class="col-6 col-md-2">
+            <div class="row mt-3 justify-content-between">
+                <div class="col-sm-6 col-md-2">
                     <label for="input_ageStartExp" class="form-label text-uppercase text-secondary">Comienzo</label>
                     <input type="text" class="form-control" id="input_ageStartExp" placeholder="2022"
-                        (ngModelChange)="onFormChange()" [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia"
-                        required />
+                        [(ngModel)]="comienzoExperiencia" name="comienzoExperiencia" #inicioExpInput="ngModel"
+                        (ngModelChange)="onFormChange()" />
+                    <div *ngIf="inicioExpInput.invalid && inicioExpInput.touched" class="invalid-feedback d-block">
+                        Indica el año de comienzo
+                    </div>
+
                 </div>
-                <div class="col-6 col-md-2">
+                <div class="col-sm-6 col-md-2 mt-3 mt-sm-0">
                     <label for="input_ageFinishExp" class="form-label text-uppercase text-secondary">Fin</label>
                     <input type="text" class="form-control" id="input_ageFinishExp" placeholder="2023"
-                        (ngModelChange)="onFormChange()" [(ngModel)]="finExperiencia" name="finExperiencia" required />
+                        [(ngModel)]="finExperiencia" name="finExperiencia" #finExpInput="ngModel"
+                        (ngModelChange)="onFormChange()" />
+                    <div *ngIf="finExpInput.invalid && finExpInput.touched" class="invalid-feedback d-block">
+                        Indica el año de finalización
+                    </div>
+
                 </div>
 
-                <div class="col-10 col-md-7">
+                <div class="col-9 col-sm-10 col-md-6 mt-3 mt-md-0">
                     <label class="form-label text-uppercase text-secondary">Puesto</label>
-                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="puestoExperiencia"
-                        name="puestoExperiencia" placeholder="Ej: Desarrollador Frontend" required />
+                    <input class="form-control" [(ngModel)]="puestoExperiencia" name="puestoExperiencia"
+                        #puestoInput="ngModel" placeholder="Ej: Desarrollador Frontend"
+                        (ngModelChange)="onFormChange()" />
+                    <div *ngIf="puestoInput.invalid && puestoInput.touched" class="invalid-feedback d-block">
+                        Especifica el puesto
+                    </div>
+
                 </div>
 
                 <div class="col-1 d-flex justify-content-end align-items-end">
-                    <button type="button" class="btn btn-primary"
-                        (click)="agregarExperiencia()">
-                        <i class="bi bi-plus"></i> 
+                    <!-- En el botón añadir experiencia -->
+                    <button type="button" class="btn btn-primary mt-4"
+                        (click)="agregarExperiencia(selEmpInput, inicioExpInput, finExpInput, puestoInput)">
+                        <i class="bi bi-plus"></i>
                     </button>
+
+
                 </div>
             </div>
         </div>
@@ -239,8 +296,7 @@
                 <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
                     class="list-group-item d-flex justify-content-between align-items-center">
                     {{ tiposTecnologiaMap[tec.tipo] }}: {{ tec.nombre }} ({{ tec.pivot.nivel }})
-                    <!-- <button class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)"><i
-                            class="bi bi-trash"></i></button> -->
+
                     <button class="btn btn-sm btn-outline-danger ms-2" (click)="abrirModalEliminar('tecnologia', i)">
                         <i class="bi bi-trash3"></i>
                     </button>
@@ -254,11 +310,22 @@
                     <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
                         [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
                         placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
+
+                        <!-- ✅ Plantilla personalizada para el dropdown -->
+                        <ng-template ng-option-tmp let-item="item">
+                            <div [ngStyle]="{
+                                        'border-bottom': item.nombre?.startsWith('Otros') ? '1px solid #ccc' : '',
+                                        'padding-bottom': item.nombre?.startsWith('Otros') ? '4px' : ''
+                                        }">
+                                {{ item.nombre }}
+                            </div>
+                        </ng-template>
                     </ng-select>
                 </div>
 
                 <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
-                <div class="col-10 col-md-11" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
+                <div class="col-10 col-md-11"
+                    *ngIf="!tecnologiaSeleccionada?.nombre.startsWith('Otros') && tecnologiaSeleccionada">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nivelSeleccionado"
                         name="nivelSeleccionado">
@@ -271,16 +338,16 @@
                 </div>
 
                 <!-- Botón solo si NO es "Otros" -->
-                <div class="col-1 d-flex justify-content-end" *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros'">
-                    <button type="button" class="btn btn-primary"
-                        (click)="agregarTecnologia()">
+                <div class="col-1 d-flex justify-content-end"
+                    *ngIf="!tecnologiaSeleccionada?.nombre.startsWith('Otros')">
+                    <button type="button" class="btn btn-primary" (click)="agregarTecnologia()">
                         <i class="bi bi-plus"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Si se selecciona 'Otros', mostrar campos para nueva tecnología -->
-            <div class="row mt-3 justify-content-between" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
+            <div class="row mt-3 justify-content-between" *ngIf="tecnologiaSeleccionada?.nombre.startsWith('Otros')">
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary">Tipo</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.tipo"
@@ -367,7 +434,7 @@
 </ng-template>
 
 <!-- Modal Confirmación -->
-<ng-template #confirmacionModal let-modal>
+<ng-template #modalConfirmarEliminacion let-modal>
     <div class="modal-content shadow rounded-4 border-0">
 
         <!-- Encabezado -->

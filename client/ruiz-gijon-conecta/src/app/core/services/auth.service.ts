@@ -19,11 +19,30 @@ export class AuthService {
   );
 
   constructor(private http: HttpClient, private router: Router) {
+    this.token = this.getToken();
+
     if (this.token) {
-      // Si hay token al iniciar, intenta cargar el usuario actual
-      this.loadCurrentUser().subscribe();
+      // Indicamos que el usuario está potencialmente autenticado (se corregirá si falla la carga)
+      this.isAuthenticatedSubject.next(true);
+
+      this.loadCurrentUser().subscribe({
+        next: (user) => {
+          this.setCurrentUser(user);
+        },
+        error: (err) => {
+          console.warn('⚠️ Token inválido o expirado, cerrando sesión', err);
+          this.logout(); // Limpia todo si el token es inválido
+        },
+      });
     }
   }
+
+  // constructor(private http: HttpClient, private router: Router) {
+  //   if (this.token) {
+  //     // Si hay token al iniciar, intenta cargar el usuario actual
+  //     this.loadCurrentUser().subscribe();
+  //   }
+  // }
 
   getToken(): string | null {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -77,21 +96,6 @@ export class AuthService {
       );
   }
 
-  // login(email: string, password: string): Observable<any> {
-  //   return this.http
-  //     .post<any>(`${this.apiUrl}/login`, { email, password })
-  //     .pipe(
-  //       tap((response) => {
-  //         if (response.token) {
-  //           sessionStorage.setItem('token', response.token);
-  //           this.token = response.token;
-  //           this.isAuthenticatedSubject.next(true);
-  //           this.loadCurrentUser().subscribe(); // 👈 Cargamos el usuario tras login
-  //         }
-  //       })
-  //     );
-  // }
-
   updatePassword(
     currentPassword: string,
     newPassword: string
@@ -118,11 +122,6 @@ export class AuthService {
 
     this.token = newToken;
   }
-
-  // setToken(newToken: string): void {
-  //   sessionStorage.setItem('token', newToken);
-  //   this.token = newToken;
-  // }
 
   setCurrentUser(user: any): void {
     this.currentUserSubject.next(user);
@@ -173,14 +172,6 @@ export class AuthService {
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
-
-  // logout() {
-  //   sessionStorage.removeItem('token');
-  //   this.token = null;
-  //   this.isAuthenticatedSubject.next(false);
-  //   this.currentUserSubject.next(null); // 👈 Limpiamos el usuario al hacer logout
-  //   this.router.navigate(['/login']);
-  // }
 
   getHeaders(): HttpHeaders {
     return new HttpHeaders({

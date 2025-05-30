@@ -1,4 +1,12 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { SectorService } from '../services/sector.service';
 import { environment } from '../../environments/environment';
+import { NgModel } from '@angular/forms';
 
 interface EmpresaForm {
   nombre: string;
@@ -19,7 +28,7 @@ interface EmpresaForm {
 interface EmpresaExperienciaVista {
   id?: number;
   nombre: string;
-  sector_id: number;
+  sector_id: number | null;
   web: string;
   descripcion?: string;
   sector?: { id: number; nombre: string } | null;
@@ -41,6 +50,10 @@ export class PerfilAlumnoComponent implements OnInit {
   // Modal para confirmar salida
   @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
   cambiosSinGuardar = false;
+
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+
+  @ViewChildren(NgModel) empresaInputs!: QueryList<NgModel>;
 
   ultimaEmpresaAgregada: any = null;
 
@@ -111,7 +124,12 @@ export class PerfilAlumnoComponent implements OnInit {
   empresasDisponibles: any[] = [];
   empresaSeleccionada: any = null;
   // puestoExperiencia: string = '';
-  nuevaEmpresa = { nombre: '', sector_id: null, web: '', descripcion: '' };
+  nuevaEmpresa: EmpresaExperienciaVista = {
+    nombre: '',
+    sector_id: null,
+    web: '',
+    descripcion: '',
+  };
 
   sectores: any[] = [];
 
@@ -310,6 +328,7 @@ export class PerfilAlumnoComponent implements OnInit {
         this.alumno = res;
         this.user = res.user || {};
         this.titulosSeleccionados = res.titulos || [];
+        console.log(this.titulosSeleccionados);
         this.tecnologiasSeleccionadas = res.tecnologias || [];
         this.experiencias = res.experiencias || [];
         this.croppedImage = res.user?.foto_perfil || '';
@@ -334,14 +353,6 @@ export class PerfilAlumnoComponent implements OnInit {
     return fotoPerfil;
   }
 
-  cancelarImagen(): void {
-    this.croppedImage = ''; // limpia la imagen recortada
-    this.imageChangedEvent = '';
-    this.showCropper = false;
-    this.rotation = 0;
-    this.updateTransform();
-  }
-
   cargarTitulos(): void {
     this.http.get<any[]>(`${environment.apiUrl}/titulos`).subscribe(
       (response) => {
@@ -361,21 +372,24 @@ export class PerfilAlumnoComponent implements OnInit {
   cargarTecnologias(): void {
     this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
-        this.tecnologiasDisponibles = data.map((tec) => ({
-          nombre: tec.nombre,
-          tipo: tec.tipo,
-          pivot: tec.pivot || { nivel: '' },
-        }));
-        this.tecnologiasDisponibles.push({
-          nombre: 'Otros',
+        // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
+        const otros = {
+          nombre: 'Otros (añadir nueva tecnología)',
           tipo: 'otros',
           pivot: { nivel: '' },
-        });
+        };
+
+        const tecnologias = data
+          .filter((tec) => tec.nombre !== otros.nombre) // evita duplicado si ya existe
+          .map((tec) => ({
+            nombre: tec.nombre,
+            tipo: tec.tipo,
+            pivot: tec.pivot || { nivel: '' },
+          }));
+
+        this.tecnologiasDisponibles = [otros, ...tecnologias];
       },
-      (error) => {
-        console.error('❌ Error al cargar tecnologías:', error);
-        this.notificationService.error('Error al cargar tecnologías.');
-      }
+      (error) => console.error('Error al cargar tecnologías', error)
     );
   }
 
@@ -391,29 +405,35 @@ export class PerfilAlumnoComponent implements OnInit {
     this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
-          this.empresasDisponibles = [
-            ...response.data.map((e: any) => ({
+          const otras = {
+            nombre: 'Otras (crear nueva empresa)',
+          };
+
+          const empresas = response.data
+            .filter((e: any) => e.nombre !== otras.nombre)
+            .map((e: any) => ({
               nombre: e.nombre,
-              sector_id: e.sector_id || 'otros', // si falta sector_id, pone 'otros'
-              web: e.web || '', // si falta web, pone vacío
-            })),
-            { nombre: 'Otras' }, // opción para crear nueva empresa
-          ];
+              sector_id: e.sector_id || 'otros',
+              web: e.web || '',
+            }));
+
+          this.empresasDisponibles = [otras, ...empresas];
         } else {
           console.error(
             'Formato inesperado en la respuesta de empresas',
             response
           );
-          this.empresasDisponibles = [{ nombre: 'Otras' }];
+          this.empresasDisponibles = [
+            { nombre: 'Otras (crear nueva empresa)' },
+          ];
         }
       },
       (error) => {
         console.error('Error al cargar empresas', error);
-        this.empresasDisponibles = [{ nombre: 'Otras' }];
+        this.empresasDisponibles = [{ nombre: 'Otras (crear nueva empresa)' }];
       }
     );
   }
-
   // #endregion Cargar datos
 
   // #region Actualizar perfil
@@ -495,11 +515,31 @@ export class PerfilAlumnoComponent implements OnInit {
     this.experiencias.splice(index, 1);
   }
 
+  private formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
   fileChangeEvent(event: any): void {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const esHEIC =
+      file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+    const esFormatoValido = this.formatosPermitidos.includes(file.type);
+
+    if (esHEIC) {
+      this.notificationService.warning(
+        'El formato HEIC no es compatible. Usa JPG, PNG o WebP.'
+      );
+      return;
+    }
+
+    if (!esFormatoValido) {
+      this.notificationService.warning('Formato de imagen no válido.');
+      return;
+    }
+
     this.imageChangedEvent = event;
     this.showCropper = true;
-
-    this.onFormChange(); // Marca como cambio pendiente
+    this.onFormChange(); // Marca el formulario como modificado
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -516,6 +556,19 @@ export class PerfilAlumnoComponent implements OnInit {
     this.updateTransform();
   }
 
+  cancelarImagen(): void {
+    this.croppedImage = ''; // limpia la imagen recortada
+    this.imageChangedEvent = '';
+    this.showCropper = false;
+    this.rotation = 0;
+    this.updateTransform();
+
+    // 🔧 Limpia visualmente el input file
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
+  }
+
   private updateTransform() {
     this.transform = {
       ...this.transform,
@@ -530,6 +583,13 @@ export class PerfilAlumnoComponent implements OnInit {
       this.finEstudios &&
       this.empresa
     ) {
+      if (parseInt(this.finEstudios) < parseInt(this.comienzoEstudios)) {
+        this.notificationService.warning(
+          'El año de fin no puede ser menor que el de inicio.'
+        );
+        return;
+      }
+
       this.titulosSeleccionados.push({
         nombre: this.titulo.nombre,
         tipo: this.titulo.tipo,
@@ -570,33 +630,54 @@ export class PerfilAlumnoComponent implements OnInit {
     return sector ? sector.nombre : 'Desconocido';
   }
 
-  agregarExperiencia(): void {
-    let empresaData: EmpresaExperienciaVista | null = null;
+  agregarExperiencia(
+    selEmpInput: NgModel,
+    inicioInput: NgModel,
+    finInput: NgModel,
+    puestoInput: NgModel
+  ): void {
+    selEmpInput.control.markAsTouched();
+    inicioInput.control.markAsTouched();
+    finInput.control.markAsTouched();
+    puestoInput.control.markAsTouched();
 
-    if (this.empresaSeleccionada?.nombre === 'Otras') {
-      if (
-        !this.nuevaEmpresa.nombre ||
-        !this.nuevaEmpresa.sector_id ||
-        !this.nuevaEmpresa.web
-      ) {
+    const creandoNuevaEmpresa =
+      this.empresaSeleccionada?.nombre?.startsWith('Otras');
+
+    if (creandoNuevaEmpresa) {
+      this.empresaInputs.forEach((input) => input.control.markAsTouched());
+
+      if (!this.nuevaEmpresa.nombre || !this.nuevaEmpresa.sector_id) {
         this.notificationService.warning(
-          'Debes introducir el nombre, sector y web de la nueva empresa.'
+          'Completa los datos de la nueva empresa.'
         );
         return;
       }
+    }
 
+    let empresaData: EmpresaExperienciaVista | null = null;
+
+    if (creandoNuevaEmpresa) {
       const sectorCompleto = this.sectores.find(
         (s) => s.id === this.nuevaEmpresa.sector_id
       );
+
+      // Normaliza la URL
+      this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
+      if (
+        this.nuevaEmpresa.web &&
+        !/^https?:\/\//i.test(this.nuevaEmpresa.web)
+      ) {
+        this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+      }
 
       empresaData = {
         nombre: this.nuevaEmpresa.nombre,
         sector_id: this.nuevaEmpresa.sector_id,
         web: this.nuevaEmpresa.web,
         descripcion: this.nuevaEmpresa.descripcion,
-        sector: sectorCompleto ?? null, // 👈 necesario para vista previa
+        sector: sectorCompleto ?? null,
       };
-      console.log('Experiencias:', this.experiencias);
 
       this.empresasNuevas.push({ ...this.nuevaEmpresa });
     } else if (this.empresaSeleccionada?.nombre) {
@@ -609,9 +690,7 @@ export class PerfilAlumnoComponent implements OnInit {
         sector: this.empresaSeleccionada.sector || null,
       };
     } else {
-      this.notificationService.warning(
-        'Por favor, selecciona o introduce una empresa.'
-      );
+      this.notificationService.warning('Selecciona o crea una empresa.');
       return;
     }
 
@@ -620,6 +699,13 @@ export class PerfilAlumnoComponent implements OnInit {
       this.finExperiencia &&
       this.puestoExperiencia
     ) {
+      if (parseInt(this.finExperiencia) < parseInt(this.comienzoExperiencia)) {
+        this.notificationService.warning(
+          'El año de fin no puede ser menor que el de inicio.'
+        );
+        return;
+      }
+
       const comienzo = this.comienzoExperiencia;
       const fin = this.finExperiencia;
 
@@ -645,7 +731,7 @@ export class PerfilAlumnoComponent implements OnInit {
       this.mostrarModalOpinionSobreEmpresa(empresaData, comienzo, fin);
     } else {
       this.notificationService.warning(
-        'Por favor, completa todos los campos de la experiencia.'
+        'Completa todos los campos de la experiencia.'
       );
     }
   }

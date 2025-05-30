@@ -6,7 +6,8 @@ import {
   Router,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map, switchMap, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,33 +18,43 @@ export class AuthGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean {
-    const user = this.authService.currentUser;
+  ): Observable<boolean> {
+    const token = this.authService.getToken();
 
-    if (!user) {
+    if (!token) {
       this.router.navigate(['/login']);
-      return false;
+      return of(false);
     }
 
-    const role = user.user?.role;
-
-    if (role === 'alumno' && user.is_verified !== 1) {
-      this.router.navigate(['/no-verificado']);
-      return false;
-    }
-
-    return true;
+    return this.authService.currentUser$.pipe(
+      take(1),
+      switchMap((user) => {
+        if (user) {
+          return this.validarAcceso(user);
+        } else {
+          // Intentar cargar usuario desde el backend
+          return this.authService.loadCurrentUser().pipe(
+            switchMap((userLoaded) => this.validarAcceso(userLoaded)),
+            catchError(() => {
+              this.authService.logout();
+              this.router.navigate(['/login']);
+              return of(false);
+            })
+          );
+        }
+      })
+    );
   }
 
-  // canActivate(
-  //   next: ActivatedRouteSnapshot,
-  //   state: RouterStateSnapshot
-  // ): Observable<boolean> | Promise<boolean> | boolean {
-  //   if (this.authService.isAuthenticated) {
-  //     return true;
-  //   } else {
-  //     this.router.navigate(['/login']);
-  //     return false;
-  //   }
-  // }
+  private validarAcceso(user: any): Observable<boolean> {
+    const role = user?.user?.role;
+    const isVerified = user?.is_verified;
+
+    if (role === 'alumno' && isVerified !== 1) {
+      this.router.navigate(['/no-verificado']);
+      return of(false);
+    }
+
+    return of(true);
+  }
 }

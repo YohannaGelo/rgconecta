@@ -1,4 +1,10 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
@@ -16,6 +22,8 @@ export class PerfilProfesorComponent implements OnInit {
 
   // Modal para confirmar salida
   @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
+
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
   cambiosSinGuardar = false;
   private resolveSalir: ((value: boolean) => void) | null = null;
@@ -107,11 +115,31 @@ export class PerfilProfesorComponent implements OnInit {
     return this.authService;
   }
 
+  private formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
   fileChangeEvent(event: any): void {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const esHEIC =
+      file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+    const esFormatoValido = this.formatosPermitidos.includes(file.type);
+
+    if (esHEIC) {
+      this.notificationService.warning(
+        'El formato HEIC no es compatible. Usa JPG, PNG o WebP.'
+      );
+      return;
+    }
+
+    if (!esFormatoValido) {
+      this.notificationService.warning('Formato de imagen no válido.');
+      return;
+    }
+
     this.imageChangedEvent = event;
     this.showCropper = true;
-
-    this.onFormChange(); // Marca como cambio pendiente
+    this.onFormChange(); // Marca el formulario como modificado
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -134,6 +162,11 @@ export class PerfilProfesorComponent implements OnInit {
     this.showCropper = false;
     this.rotation = 0;
     this.updateTransform();
+
+    // 🔧 Limpia visualmente el input file
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
   }
 
   private updateTransform() {

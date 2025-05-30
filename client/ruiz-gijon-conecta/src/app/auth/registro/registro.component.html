@@ -31,7 +31,9 @@
           <div *ngIf="emailInput.invalid && emailInput.touched" class="invalid-feedback d-block">
             <div *ngIf="emailInput.errors?.['required']">El correo es obligatorio</div>
             <div *ngIf="emailInput.errors?.['pattern']">El formato del correo no es válido</div>
+            <div *ngIf="emailInput.errors?.['emailExistente']">Ya existe una cuenta con este correo</div>
           </div>
+
         </div>
 
         <!-- 🔒 CONTRASEÑA -->
@@ -215,9 +217,10 @@
           <div class="col-md-4">
             <label class="form-label text-uppercase text-secondary">Web</label>
             <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa" #webEmpresaInput="ngModel"
-              placeholder="https://empresa.com" required />
+              placeholder="https://empresa.com o www.empresa.com" required
+              pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})(\/\S*)?$" />
             <div *ngIf="webEmpresaInput.invalid && webEmpresaInput.touched" class="invalid-feedback d-block">
-              La web es obligatoria
+              Introduce una URL válida. Ej: https://empresa.com o www.empresa.com
             </div>
           </div>
           <div class="col-md-4">
@@ -466,7 +469,7 @@
       <div class="row bg-white rounded-2 shadow py-4 px-2 mt-3">
         <div class="col-12">
           <label class="form-label text-uppercase text-secondary">Imagen de perfil</label>
-          <input type="file" class="form-control" (change)="fileChangeEvent($event)" accept="image/*" />
+          <input #fileInput type="file" class="form-control" (change)="fileChangeEvent($event)" accept="image/*" />
         </div>
 
         <!-- Editor de imagen -->
@@ -476,18 +479,21 @@
             (imageCropped)="imageCropped($event)" style="max-height: 300px;">
           </image-cropper>
 
-          <div class="mt-3 d-flex gap-2">
+          <div class="mt-3 d-flex justify-content-center gap-2">
             <button type="button" class="btn btn-outline-primary" (click)="rotateLeft()">
-              <i class="bi bi-arrow-counterclockwise"></i> Rotar Izquierda
+              <i class="bi bi-arrow-counterclockwise"></i>
             </button>
             <button type="button" class="btn btn-outline-primary" (click)="rotateRight()">
-              <i class="bi bi-arrow-clockwise"></i> Rotar Derecha
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger" (click)="cancelarImagen()">
+              <i class="bi bi-x"></i>
             </button>
           </div>
         </div>
 
         <!-- Vista previa -->
-        <div class="col-12 mt-3" *ngIf="croppedImage">
+        <div class="col-12 mt-3 d-flex flex-column justify-content-center align-items-center" *ngIf="croppedImage">
           <p class="text-success">Vista previa del recorte:</p>
           <img [src]="croppedImage" class="img-thumbnail" style="max-width: 150px;">
         </div>

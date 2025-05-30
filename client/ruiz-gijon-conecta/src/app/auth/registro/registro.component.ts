@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   OnInit,
   QueryList,
   TemplateRef,
@@ -55,6 +56,9 @@ export class RegistroComponent implements OnInit {
   // Modal para confirmar salida
   @ViewChild('modalConfirmarSalida') modalConfirmarSalida!: TemplateRef<any>;
   cambiosSinGuardar = false;
+
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('emailInput') emailInputRef!: NgModel;
 
   ultimaEmpresaAgregada: any = null;
 
@@ -321,7 +325,6 @@ export class RegistroComponent implements OnInit {
       this.finEstudios &&
       this.empresa
     ) {
-      
       if (parseInt(this.finEstudios) < parseInt(this.comienzoEstudios)) {
         this.notificationService.warning(
           'El año de fin no puede ser menor que el de inicio.'
@@ -556,11 +559,7 @@ export class RegistroComponent implements OnInit {
         input.control.markAsTouched();
       });
 
-      if (
-        !this.nuevaEmpresa.nombre ||
-        !this.nuevaEmpresa.web ||
-        !this.nuevaEmpresa.sector_id
-      ) {
+      if (!this.nuevaEmpresa.nombre || !this.nuevaEmpresa.sector_id) {
         this.notificationService.warning(
           'Completa los datos de la nueva empresa.'
         );
@@ -584,6 +583,15 @@ export class RegistroComponent implements OnInit {
     // Si es una empresa nueva
     // if (this.empresaSeleccionada?.nombre === 'Otras') {
     if (this.empresaSeleccionada?.nombre?.startsWith('Otras')) {
+      // Normaliza la URL
+      this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
+      if (
+        this.nuevaEmpresa.web &&
+        !/^https?:\/\//i.test(this.nuevaEmpresa.web)
+      ) {
+        this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+      }
+
       const { nombre, sector_id, web, descripcion } = this.nuevaEmpresa;
 
       if (!nombre || !web || !sector_id) {
@@ -750,6 +758,19 @@ export class RegistroComponent implements OnInit {
     this.updateTransform();
   }
 
+  cancelarImagen(): void {
+    this.croppedImage = ''; // limpia la imagen recortada
+    this.imageChangedEvent = '';
+    this.showCropper = false;
+    this.rotation = 0;
+    this.updateTransform();
+
+    // 🔧 Limpia visualmente el input file
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
+  }
+
   private updateTransform() {
     this.transform = {
       ...this.transform,
@@ -869,8 +890,33 @@ export class RegistroComponent implements OnInit {
       },
       (err) => {
         console.error('Error al crear alumno', err);
-        if (err.status === 422) {
-          console.error('Errores de validación:', err.error.errors);
+        if (err.status === 422 && err.error?.errors) {
+          const errores = err.error.errors;
+
+          // Mostrar mensaje si el email ya está en uso
+          if (errores['user.email']) {
+            const mensajeOriginal = errores['user.email'][0];
+            const mensajeTraducido = mensajeOriginal.includes(
+              'has already been taken'
+            )
+              ? 'Ya existe una cuenta con este correo.'
+              : mensajeOriginal;
+            this.notificationService.warning(mensajeTraducido);
+
+            // Marca el input de email con error personalizado
+            if (this.emailInputRef) {
+              this.emailInputRef.control.setErrors({ emailExistente: true });
+              this.emailInputRef.control.markAsTouched();
+            }
+          } else {
+            this.notificationService.warning(
+              'Corrige los errores del formulario.'
+            );
+          }
+        } else {
+          this.notificationService.error(
+            'Error inesperado. Intenta más tarde.'
+          );
         }
       }
     );

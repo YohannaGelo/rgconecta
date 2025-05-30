@@ -39,11 +39,12 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label text-uppercase text-secondary">Web</label>
-                        <div class="input-group">
-                            <span class="input-group-text">https://</span>
-                            <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="webSinProtocolo"
-                                name="webEmpresa" placeholder="empresa.com" required
-                                pattern="^\.[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Formato válido: ejemplo.com" />
+                        <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
+                            #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com" required
+                            pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}(/.*)?$" />
+                        <div *ngIf="webEmpresaInput.invalid && webEmpresaInput.touched"
+                            class="invalid-feedback d-block">
+                            Introduce una URL válida. Ej: https://empresa.com o www.empresa.com
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -171,8 +172,7 @@
 
                         <!-- Botón para añadir tecnología -->
                         <div class="col-1 d-flex justify-content-end align-items-end">
-                            <button type="button" class="btn btn-primary "
-                                (click)="agregarTecnologia()">
+                            <button type="button" class="btn btn-primary " (click)="agregarTecnologia()">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
@@ -310,7 +310,8 @@
 
         <!-- Footer -->
         <div class="modal-footer border-0 justify-content-center pb-4">
-            <button class="btn btn-outline-secondary px-4 me-2" (click)="actualizarPreferencia(false, modal)" appAutofocus>
+            <button class="btn btn-outline-secondary px-4 me-2" (click)="actualizarPreferencia(false, modal)"
+                appAutofocus>
                 No permitir
             </button>
             <button class="btn btn-primary px-4" (click)="actualizarPreferencia(true, modal)">

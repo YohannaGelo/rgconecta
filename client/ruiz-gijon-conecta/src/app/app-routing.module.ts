@@ -32,6 +32,7 @@ import { ProfesoresComponent as AdminProfesoresComponent } from './admin/profeso
 import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores-vista.component';
 import { AyudaComponent } from './ayuda/ayuda.component';
 import { VerificarComponent } from './auth/verificar/verificar.component';
+import { ProfeClaveGuard } from './core/guards/profe-clave.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -46,6 +47,7 @@ const routes: Routes = [
     path: 'registro-profes',
     component: RegistroProfesorComponent,
     canDeactivate: [PendingChangesGuard],
+    canActivate: [ProfeClaveGuard],
   },
   { path: 'ofertas', component: OfertasComponent },
   { path: 'alumnos', component: AlumnosComponent },

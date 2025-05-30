@@ -49,6 +49,7 @@ export class LoginComponent {
       })
       .subscribe({
         next: () => {
+          sessionStorage.setItem('claveProfeOk', 'true');
           modal.close();
           this.router.navigate(['/registro-profes']);
         },
