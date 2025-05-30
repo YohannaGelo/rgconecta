@@ -11,62 +11,69 @@
             <!-- Nombre completo -->
             <div class="mt-3">
                 <label for="input-name" class="form-label text-uppercase text-secondary">Nombre completo</label>
-                <input type="text" class="form-control text-secondary" id="input-name"
-                    placeholder="Ejemplo: John Doe" required (ngModelChange)="onFormChange()" [(ngModel)]="name" name="name" />
-                <div class="valid-feedback">Correcto</div>
-                <div class="invalid-feedback">Debes completar el nombre completo</div>
+                <input type="text" class="form-control text-secondary" id="input-name" placeholder="Ejemplo: John Doe"
+                    required (ngModelChange)="onFormChange()" #nameInput="ngModel" [(ngModel)]="name" name="name" />
+                <div *ngIf="nameInput.invalid && nameInput.touched" class="invalid-feedback d-block">
+                    El nombre es obligatorio
+                </div>
             </div>
 
             <!-- Correo electrónico -->
             <div class="mt-3">
                 <label for="input-email" class="form-label text-uppercase text-secondary">Correo electrónico</label>
                 <input type="email" class="form-control text-secondary" id="input-email"
-                    placeholder="ejemplo@correo.com" required (ngModelChange)="onFormChange()" [(ngModel)]="email" name="email" #emailInput="ngModel"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
+                    placeholder="ejemplo@correo.com" required (ngModelChange)="onFormChange()" [(ngModel)]="email"
+                    name="email" #emailInput="ngModel" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
+                <!-- Mensajes de error -->
                 <div *ngIf="emailInput.invalid && emailInput.touched" class="invalid-feedback d-block">
                     <div *ngIf="emailInput.errors?.['required']">El correo es obligatorio</div>
                     <div *ngIf="emailInput.errors?.['pattern']">El formato del correo no es válido</div>
+                    <div *ngIf="emailInput.errors?.['emailExistente']">Ya existe una cuenta con este correo</div>
                 </div>
             </div>
 
-            <!-- Contraseña -->
-            <div class="mt-3">
-                <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña</label>
-                <input type="password" class="form-control text-secondary" id="input-password" placeholder="********"
-                    required (ngModelChange)="onFormChange()" [(ngModel)]="password" name="password" #passwordInput="ngModel"
-                    (ngModelChange)="validarPassword()" />
-                <div *ngIf="passwordInput.touched && !passwordValida" class="invalid-feedback d-block">
-                    La contraseña debe tener:
-                    <ul>
-                        <li>Al menos 8 caracteres</li>
-                        <li>1 mayúscula</li>
-                        <li>1 minúscula</li>
-                        <li>1 número</li>
-                        <li>1 símbolo</li>
-                    </ul>
+            <div class="row flex-column flex-md-row">
+                <!-- Contraseña -->
+                <div class=" col-md-6 mt-3">
+                    <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña</label>
+                    <input type="password" class="form-control text-secondary" id="input-password"
+                        placeholder="********" required (ngModelChange)="onFormChange()" [(ngModel)]="password"
+                        name="password" #passwordInput="ngModel" (ngModelChange)="validarPassword()" />
+                    <div *ngIf="passwordInput.touched && !passwordValida" class="invalid-feedback d-block">
+                        La contraseña debe tener:
+                        <ul>
+                            <li>Al menos 8 caracteres</li>
+                            <li>1 mayúscula</li>
+                            <li>1 minúscula</li>
+                            <li>1 número</li>
+                            <li>1 símbolo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class=" col-md-6 mt-3">
+                    <label for="input-confirm-password" class="form-label text-uppercase text-secondary">Confirmar
+                        contraseña</label>
+                    <input type="password" class="form-control text-secondary" id="input-confirm-password"
+                        placeholder="********" required (ngModelChange)="onFormChange()" [(ngModel)]="confirmPassword"
+                        name="confirmPassword" #confirmPasswordInput="ngModel"
+                        (ngModelChange)="validarConfirmPassword()" />
+                    <div *ngIf="confirmPasswordInput.touched && !passwordsCoinciden" class="invalid-feedback d-block">
+                        Las contraseñas no coinciden
+                    </div>
                 </div>
             </div>
-
-            <!-- Confirmar Contraseña -->
-            <div class="mt-3">
-                <label for="input-confirm-password" class="form-label text-uppercase text-secondary">Confirmar
-                    contraseña</label>
-                <input type="password" class="form-control text-secondary" id="input-confirm-password"
-                    placeholder="********" required (ngModelChange)="onFormChange()" [(ngModel)]="confirmPassword" name="confirmPassword"
-                    #confirmPasswordInput="ngModel" (ngModelChange)="validarConfirmPassword()" />
-                <div *ngIf="confirmPasswordInput.touched && !passwordsCoinciden" class="invalid-feedback d-block">
-                    Las contraseñas no coinciden
-                </div>
-            </div>
-
 
             <!-- Departamento -->
             <div class="mt-3">
                 <label for="input-departamento" class="form-label text-uppercase text-secondary">Departamento</label>
                 <input type="text" class="form-control text-secondary" id="input-departamento"
-                    placeholder="Ejemplo: Informática" required (ngModelChange)="onFormChange()" [(ngModel)]="departamento" name="departamento" />
-                <div class="valid-feedback">Correcto</div>
-                <div class="invalid-feedback">Debes completar el departamento</div>
+                    placeholder="Ejemplo: Informática" required (ngModelChange)="onFormChange()"
+                    [(ngModel)]="departamento" #departamentoInput="ngModel" name="departamento" />
+                <div *ngIf="departamentoInput.invalid && departamentoInput.touched" class="invalid-feedback d-block">
+                    El departamento es obligatorio
+                </div>
             </div>
 
         </section>
@@ -80,28 +87,34 @@
             <div class="row bg-white rounded-2 shadow py-4 px-2">
                 <div class="col-12">
                     <label class="form-label text-uppercase text-secondary">Imagen de perfil</label>
-                    <input type="file" class="form-control" (change)="fileChangeEvent($event)" accept="image/*" />
+                    <input #fileInput type="file" class="form-control" (change)="fileChangeEvent($event)"
+                        accept="image/*" />
                 </div>
 
                 <!-- Editor de imagen -->
                 <div class="col-12 mt-3" *ngIf="showCropper">
                     <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
-                        [aspectRatio]="1" [transform]="transform" format="jpeg" (imageCropped)="imageCropped($event)"
-                        style="max-height: 300px;">
+                        [aspectRatio]="1" [transform]="transform" format="jpeg" [resizeToWidth]="250"
+                        [resizeToHeight]="250" (imageCropped)="imageCropped($event)" style="max-height: 300px;">
                     </image-cropper>
 
-                    <div class="mt-3 d-flex gap-2">
+                    <div class="mt-3 d-flex justify-content-center gap-2">
                         <button type="button" class="btn btn-outline-primary" (click)="rotateLeft()">
-                            <i class="bi bi-arrow-counterclockwise"></i> Rotar Izquierda
+                            <i class="bi bi-arrow-counterclockwise"></i>
                         </button>
                         <button type="button" class="btn btn-outline-primary" (click)="rotateRight()">
-                            <i class="bi bi-arrow-clockwise"></i> Rotar Derecha
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" (click)="cancelarImagen()">
+                            <i class="bi bi-x"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- Vista previa -->
-                <div class="col-12 mt-3" *ngIf="croppedImage">
+                <div class="col-12 mt-3 d-flex flex-column justify-content-center align-items-center"
+                    *ngIf="croppedImage">
+
                     <p class="text-success">Vista previa del recorte:</p>
                     <img [src]="croppedImage" class="img-thumbnail" style="max-width: 150px;">
                 </div>

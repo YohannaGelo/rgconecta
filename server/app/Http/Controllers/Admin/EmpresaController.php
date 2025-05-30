@@ -56,11 +56,19 @@ class EmpresaController extends Controller
     // DELETE /api/admin/empresas/{empresa}
     public function destroy(Empresa $empresa)
     {
+        // Validar que la empresa no tenga ofertas u opiniones asociadas
+        if ($empresa->ofertas()->exists() || $empresa->opiniones()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar la empresa porque tiene ofertas u opiniones asociadas.'
+            ], 422);
+        }
+
         $empresa->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Empresa eliminada correctamente.'
-        ]);
+        ], 204);
     }
 }

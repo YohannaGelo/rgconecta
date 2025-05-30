@@ -77,6 +77,12 @@ export class EmpresasComponent implements OnInit {
   }
 
   guardarNueva(): void {
+    // Normaliza la URL
+    this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
+    if (this.nuevaEmpresa.web && !/^https?:\/\//i.test(this.nuevaEmpresa.web)) {
+      this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+    }
+
     this.empresaService.create(this.nuevaEmpresa).subscribe({
       next: () => {
         this.notificationService.success('Empresa creada correctamente');
@@ -124,7 +130,11 @@ export class EmpresasComponent implements OnInit {
           },
           error: (err) => {
             console.error('Error al eliminar empresa', err);
-            this.notificationService.error('Error al eliminar la empresa');
+
+            // Extraer el mensaje del backend si existe
+            const mensaje =
+              err?.error?.message || 'Error al eliminar la empresa';
+            this.notificationService.error(mensaje);
           },
         });
       });

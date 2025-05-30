@@ -131,14 +131,12 @@ export class NuevaOfertaComponent implements OnInit {
   // #endregion Cambios Pendientes
 
   cargarEmpresas(): void {
-    this.http
-      .get<{ data: any[] }>(`${environment.apiUrl}/empresas`)
-      .subscribe({
-        next: (res) => {
-          this.empresasDisponibles = [...res.data, { nombre: 'Otras' }];
-        },
-        error: (err) => console.error('Error al cargar empresas', err),
-      });
+    this.http.get<{ data: any[] }>(`${environment.apiUrl}/empresas`).subscribe({
+      next: (res) => {
+        this.empresasDisponibles = [...res.data, { nombre: 'Otras' }];
+      },
+      error: (err) => console.error('Error al cargar empresas', err),
+    });
   }
 
   cargarTitulos(): void {
@@ -272,8 +270,16 @@ export class NuevaOfertaComponent implements OnInit {
     try {
       await this.crearTecnologiasSiFaltan();
 
-      if (this.empresaSeleccionada?.nombre === 'Otras') {
-        this.nuevaEmpresa.web = 'https://' + this.webSinProtocolo;
+      // if (this.empresaSeleccionada?.nombre === 'Otras') {
+      //   this.nuevaEmpresa.web = 'https://' + this.webSinProtocolo;
+      // }
+      // Normaliza la URL
+      this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
+      if (
+        this.nuevaEmpresa.web &&
+        !/^https?:\/\//i.test(this.nuevaEmpresa.web)
+      ) {
+        this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
       }
 
       const payload: any = {
@@ -326,19 +332,26 @@ export class NuevaOfertaComponent implements OnInit {
   }
 
   actualizarPreferencia(acepta: boolean, modal: any): void {
-  this.http.put(`${environment.apiUrl}/preferencias`, {
-    responder_dudas: acepta
-  }, this.authService.authHeader()).subscribe({
-    next: () => {
-      this.notificationService.success('Preferencia actualizada');
-      modal.close();
-    },
-    error: () => {
-      this.notificationService.error('No se pudo actualizar la preferencia');
-    }
-  });
-}
-
+    this.http
+      .put(
+        `${environment.apiUrl}/preferencias`,
+        {
+          responder_dudas: acepta,
+        },
+        this.authService.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Preferencia actualizada');
+          modal.close();
+        },
+        error: () => {
+          this.notificationService.error(
+            'No se pudo actualizar la preferencia'
+          );
+        },
+      });
+  }
 
   compareEmpresa = (a: any, b: any) => a?.nombre === b?.nombre;
 }

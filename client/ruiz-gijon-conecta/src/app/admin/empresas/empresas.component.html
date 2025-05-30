@@ -46,7 +46,10 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small text-muted">Web</label>
-                    <input type="text" class="form-control" [(ngModel)]="nuevaEmpresa.web" placeholder="https://..." />
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
+                        #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com" required
+                        pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})(\/\S*)?$" />
+                    
                 </div>
                 <div class="col-md-1 d-grid">
                     <button class="btn btn-primary w-100" (click)="guardarNueva()">

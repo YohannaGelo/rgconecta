@@ -76,7 +76,7 @@
                     <div *ngIf="editando?.id !== usuario.id">
                         <h4 class="card-title mb-1">{{ usuario.name }}</h4>
                         <p *ngIf="!usuario.email_verified_at" class="my-2 small">
-                            <span class="badge bg-danger ">Email no verificado</span>
+                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
                         </p>
                         <p class="text-muted mb-2">
                             <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
@@ -137,7 +137,7 @@
                         <td>
 
                             <div *ngIf="editando?.id !== usuario.id"><span *ngIf="!usuario.email_verified_at" class="my-2 small">
-                                <span class="badge bg-danger ">Email no verificado</span>
+                                <span class="badge bg-danger  rounded-pill">Email no verificado</span>
                             </span> {{ usuario.email }} </div>
                             <input *ngIf="editando?.id === usuario.id" type="email" class="form-control form-control-sm"
                                 [(ngModel)]="editando.email" />
