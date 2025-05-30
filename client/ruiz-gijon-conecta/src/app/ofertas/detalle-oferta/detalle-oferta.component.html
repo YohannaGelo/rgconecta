@@ -7,13 +7,15 @@
         <!-- Cabecera -->
         <article>
             <div class="d-flex">
-                <p class="btn rounded-5 py-0 px-3 pe-none me-2"
+                <p *ngIf="oferta" class="btn rounded-5 py-0 px-3 pe-none me-2"
                     [ngClass]="{ 'btn-primary': oferta.fecha_expiracion > hoy, 'btn-outline-secondary': oferta.fecha_expiracion <= hoy }">
                     {{ oferta.fecha_expiracion > hoy ? 'Activa' : 'Fin.' }}
                 </p>
-                <p *ngIf="oferta.tecnologias.length" class="btn btn-dark rounded-5 py-0 px-3 pe-none">
+
+                <p *ngIf="oferta?.tecnologias?.length" class="btn btn-dark rounded-5 py-0 px-3 pe-none">
                     {{ oferta.tecnologias[0].tipo | titlecase }}
                 </p>
+
             </div>
 
             <div class="d-flex gap-3 align-items-center justify-content-between my-3">
@@ -39,8 +41,10 @@
             <p class="text-secondary my-2 form-label">PUESTO DE TRABAJO</p>
             <p class="mb-2">{{ oferta.descripcion }}</p>
             <p class="mb-1 text-secondary small">
-                {{ obtenerTipoTrabajo(oferta.localizacion) }}
+                {{ obtenerTipoTrabajo(oferta.localizacion) }} 
             </p>
+            <p class="small bg-opacity-10 rounded-pill text-primary mt-2 px-2 text-end"><i
+                    class="bi bi-calendar-date me-2"></i><span class="text-secondary">Disponible hasta:</span> {{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }}</p>
         </div>
 
 
@@ -87,7 +91,8 @@
         </div>
 
         <!-- Si no acepta recibir dudas -->
-        <div class="bg-light text-secondary py-2 px-4 mb-3 small" *ngIf="oferta && !oferta.user?.preferencias?.responder_dudas">
+        <div class="bg-light text-secondary py-2 px-4 mb-3 small"
+            *ngIf="oferta && !oferta.user?.preferencias?.responder_dudas">
             El autor de esta oferta ha decidido no recibir mensajes directamente.
         </div>
 

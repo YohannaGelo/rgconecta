@@ -1,0 +1,21 @@
+<div class="loading-overlay" *ngIf="loadingService.loading$ | async">
+    <div class="loading-content">
+        <div class="spinner-orbit-container">
+            <!-- Órbitas -->
+            <div class="spinner-orbit orbit-sm">
+                <div class="orbit-dot"></div>
+            </div>
+            <div class="spinner-orbit orbit-md">
+                <div class="orbit-dot"></div>
+            </div>
+            <div class="spinner-orbit orbit-lg">
+                <div class="orbit-dot"></div>
+            </div>
+
+            <!-- Logo central -->
+            <img src="https://res.cloudinary.com/dnyqgpinf/image/upload/v1748027218/logo_RG_480_azul_k3jtjj.png"
+                alt="Ruiz Gijón Conecta" class="spinner-logo" />
+        </div>
+
+    </div>
+</div>

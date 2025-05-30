@@ -10,7 +10,7 @@
 - ~~Revisar página de no-verificado y ver el mail~~
 - ~~Implemetar gestión de correos... avisos al registrar, verificar...~~
 - Ajustar textos con tildes
-- Ajustar el necesitar https:// en la creación de empresa... o no, pero igual siempre
+- ~~Ajustar el necesitar https:// en la creación de empresa... o no, pero igual siempre~~
 - Que los desplegabes aparezcan en orden alfabético
 - ~~Alumnos: mostrar solo los verificados~~
 - ~~En verificar alumnos, link mailto en los correos - descartado~~
@@ -18,10 +18,10 @@
 - ¡ REVISAR LOS CONSOLE LOG Y QUITAR LOS DATOS !
 - Añadir en Admin y en perfiles la opción de modificar las preferencias
 - ~~Revisar los enlaces de los mails~~
-- ¿Que pas con la fecha de expiracion de las ofertas (console)?
+- ~~¿Que pas con la fecha de expiracion de las ofertas (console)?~~
 - Implementar logica filtros en mis opiniones y mis ofertas -> o quitar flechas
-- PANTALLA CARGA!!!!
-- ¿Pq al actualizar página siempre vuelve al login?
+- ~~PANTALLA CARGA!!!!~~
+- ~~¿Pq al actualizar página siempre vuelve al login?~~
 
 ---
 
@@ -46,3 +46,4 @@
 
 - Uso de middleware (laravel)
 - Uso de Guards (angular)
+- Interceptor para cuando se hacen llamadas mostrar pantalla de carga

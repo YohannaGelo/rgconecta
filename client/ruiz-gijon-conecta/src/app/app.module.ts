@@ -9,7 +9,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 import { HomeComponent } from './home/home.component';
 import { OfertasComponent } from './ofertas/ofertas.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OpinionesComponent } from './opiniones/opiniones.component';
 import { NuevaOfertaComponent } from './nueva-oferta/nueva-oferta.component';
@@ -43,6 +43,8 @@ import { ProfesoresVistaComponent } from './profesor/profesores-vista/profesores
 import { NoVerificadoComponent } from './no-verificado/no-verificado.component';
 import { AyudaComponent } from './ayuda/ayuda.component';
 import { VerificarComponent } from './auth/verificar/verificar.component';
+import { LoaderComponent } from './shared/components/loader/loader.component';
+import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 
 
 @NgModule({
@@ -80,7 +82,8 @@ import { VerificarComponent } from './auth/verificar/verificar.component';
     FloatingContactPanelComponent,
     ProfesoresVistaComponent,
     AyudaComponent,
-    VerificarComponent
+    VerificarComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,
@@ -98,7 +101,13 @@ import { VerificarComponent } from './auth/verificar/verificar.component';
       preventDuplicates: true, // evita mensajes repetidos
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true,
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
