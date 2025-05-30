@@ -1,6 +1,5 @@
 <div class="container py-4">
-    <div
-        class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
+    <div class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
         <h2 class="mb-0 col-9">Gestión de Alumnos</h2>
         <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
             <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
@@ -72,6 +71,9 @@
                         <p class="mb-1 badge bg-primary bg-opacity-10 text-primary"><i
                                 class="bi bi-mortarboard me-2"></i> {{ alumno.promocion }}</p>
                         <p class="mb-1"><strong>Situación:</strong> {{ alumno.situacion_laboral }}</p>
+                        <p class="mb-1 small"><strong>Fecha nac.:</strong> {{ alumno.fecha_nacimiento |
+                            date:'dd-MM-yyyy' }}</p>
+
                         <span class="badge mt-auto" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
                             {{ alumno.is_verified ? 'Verificado' : 'No verificado' }}
                         </span>
@@ -84,10 +86,12 @@
                         <select class="form-select mb-2" [(ngModel)]="editando.situacion_laboral">
                             <option *ngFor="let s of situaciones" [value]="s">{{ s }}</option>
                         </select>
+                        <input type="date" class="form-control mb-2" [(ngModel)]="editando.fecha_nacimiento" [max]="hoy"
+                            [min]="fechaMinima" />
+
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" [(ngModel)]="editando.is_verified" />
-                            <!-- <input class="form-check-input" type="checkbox" [checked]="editando.is_verified"
-                                (change)="onVerificacionChange($event)" /> -->
+
 
                             <label class="form-check-label">Verificado</label>
                         </div>
@@ -123,9 +127,11 @@
                     <tr *ngFor="let alumno of alumnosFiltrados()">
                         <td class="ps-4">{{ alumno.id }}</td>
                         <td>{{ alumno.user?.name }}</td>
-                        <td><p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
-                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
-                        </p>{{ alumno.user?.email }}</td>
+                        <td>
+                            <p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
+                                <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                            </p>{{ alumno.user?.email }}
+                        </td>
                         <td>
                             <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">
                                 {{ alumno.promocion }}</div>
@@ -139,6 +145,14 @@
                                 <option *ngFor="let s of situaciones" [value]="s">{{ s }}</option>
                             </select>
                         </td>
+                        <td>
+                            <div *ngIf="editando?.id !== alumno.id">
+                                {{ alumno.fecha_nacimiento | date:'shortDate' }}
+                            </div>
+                            <input *ngIf="editando?.id === alumno.id" class="form-control form-control-sm" type="date"
+                                [(ngModel)]="editando.fecha_nacimiento" [max]="hoy" [min]="fechaMinima" />
+                        </td>
+
                         <td>
                             <div *ngIf="editando?.id !== alumno.id">
                                 <span class="badge" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">

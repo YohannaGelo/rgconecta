@@ -44,7 +44,7 @@ export class AlumnosComponent implements OnInit {
     if (this.filtroExperiencia) params.experiencia = this.filtroExperiencia;
     if (this.filtroSituacion) params.situacion = this.filtroSituacion;
 
-    console.log('📤 Filtros aplicados:', params);
+    // console.log('📤 Filtros aplicados:', params);
 
     this.http.get<any>(`${environment.apiUrl}/alumnos`, { params }).subscribe({
       next: (response) => {

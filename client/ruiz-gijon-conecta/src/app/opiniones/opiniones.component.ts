@@ -103,7 +103,7 @@ export class OpinionesComponent implements OnInit {
             this.opiniones.map((op) => [op.empresa.id, op.empresa])
           ).values(),
         ];
-        console.log('Empresas únicas:', this.empresasUnicas);
+        // console.log('Empresas únicas:', this.empresasUnicas);
       },
       (error) => {
         console.error('Error cargando opiniones:', error);
@@ -112,7 +112,7 @@ export class OpinionesComponent implements OnInit {
   }
 
   cargarOpinionesPorEmpresa(empresaId: number): void {
-    console.log('Cargando opiniones para empresa:', empresaId);
+    // console.log('Cargando opiniones para empresa:', empresaId);
     this.http
       .get<any>(`${environment.apiUrl}/empresas/${empresaId}/opiniones`)
       .subscribe({
@@ -226,7 +226,7 @@ export class OpinionesComponent implements OnInit {
       payload.empresa_id = +this.empresaSeleccionada.id;
     }
 
-    console.log(payload);
+    // console.log(payload);
 
     this.http
       .post(`${environment.apiUrl}/opiniones`, payload, { headers })

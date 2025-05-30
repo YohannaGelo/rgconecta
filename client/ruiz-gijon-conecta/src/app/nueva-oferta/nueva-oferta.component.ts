@@ -1,4 +1,11 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
@@ -6,6 +13,7 @@ import { NotificationService } from '../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SectorService } from '../services/sector.service';
 import { environment } from '../../environments/environment';
+import { NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-nueva-oferta',
@@ -20,6 +28,12 @@ export class NuevaOfertaComponent implements OnInit {
 
   // Modal para confirmar notificaciones
   @ViewChild('modalPreferencias') modalPreferencias!: TemplateRef<any>;
+
+  @ViewChild('confirmacionModal') confirmacionModal: any;
+  itemAEliminar: { tipo: string; index: number } | null = null;
+
+  @ViewChildren(NgModel) inputs!: QueryList<NgModel>;
+  @ViewChild('selEmpInput') selEmpInput!: NgModel;
 
   titulo = '';
   descripcion = '';
@@ -71,6 +85,18 @@ export class NuevaOfertaComponent implements OnInit {
     default: ['basico', 'intermedio', 'avanzado'],
   };
 
+  nivelesEtiquetas: { [key: string]: string } = {
+    basico: 'Básico',
+    intermedio: 'Intermedio',
+    avanzado: 'Avanzado',
+    A1: 'A1',
+    A2: 'A2',
+    B1: 'B1',
+    B2: 'B2',
+    C1: 'C1',
+    C2: 'C2',
+  };
+
   // Nivel seleccionado asociado a la nueva tecnología
   nivelSeleccionado: string = '';
 
@@ -101,7 +127,7 @@ export class NuevaOfertaComponent implements OnInit {
   // #region Cambios Pendientes
   // Método para confirmar si hay cambios pendientes
   hayCambiosPendientes(): boolean | Promise<boolean> {
-    console.log(this.cambiosSinGuardar);
+    // console.log(this.cambiosSinGuardar);
 
     if (!this.cambiosSinGuardar) {
       return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
@@ -110,11 +136,11 @@ export class NuevaOfertaComponent implements OnInit {
     return this.modalService
       .open(this.modalConfirmarSalida, { centered: true })
       .result.then(() => {
-        console.log('✅ Usuario confirmó salir');
+        // console.log('✅ Usuario confirmó salir');
         return true;
       })
       .catch(() => {
-        console.log('❌ Usuario canceló navegación');
+        // console.log('❌ Usuario canceló navegación');
         return false;
       });
   }
@@ -131,12 +157,39 @@ export class NuevaOfertaComponent implements OnInit {
   // #endregion Cambios Pendientes
 
   cargarEmpresas(): void {
-    this.http.get<{ data: any[] }>(`${environment.apiUrl}/empresas`).subscribe({
-      next: (res) => {
-        this.empresasDisponibles = [...res.data, { nombre: 'Otras' }];
+    this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
+      (response) => {
+        if (response && Array.isArray(response.data)) {
+          const otras = {
+            id: null, // 👈 clave: que no tenga id
+            nombre: 'Otras (crear nueva empresa)',
+          };
+
+          const empresas = response.data.map((e: any) => ({
+            id: e.id,
+            nombre: e.nombre,
+            sector_id: e.sector_id || 'otros',
+            web: e.web || '',
+          }));
+
+          this.empresasDisponibles = [otras, ...empresas];
+        } else {
+          console.error(
+            'Formato inesperado en la respuesta de empresas',
+            response
+          );
+          this.empresasDisponibles = [
+            { id: null, nombre: 'Otras (crear nueva empresa)' },
+          ];
+        }
       },
-      error: (err) => console.error('Error al cargar empresas', err),
-    });
+      (error) => {
+        console.error('Error al cargar empresas', error);
+        this.empresasDisponibles = [
+          { id: null, nombre: 'Otras (crear nueva empresa)' },
+        ];
+      }
+    );
   }
 
   cargarTitulos(): void {
@@ -157,16 +210,21 @@ export class NuevaOfertaComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
         // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
-        this.tecnologiasDisponibles = data.map((tec) => ({
-          nombre: tec.nombre,
-          tipo: tec.tipo,
-          pivot: tec.pivot || { nivel: '' }, // Incluimos pivot si no existe
-        }));
-        this.tecnologiasDisponibles.push({
-          nombre: 'Otros',
+        const otros = {
+          nombre: 'Otros (añadir nueva tecnología)',
           tipo: 'otros',
           pivot: { nivel: '' },
-        });
+        };
+
+        const tecnologias = data
+          .filter((tec) => tec.nombre !== otros.nombre) // evita duplicado si ya existe
+          .map((tec) => ({
+            nombre: tec.nombre,
+            tipo: tec.tipo,
+            pivot: tec.pivot || { nivel: '' },
+          }));
+
+        this.tecnologiasDisponibles = [otros, ...tecnologias];
       },
       (error) => console.error('Error al cargar tecnologías', error)
     );
@@ -267,19 +325,52 @@ export class NuevaOfertaComponent implements OnInit {
 
   // #region ✅ enviarOferta()
   async enviarOferta(): Promise<void> {
+    let formularioValido = true;
+
+    // Marca todos los campos normales
+    this.inputs.forEach((control: NgModel) => {
+      control.control.markAsTouched();
+      if (control.invalid) {
+        formularioValido = false;
+      }
+    });
+
+    // Marca el ng-select de empresa
+    this.selEmpInput.control.markAsTouched();
+    if (this.selEmpInput.invalid) {
+      formularioValido = false;
+    }
+
+    const creandoEmpresaNueva =
+      this.empresaSeleccionada?.nombre?.startsWith('Otras');
+    if (creandoEmpresaNueva) {
+      const { nombre, sector_id, web } = this.nuevaEmpresa;
+
+      if (!nombre?.trim() || !sector_id) {
+        formularioValido = false;
+      }
+    }
+
+    if (!formularioValido) {
+      this.notificationService.warning(
+        'Por favor, completa todos los campos obligatorios'
+      );
+      return;
+    }
+
     try {
       await this.crearTecnologiasSiFaltan();
 
-      // if (this.empresaSeleccionada?.nombre === 'Otras') {
-      //   this.nuevaEmpresa.web = 'https://' + this.webSinProtocolo;
-      // }
-      // Normaliza la URL
-      this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
-      if (
-        this.nuevaEmpresa.web &&
-        !/^https?:\/\//i.test(this.nuevaEmpresa.web)
-      ) {
-        this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+      // ⚠️ Normaliza la URL si es nueva empresa
+      if (creandoEmpresaNueva) {
+        this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
+
+        if (
+          this.nuevaEmpresa.web &&
+          !/^https?:\/\//i.test(this.nuevaEmpresa.web)
+        ) {
+          this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+        }
       }
 
       const payload: any = {
@@ -293,12 +384,14 @@ export class NuevaOfertaComponent implements OnInit {
         tecnologias: this.tecnologiasSeleccionadas
           .filter((t) => t.id)
           .map((t) => t.id),
-        ...(this.empresaSeleccionada?.nombre !== 'Otras'
-          ? { empresa_id: this.empresaSeleccionada?.id }
-          : {
-              sobre_empresa: this.nuevaEmpresa.nombre,
+        ...(creandoEmpresaNueva
+          ? {
+              sobre_empresa: this.nuevaEmpresa.nombre.trim(),
               sector_id: this.nuevaEmpresa.sector_id,
               web: this.nuevaEmpresa.web,
+            }
+          : {
+              empresa_id: this.empresaSeleccionada?.id,
             }),
       };
 
@@ -309,15 +402,8 @@ export class NuevaOfertaComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.notificationService.success('Oferta publicada correctamente');
-
-            // Reseteamos cambios
             this.resetCambios();
-            console.log(
-              '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
-            );
-
             this.modalService.open(this.modalPreferencias, { centered: true });
-
             this.router.navigate(['/ofertas']);
           },
           error: (err) => {
@@ -329,6 +415,21 @@ export class NuevaOfertaComponent implements OnInit {
       console.error('❌ Error creando tecnologías nuevas:', err);
       this.notificationService.error('Error al crear tecnologías nuevas');
     }
+  }
+
+  abrirConfirmacion(tipo: string, index: number) {
+    this.itemAEliminar = { tipo, index };
+    this.modalService.open(this.confirmacionModal, { centered: true });
+  }
+
+  confirmarEliminacion(modal: any) {
+    if (!this.itemAEliminar) return;
+
+    const { tipo, index } = this.itemAEliminar;
+    if (tipo === 'tecnologia') this.eliminarTecnologia(index);
+
+    this.itemAEliminar = null;
+    modal.close();
   }
 
   actualizarPreferencia(acepta: boolean, modal: any): void {

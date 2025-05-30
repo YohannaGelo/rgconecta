@@ -69,7 +69,7 @@
                 <div class="mb-3">
                     <label class="form-label">Fecha de nacimiento</label>
                     <input type="date" class="form-control" (ngModelChange)="onFormChange()"
-                        [(ngModel)]="alumno.fecha_nacimiento" name="fechaNacimiento">
+                        [(ngModel)]="alumno.fecha_nacimiento" name="fechaNacimiento" [max]="hoy" [min]="fechaMinima">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Situación laboral</label>
@@ -289,7 +289,7 @@
     <!-- Card 4: Tecnologías -->
     <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">💻 Tecnologías</h5>
+            <h5 class="mb-0">💻 Habilidades</h5>
         </div>
         <div class="card-body">
             <ul class="list-group mb-3">
@@ -324,7 +324,7 @@
                 </div>
 
                 <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
-                <div class="col-10 col-md-11"
+                <div class="col-10 col-md-11 mt-3"
                     *ngIf="!tecnologiaSeleccionada?.nombre.startsWith('Otros') && tecnologiaSeleccionada">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
                     <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nivelSeleccionado"
@@ -358,12 +358,12 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-5 mt-3 mt-md-0">
                     <label class="form-label text-uppercase text-secondary">Nombre</label>
                     <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.nombre"
                         name="nombreTecnologia" placeholder="Ej: Figma" required>
                 </div>
-                <div class="col-10 col-md-3">
+                <div class="col-10 col-md-3 mt-3 mt-md-0">
                     <label class="form-label text-uppercase text-secondary">Nivel</label>
                     <select class="form-select" (ngModelChange)="onFormChange()"
                         [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia" required>
