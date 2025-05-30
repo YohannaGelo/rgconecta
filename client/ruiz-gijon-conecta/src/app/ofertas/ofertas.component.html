@@ -1,4 +1,4 @@
-<div class="d-flex flex-column flex-grow-1 my-3" style="min-height: calc(100dvh - 220px);">
+<div class="d-flex flex-column flex-grow-1 my-3" style="min-height: calc(100dvh - 205px);">
 
     <!-- Filtros -->
     <section class="row justify-content-end mb-3 me-4">
@@ -6,7 +6,7 @@
 
             <!-- Fecha -->
             <div class="col-sm-4 col-md-3 p-0">
-                <ng-select [items]="['recientes', 'antiguas']" bindLabel="" placeholder="📅 Fecha"
+                <ng-select [items]="['Recientes', 'Antiguas']" bindLabel="" placeholder="📅 Fecha"
                     [(ngModel)]="filtroFecha" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
                 </ng-select>
             </div>

@@ -43,7 +43,7 @@ export class DetallesAlumnoComponent implements OnInit {
       .get<any>(`${environment.apiUrl}/alumnos/${id}`, { headers })
       .subscribe({
         next: (response) => {
-          console.log('Alumno cargado:', response);
+          // console.log('Alumno cargado:', response);
           this.alumno = response;
         },
         error: (error) => {

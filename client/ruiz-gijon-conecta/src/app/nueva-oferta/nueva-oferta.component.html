@@ -1,289 +1,391 @@
-<div class="container-xl">
+<form (ngSubmit)="enviarOferta()" class="needs-validation d-flex flex-column flex-grow-1"
+    style="min-height: calc(100dvh - 205px);" novalidate>
 
-    <form (ngSubmit)="enviarOferta()" class="needs-validation d-flex flex-column flex-grow-1  mx-2"
-        style="min-height: calc(100dvh - 220px);" novalidate>
-        <div class="row  mb-3 justify-content-between gap-3 flex-grow-1">
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="row mb-3 justify-content-between gap-3 flex-grow-1 mx-2">
 
-            <!-- CONTENIDO PRINCIPAL -->
-            <section class="col bg-white rounded-2 shadow p-4 d-flex flex-column flex-grow-1">
-                <legend class="fw-bold fs-2">Añadir oferta de trabajo</legend>
+        <!-- Caja grande   -->
+        <section class="col bg-white rounded-2 shadow p-4 d-flex flex-column flex-grow-1">
+            <legend class="fw-bold fs-2">Añadir oferta de trabajo</legend>
 
-                <!-- Puesto -->
+            <!-- Puesto -->
+            <div class="mt-3">
+                <label class="form-label text-uppercase text-secondary">Puesto de trabajo <span
+                        class="text-primary small">*</span></label>
+                <input class="form-control text-secondary" (ngModelChange)="onFormChange()" [(ngModel)]="titulo"
+                    name="titulo" placeholder="Ej: Administrador de base de datos" #tituloInput="ngModel" required />
+                <div *ngIf="tituloInput.invalid && tituloInput.touched" class="invalid-feedback d-block">
+                    El puesto a desempeñar es obligatorio
+                </div>
+            </div>
+
+            <!-- Empresa -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label text-uppercase text-secondary">Empresa <span
+                            class="text-primary small">*</span></label>
+                    <ng-select [items]="empresasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="empresaSeleccionada" [compareWith]="compareEmpresa" name="empresaSeleccionada"
+                        placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()"
+                        #selEmpInput="ngModel" required>
+
+                        <!-- ✅ Plantilla personalizada para el dropdown -->
+                        <ng-template ng-option-tmp let-item="item">
+                            <div [ngStyle]="{
+                                'border-bottom': item.nombre?.startsWith('Otras') ? '1px solid #ccc' : '',
+                                'padding-bottom': item.nombre?.startsWith('Otras') ? '4px' : ''
+                                }">
+                                {{ item.nombre }}
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="selEmpInput.invalid && selEmpInput.touched" class="invalid-feedback d-block">
+                        La empresa es obligatoria
+                    </div>
+                </div>
+                <div class="col-md-6" *ngIf="empresaSeleccionada?.nombre !== 'Otras' && empresaSeleccionada?.web">
+                    <label class="form-label text-uppercase text-secondary">Web</label>
+                    <input class="form-control" [value]="empresaSeleccionada.web" disabled />
+                </div>
+            </div>
+
+            <!-- Campos para nueva empresa -->
+            <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre?.startsWith('Otras')">
+
+
+                <div class="col-md-4">
+                    <label class="form-label text-uppercase text-secondary">Nombre</label>
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.nombre" name="nombreEmpresa"
+                        #nombreEmpresaInput="ngModel" placeholder="Ej: GestiónPro" required />
+                    <div *ngIf="nombreEmpresaInput.invalid && nombreEmpresaInput.touched"
+                        class="invalid-feedback d-block">
+                        El nombre de la empresa es obligatorio
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-uppercase text-secondary">Web</label>
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
+                        #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com"
+                        pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})(\/\S*)?$" />
+                    <div *ngIf="webEmpresaInput.invalid && webEmpresaInput.touched" class="invalid-feedback d-block">
+                        Introduce una URL válida. Ej: https://empresa.com o www.empresa.com
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-uppercase text-secondary">Sector</label>
+                    <select class="form-select" [(ngModel)]="nuevaEmpresa.sector_id" name="sectorEmpresa" required
+                        #sectorEmpresaInput="ngModel" (ngModelChange)="onFormChange()">
+                        <option value="" disabled>Selecciona un sector</option>
+                        <option *ngFor="let s of sectores" [value]="s.id">
+                            {{ s.nombre }}
+                        </option>
+                    </select>
+                    <div *ngIf="sectorEmpresaInput.invalid && sectorEmpresaInput.touched"
+                        class="invalid-feedback d-block">
+                        El sector es obligatorio
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mt-3">
+                <label class="form-label text-uppercase text-secondary">Descripción de la oferta <span
+                        class="text-primary small">*</span></label>
+                <textarea class="form-control" rows="5" (ngModelChange)="onFormChange()" [(ngModel)]="descripcion"
+                    name="descripcion" placeholder="Describe brevemente las funciones del puesto..."
+                    #descInput="ngModel" required></textarea>
+                <div *ngIf="descInput.invalid && descInput.touched" class="invalid-feedback d-block">
+                    La descripción es obligatoria
+                </div>
+            </div>
+
+            <!-- Jornada y Localización -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label text-uppercase text-secondary">Tipo de jornada <span
+                            class="text-primary small">*</span></label>
+                    <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="jornada" name="jornada"
+                        #jornadaInput="ngModel" required>
+                        <option value="" disabled selected>Selecciona jornada</option>
+                        <option value="completa">Jornada completa</option>
+                        <option value="media_jornada">Media jornada</option>
+                        <option value="3_6_horas">3–6 horas</option>
+                        <option value="menos_3_horas">Menos de 3 horas</option>
+                    </select>
+                    <div *ngIf="jornadaInput.invalid && jornadaInput.touched" class="invalid-feedback d-block">
+                        La jornada es obligatoria
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-uppercase text-secondary mt-3 mt-md-0">Localización <i
+                            class="bi bi-info-circle text-warning" placement="top"
+                            ngbTooltip="Puedes escribir solo la localización. Escribe 'Online' si es 100% remoto. O añade 'SM'  a la localización para indicar semipresencial."></i>
+                        <span class="text-primary small"> *</span></label>
+                    <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="localizacion"
+                        #localizacionInput="ngModel" name="localizacion" placeholder="Ej: Sevilla | Online | Madrid SM"
+                        required />
+                    <div *ngIf="localizacionInput.invalid && localizacionInput.touched"
+                        class="invalid-feedback d-block">
+                        La localización es obligatoria
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Fechas -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label text-uppercase text-secondary">Fecha de expiración <span
+                            class="text-primary small">*</span></label>
+                    <input type="date" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="fechaExpiracion" name="fechaExpiracion" #fechaExpiracionInput="ngModel" required />
+                    <div *ngIf="fechaExpiracionInput.invalid && fechaExpiracionInput.touched"
+                        class="invalid-feedback d-block">
+                        La fecha de expiración es obligatoria
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <small class="text-muted">* La fecha de publicación se establece automáticamente</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- CAJA DERECHA (REQUISITOS) -->
+        <div class="col-lg-4">
+            <div class="row bg-white rounded-2 shadow p-4 px-2">
+                <legend class="fw-bold">Requisitos</legend>
+
+                <!-- Titulación -->
                 <div class="mt-3">
-                    <label class="form-label text-uppercase text-secondary">Puesto de trabajo</label>
-                    <input class="form-control text-secondary" (ngModelChange)="onFormChange()" [(ngModel)]="titulo"
-                        name="titulo" placeholder="Ej: Administrador de base de datos" required />
+                    <label class="form-label text-uppercase text-secondary">Titulación requerida</label>
+                    <ng-select [items]="titulosDisponibles" bindLabel="nombre" [bindValue]="'id'"
+                        [(ngModel)]="titulacionSeleccionada" name="titulacionSeleccionada"
+                        placeholder="Selecciona un título...">
+                    </ng-select>
+
                 </div>
 
-                <!-- Empresa -->
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-uppercase text-secondary">Empresa</label>
-                        <ng-select [items]="empresasDisponibles" bindLabel="nombre" (ngModelChange)="onFormChange()"
-                            [(ngModel)]="empresaSeleccionada" name="empresaSeleccionada" [compareWith]="compareEmpresa"
-                            placeholder="Selecciona o escribe una empresa" (change)="onEmpresaChange()">
+                <!-- Años de experiencia -->
+                <div class="mt-3">
+                    <label class="form-label text-uppercase text-secondary">Años de experiencia</label>
+                    <input type="number" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="aniosExperiencia" name="aniosExperiencia" min="0" />
+                </div>
+
+                <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
+                <div class="col-12 d-flex align-items-end justify-content-between">
+                    <div class="col-9 col-sm-10 col-md-11 col-lg-9 col-xl-10">
+                        <label class="form-label text-uppercase text-secondary d-flex align-items-center gap-2 mt-3">
+                            Habilidades
+                            <i class="bi bi-info-circle text-warning" placement="top"
+                                ngbTooltip="El tipo de la primera habilidad que añadas determinará la categoría principal de la oferta."></i>
+                        </label>
+
+                        <ng-select [items]="tecnologiasDisponibles" [(ngModel)]="tecnologiaSeleccionada"
+                            name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
+                            (change)="onTecnologiaChange()">
+
+                            <!-- ✅ Plantilla personalizada para el dropdown -->
+                            <ng-template ng-option-tmp let-item="item">
+                                <div [ngStyle]="{
+                                        'border-bottom': item.nombre?.startsWith('Otros') ? '1px solid #ccc' : '',
+                                        'padding-bottom': item.nombre?.startsWith('Otros') ? '4px' : ''
+                                        }">
+                                    {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
+                                </div>
+                            </ng-template>
+
+                            <!-- 🔽 Etiqueta que aparece en el desplegable -->
+                            <ng-template ng-label-tmp let-item="item">
+                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
+                            </ng-template>
+
+                            <!-- 🔽 Etiqueta que aparece en la lista de opciones -->
+                            <ng-template ng-option-tmp let-item="item">
+                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
+                            </ng-template>
+
                         </ng-select>
-                    </div>
-                    <div class="col-md-6" *ngIf="empresaSeleccionada?.nombre !== 'Otras' && empresaSeleccionada?.web">
-                        <label class="form-label text-uppercase text-secondary">Web</label>
-                        <input class="form-control" [value]="empresaSeleccionada.web" disabled />
-                    </div>
-                </div>
 
-                <!-- Campos para nueva empresa -->
-                <div class="row mt-3" *ngIf="empresaSeleccionada?.nombre === 'Otras'">
-                    <div class="col-md-4">
-                        <label class="form-label text-uppercase text-secondary">Nombre</label>
-                        <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaEmpresa.nombre"
-                            name="nuevaEmpresaNombre" placeholder="Ej: MarketLab" required />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-uppercase text-secondary">Web</label>
-                        <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
-                            #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com" required
-                            pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}(/.*)?$" />
-                        <div *ngIf="webEmpresaInput.invalid && webEmpresaInput.touched"
-                            class="invalid-feedback d-block">
-                            Introduce una URL válida. Ej: https://empresa.com o www.empresa.com
+
+                        <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
+                        <div class="mt-2"
+                            *ngIf="!tecnologiaSeleccionada?.nombre.startsWith('Otros') && tecnologiaSeleccionada">
+                            <div class="col-md-9">
+                                <label class="form-label text-uppercase text-secondary">Nivel</label>
+                                <select class="form-select" (ngModelChange)="onFormChange()"
+                                    [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option
+                                        *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
+                                        [value]="nivel">
+                                        {{ nivelesEtiquetas[nivel] || nivel }}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-uppercase text-secondary">Sector</label>
-                        <select class="form-select" (ngModelChange)="onFormChange()"
-                            [(ngModel)]="nuevaEmpresa.sector_id" name="nuevaEmpresaSector">
-                            <option value="" disabled selected>Selecciona un sector</option>
-                            <option *ngFor="let s of sectores" [value]="s.id">
-                                {{ s.nombre }}
+
+                    <!-- Botón para añadir tecnología -->
+                    <div class="col-1 d-flex justify-content-end align-items-end"
+                        *ngIf="!tecnologiaSeleccionada?.nombre.startsWith('Otros')">
+                        <button type="button" class="btn btn-primary" (click)="agregarTecnologia()">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Si se selecciona 'Otros', mostrar campos para nueva tecnología -->
+                <div class="mt-3 d-flex flex-column flex-md-row justify-content-between gap-3"
+                    *ngIf="tecnologiaSeleccionada?.nombre.startsWith('Otros')">
+                    <div class="col">
+                        <label class="form-label text-uppercase text-secondary">Tipo</label>
+                        <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="nuevaTecnologia.tipo"
+                            name="tipoTecnologia">
+                            <option value="" disabled selected>Selecciona un tipo</option>
+                            <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">
+                                {{ tiposTecnologiaMap[tipo] }}
                             </option>
                         </select>
                     </div>
+                    <div class="col">
+                        <label class="form-label text-uppercase text-secondary">Nombre</label>
+                        <input class="form-control" (ngModelChange)="onFormChange()"
+                            [(ngModel)]="nuevaTecnologia.nombre" name="nombreTecnologia" placeholder="Ej: Figma" />
+                    </div>
+
                 </div>
 
-                <!-- Descripción -->
-                <div class="mt-3">
-                    <label class="form-label text-uppercase text-secondary">Descripción de la oferta</label>
-                    <textarea class="form-control" rows="5" (ngModelChange)="onFormChange()" [(ngModel)]="descripcion"
-                        name="descripcion" placeholder="Describe brevemente las funciones del puesto..."
-                        required></textarea>
-                </div>
-
-                <!-- Jornada y Localización -->
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-uppercase text-secondary">Tipo de jornada</label>
-                        <select class="form-select" (ngModelChange)="onFormChange()" [(ngModel)]="jornada"
-                            name="jornada" required>
-                            <option value="" disabled selected>Selecciona jornada</option>
-                            <option value="completa">Jornada completa</option>
-                            <option value="media_jornada">Media jornada</option>
-                            <option value="3_6_horas">3–6 horas</option>
-                            <option value="menos_3_horas">Menos de 3 horas</option>
+                <!-- Select de Nivel + botón -->
+                <div class="d-flex justify-content-between mt-3"
+                    *ngIf="tecnologiaSeleccionada?.nombre.startsWith('Otros')">
+                    <div class="col-10">
+                        <label class="form-label text-uppercase text-secondary">Nivel</label>
+                        <select class="form-select" (ngModelChange)="onFormChange()"
+                            [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia">
+                            <option value="" disabled selected>Selecciona un nivel</option>
+                            <option *ngFor="let nivel of nivelesMap[nuevaTecnologia.tipo] || nivelesMap['default']"
+                                [value]="nivel">
+                                {{ nivelesEtiquetas[nivel] || nivel }}
+                            </option>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-uppercase text-secondary">Localización <i
-                                class="bi bi-info-circle text-warning" placement="top"
-                                ngbTooltip="Puedes escribir solo la localización. Escribe 'Online' si es 100% remoto. O añade 'SM'  a la localización para indicar semipresencial."></i></label>
-                        <input class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="localizacion"
-                            name="localizacion" placeholder="Ej: Sevilla | Online | Madrid SM" required />
-
-
+                    <div class="col-1 d-flex align-items-end justify-content-end">
+                        <button type="button" class="btn btn-success" (click)="agregarNuevaTecnologiaLocal()">
+                            <i class="bi bi-plus"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Fechas -->
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-uppercase text-secondary">Fecha de expiración</label>
-                        <input type="date" class="form-control" (ngModelChange)="onFormChange()"
-                            [(ngModel)]="fechaExpiracion" name="fechaExpiracion" required />
-                    </div>
-                    <div class="col-md-6 d-flex align-items-end">
-                        <small class="text-muted">* La fecha de publicación se establece automáticamente</small>
-                    </div>
-                </div>
-            </section>
-
-            <!-- CAJA DERECHA (REQUISITOS) -->
-            <div class="col-lg-4">
-                <div class="row bg-white rounded-2 shadow p-4 px-2">
-                    <legend class="fw-bold">Requisitos</legend>
-
-                    <!-- Titulación -->
-                    <div class="mt-3">
-                        <label class="form-label text-uppercase text-secondary">Titulación requerida</label>
-                        <ng-select [items]="titulosDisponibles" bindLabel="nombre" [bindValue]="'id'"
-                            [(ngModel)]="titulacionSeleccionada" name="titulacionSeleccionada"
-                            placeholder="Selecciona un título...">
-                        </ng-select>
-
-                    </div>
-
-                    <!-- Años de experiencia -->
-                    <div class="mt-3">
-                        <label class="form-label text-uppercase text-secondary">Años de experiencia</label>
-                        <input type="number" class="form-control" (ngModelChange)="onFormChange()"
-                            [(ngModel)]="aniosExperiencia" name="aniosExperiencia" min="0" />
-                    </div>
-
-                    <!-- 💻 TECNOLOGÍAS (Habilidades de cara al usuario) -->
-                    <div class="col d-flex align-items-end justify-content-between">
-                        <div class="col-9 col-sm-10 col-md-11 col-lg-9 col-xl-10">
-                            <label class="form-label text-uppercase text-secondary d-flex align-items-center gap-2">
-                                Habilidades
-                                <i class="bi bi-info-circle text-warning" placement="top"
-                                    ngbTooltip="El tipo de la primera habilidad que añadas determinará la categoría principal de la oferta."></i>
-                            </label>
-
-                            <ng-select [items]="tecnologiasDisponibles" [(ngModel)]="tecnologiaSeleccionada"
-                                name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
-                                (change)="onTecnologiaChange()">
-
-                                <!-- 🔽 Etiqueta que aparece en el desplegable -->
-                                <ng-template ng-label-tmp let-item="item">
-                                    {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
-                                </ng-template>
-
-                                <!-- 🔽 Etiqueta que aparece en la lista de opciones -->
-                                <ng-template ng-option-tmp let-item="item">
-                                    {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
-                                </ng-template>
-
-                            </ng-select>
 
 
-                            <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
-                            <div class="row mt-2"
-                                *ngIf="tecnologiaSeleccionada?.nombre !== 'Otros' && tecnologiaSeleccionada">
-                                <div class="col-md-9">
-                                    <label class="form-label text-uppercase text-secondary">Nivel</label>
-                                    <select class="form-select" (ngModelChange)="onFormChange()"
-                                        [(ngModel)]="nivelSeleccionado" name="nivelSeleccionado">
-                                        <option value="" disabled selected>Selecciona</option>
-                                        <option
-                                            *ngFor="let nivel of nivelesMap[tecnologiaSeleccionada?.tipo] || nivelesMap['default']"
-                                            [value]="nivel">
-                                            {{ nivel | titlecase }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Botón para añadir tecnología -->
-                        <div class="col-1 d-flex justify-content-end align-items-end">
-                            <button type="button" class="btn btn-primary " (click)="agregarTecnologia()">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Si se selecciona 'Otros', mostrar campos para nueva tecnología -->
-                    <div class="row mt-3" *ngIf="tecnologiaSeleccionada?.nombre === 'Otros'">
-                        <div class="col-md-4">
-                            <label class="form-label text-uppercase text-secondary">Tipo</label>
-                            <select class="form-select" (ngModelChange)="onFormChange()"
-                                [(ngModel)]="nuevaTecnologia.tipo" name="tipoTecnologia">
-                                <option value="" disabled selected>Selecciona un tipo</option>
-                                <option *ngFor="let tipo of tiposTecnologia" [value]="tipo">
-                                    {{ tiposTecnologiaMap[tipo] }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-uppercase text-secondary">Nombre</label>
-                            <input class="form-control" (ngModelChange)="onFormChange()"
-                                [(ngModel)]="nuevaTecnologia.nombre" name="nombreTecnologia" placeholder="Ej: Figma" />
-                        </div>
-                        <!-- Select de Nivel -->
-                        <div class="col-md-8 mt-2">
-                            <label class="form-label text-uppercase text-secondary">Nivel</label>
-                            <select class="form-select" (ngModelChange)="onFormChange()"
-                                [(ngModel)]="nuevaTecnologia.pivot.nivel" name="nivelTecnologia">
-                                <option value="" disabled selected>Selecciona un nivel</option>
-                                <option *ngFor="let nivel of nivelesMap[nuevaTecnologia.tipo] || nivelesMap['default']"
-                                    [value]="nivel">
-                                    {{ nivel | titlecase }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end justify-content-end mt-2">
-                            <button type="button" class="btn btn-success"
-                                (click)="agregarNuevaTecnologiaLocal()">Agregar</button>
-                        </div>
-                    </div>
-
-                    <!-- Lista de tecnologías añadidas -->
-                    <div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
-                        <div class="col-12">
-                            <h6 class="text-secondary">Tecnologías añadidas:</h6>
-                            <ul class="list-group">
-                                <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
-                                    class="list-group-item d-flex justify-content-between">
-                                    <span class="text-secondary">
-                                        {{ tiposTecnologiaMap[tec.tipo] || 'Tecnología' }}:
-                                        <span class="text-black">{{ tec.nombre | titlecase }}</span>
-                                        <span *ngIf="tec.pivot?.nivel">({{ tec.pivot.nivel | titlecase }})</span>
-                                    </span>
-                                    <button type="button" class="btn btn-sm btn-danger" (click)="eliminarTecnologia(i)">
-                                        <i class="bi bi-x"></i>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                <!-- Lista de tecnologías añadidas -->
+                <div class="row mt-3" *ngIf="tecnologiasSeleccionadas.length > 0">
+                    <div class="col-12">
+                        <h6 class="text-secondary">Habilidades añadidas:</h6>
+                        <ul class="list-group">
+                            <li *ngFor="let tec of tecnologiasSeleccionadas; let i = index"
+                                class="list-group-item d-flex justify-content-between">
+                                <span class="text-secondary">
+                                    {{ tiposTecnologiaMap[tec.tipo] || 'Tecnología' }}:
+                                    <span class="text-black">{{ tec.nombre | titlecase }}</span>
+                                    <span *ngIf="tec.pivot?.nivel"> ({{ nivelesEtiquetas[tec.pivot.nivel] | titlecase
+                                        }})</span>
+                                </span>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                    (click)="abrirConfirmacion('tecnologia', i)">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+            </div>
 
-                <!-- BOTÓN DE ENVÍO -->
-                <div
-                    class="row bg-white rounded-2 shadow py-4 px-2 mt-3 align-items-center justify-content-center text-center">
-                    <div class="col-12 col-sm-6 col-lg-7 mb-3 mb-sm-0">
-                        <h4 class="fw-bold mb-3">¿Listo para publicar?</h4>
-                        <button type="submit" class="btn btn-primary rounded-5 py-1 px-3 shadow-sm">Publicar
-                            oferta</button>
-                    </div>
-                    <div class="col-8 col-sm-4 col-lg-5">
-                        <img src="assets/img/envio.png" alt="Imagen para envío" class="img-fluid" />
-                    </div>
+            <!-- BOTÓN DE ENVÍO -->
+            <div
+                class="row bg-white rounded-2 shadow py-4 px-2 mt-3 align-items-center justify-content-center text-center">
+                <div class="col-12 col-sm-6 col-lg-7 mb-3 mb-sm-0">
+                    <h4 class="fw-bold mb-3">¿Listo para publicar?</h4>
+                    <button type="submit" class="btn btn-primary rounded-5 py-1 px-3 shadow-sm">Publicar
+                        oferta</button>
+                </div>
+                <div class="col-8 col-sm-4 col-lg-5">
+                    <img src="assets/img/envio.png" alt="Imagen para envío" class="img-fluid" />
                 </div>
             </div>
         </div>
-    </form>
+    </div>
+</form>
 
-    <!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
-    <ng-template #modalConfirmarSalida let-modal>
-        <div class="modal-content shadow rounded-4 border-0">
+<!-- Modal confirmación -->
+<ng-template #confirmacionModal let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
 
-            <!-- Encabezado -->
-            <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
-                <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
-                    Cambios sin guardar
-                </h5>
-                <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
-            </div>
-
-            <!-- Cuerpo -->
-            <div class="modal-body text-center mt-2">
-                <i class="bi bi-box-arrow-left text-warning fs-2 pb-2"></i>
-                <p class="text-secondary fs-5 mt-2 mb-0">
-                    Has realizado cambios que no se han guardado.<br>
-                    ¿Seguro que quieres salir?
-                </p>
-            </div>
-
-            <!-- Footer -->
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
-                    Cancelar
-                </button>
-                <button class="btn btn-warning px-4" (click)="modal.close()">
-                    Salir sin guardar
-                </button>
-            </div>
-
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                Confirmar eliminación
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
         </div>
-    </ng-template>
-</div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-trash3 text-danger fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Estás seguro de que deseas eliminar este elemento?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger px-4" (click)="confirmarEliminacion(modal)">
+                Eliminar
+            </button>
+        </div>
+
+    </div>
+</ng-template>
+
+
+<!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
+<ng-template #modalConfirmarSalida let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Encabezado -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+                Cambios sin guardar
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-box-arrow-left text-warning fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                Has realizado cambios que no se han guardado.<br>
+                ¿Seguro que quieres salir?
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-warning px-4" (click)="modal.close()">
+                Salir sin guardar
+            </button>
+        </div>
+
+    </div>
+</ng-template>
 
 <!-- Aceptar notificaciones -->
 <ng-template #modalPreferencias let-modal>

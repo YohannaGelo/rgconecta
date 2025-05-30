@@ -9,19 +9,20 @@
 - ~~Volver a revisar el registro-alumno y las comprobaciones del formulario (no insertar fecha, insertar tecnologia y nivel)~~
 - ~~Revisar página de no-verificado y ver el mail~~
 - ~~Implemetar gestión de correos... avisos al registrar, verificar...~~
-- Ajustar textos con tildes
+- ~~Ajustar textos con tildes~~
 - ~~Ajustar el necesitar https:// en la creación de empresa... o no, pero igual siempre~~
-- Que los desplegabes aparezcan en orden alfabético
+- ~~Que los desplegabes aparezcan en orden alfabético~~
 - ~~Alumnos: mostrar solo los verificados~~
 - ~~En verificar alumnos, link mailto en los correos - descartado~~
-- Poder poner 0 años de experiencia
-- ¡ REVISAR LOS CONSOLE LOG Y QUITAR LOS DATOS !
-- Añadir en Admin y en perfiles la opción de modificar las preferencias
+- ~~¡ REVISAR LOS CONSOLE LOG Y QUITAR LOS DATOS !~~
 - ~~Revisar los enlaces de los mails~~
 - ~~¿Que pas con la fecha de expiracion de las ofertas (console)?~~
-- Implementar logica filtros en mis opiniones y mis ofertas -> o quitar flechas
 - ~~PANTALLA CARGA!!!!~~
 - ~~¿Pq al actualizar página siempre vuelve al login?~~
+- ~~En años... poner un minimo? por la edad...~~
+- Poder poner 0 años de experiencia
+- Añadir en Admin y en perfiles la opción de modificar las preferencias
+- Implementar logica filtros en mis opiniones y mis ofertas -> o quitar flechas
 
 ---
 
@@ -29,6 +30,7 @@
 
 - Filtrado y paginación en verificar-alumnos
 - Botón volver en detalles alumno y detalles oferta
+- Revisar navbar (Ofertas - Alumnado)
 - ~~Filtrado en admin~~
 - ~~Poner en los perfiles que para cambiar el email se pongan en contacto con el admin~~
 - ~~Ajustar tamaño de imagenes al subirla~~

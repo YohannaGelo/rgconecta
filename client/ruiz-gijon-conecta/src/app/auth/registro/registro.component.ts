@@ -189,7 +189,13 @@ export class RegistroComponent implements OnInit {
     private sectorService: SectorService
   ) {}
 
+  hoy = new Date().toISOString().split('T')[0]; // Hoy
+  fechaMinima: string = '';
+
   ngOnInit(): void {
+    const min = new Date();
+    min.setFullYear(min.getFullYear() - 120); // Límite: 120 años atrás
+    this.fechaMinima = min.toISOString().split('T')[0];
     this.cargarTitulos();
     this.cargarSectores();
     this.cargarEmpresas();
@@ -213,7 +219,7 @@ export class RegistroComponent implements OnInit {
   // #region Cambios Pendientes
   // Método para confirmar si hay cambios pendientes
   hayCambiosPendientes(): boolean | Promise<boolean> {
-    console.log(this.cambiosSinGuardar);
+    // console.log(this.cambiosSinGuardar);
 
     if (!this.cambiosSinGuardar) {
       return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
@@ -222,11 +228,11 @@ export class RegistroComponent implements OnInit {
     return this.modalService
       .open(this.modalConfirmarSalida, { centered: true })
       .result.then(() => {
-        console.log('✅ Usuario confirmó salir');
+        // console.log('✅ Usuario confirmó salir');
         return true;
       })
       .catch(() => {
-        console.log('❌ Usuario canceló navegación');
+        // console.log('❌ Usuario canceló navegación');
         return false;
       });
   }
@@ -809,6 +815,20 @@ export class RegistroComponent implements OnInit {
       return;
     }
 
+    const fechaNacimiento = new Date(this.fechaNacimiento);
+    const fechaHoy = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setFullYear(fechaHoy.getFullYear() - 120);
+
+    if (fechaNacimiento < fechaLimite || fechaNacimiento > fechaHoy) {
+      this.notificationService.warning(
+        'La fecha de nacimiento debe estar entre ' +
+          fechaLimite.toISOString().split('T')[0] +
+          ' y hoy.'
+      );
+      return;
+    }
+
     const alumno = {
       user: {
         name: this.name,
@@ -874,9 +894,9 @@ export class RegistroComponent implements OnInit {
 
             // Reseteamos cambios
             this.resetCambios();
-            console.log(
-              '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
-            );
+            // console.log(
+            //   '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
+            // );
             this.router.navigate(['/ofertas']);
           },
           (loginErr) => {
@@ -1024,7 +1044,7 @@ export class RegistroComponent implements OnInit {
         };
       }
 
-      console.log('📤 Enviando opinión:', payload);
+      // console.log('📤 Enviando opinión:', payload);
 
       this.http
         .post(`${environment.apiUrl}/opiniones`, payload, { headers })

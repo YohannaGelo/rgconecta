@@ -29,7 +29,13 @@ export class AlumnosComponent implements OnInit {
     this.panel = this.injector.get(PanelComponent);
   }
 
+    hoy = new Date().toISOString().split('T')[0]; // Hoy
+  fechaMinima: string = '';
+
   ngOnInit(): void {
+    const min = new Date();
+    min.setFullYear(min.getFullYear() - 120); // Límite: 120 años atrás
+    this.fechaMinima = min.toISOString().split('T')[0];
     this.cargarAlumnos();
   }
 
@@ -85,6 +91,20 @@ export class AlumnosComponent implements OnInit {
 
   guardarEdicion(): void {
     if (!this.editando) return;
+
+    const fechaNacimiento = new Date(this.editando.fecha_nacimiento);
+    const fechaHoy = new Date();
+    const fechaLimite = new Date();
+    fechaLimite.setFullYear(fechaHoy.getFullYear() - 120);
+
+    if (fechaNacimiento < fechaLimite || fechaNacimiento > fechaHoy) {
+      this.notificationService.warning(
+        'La fecha de nacimiento debe estar entre ' +
+          fechaLimite.toISOString().split('T')[0] +
+          ' y hoy.'
+      );
+      return;
+    }
 
     const payload = {
       fecha_nacimiento: this.editando.fecha_nacimiento,

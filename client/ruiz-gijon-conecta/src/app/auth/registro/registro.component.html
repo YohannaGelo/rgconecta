@@ -321,7 +321,7 @@
             <label for="input_date" class="form-label text-uppercase text-secondary">Fecha de nacimiento <span
                 class="text-primary small">*</span></label>
             <input type="date" class="form-control" id="input_date" required (ngModelChange)="onFormChange()"
-              [(ngModel)]="fechaNacimiento" name="fechaNacimiento" #fechaInput="ngModel">
+              [(ngModel)]="fechaNacimiento" name="fechaNacimiento" #fechaInput="ngModel"  [max]="hoy" [min]="fechaMinima">
             <div *ngIf="fechaInput.invalid && fechaInput.touched" class="invalid-feedback d-block">
               La fecha de nacimiento es obligatoria
             </div>

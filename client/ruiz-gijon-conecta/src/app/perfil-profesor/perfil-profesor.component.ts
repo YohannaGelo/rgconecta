@@ -55,7 +55,7 @@ export class PerfilProfesorComponent implements OnInit {
   // #region Cambios Pendientes
   // Método para confirmar si hay cambios pendientes
   hayCambiosPendientes(): boolean | Promise<boolean> {
-    console.log(this.cambiosSinGuardar);
+    // console.log(this.cambiosSinGuardar);
 
     if (!this.cambiosSinGuardar) {
       return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
@@ -64,11 +64,11 @@ export class PerfilProfesorComponent implements OnInit {
     return this.modalService
       .open(this.modalConfirmarSalida, { centered: true })
       .result.then(() => {
-        console.log('✅ Usuario confirmó salir');
+        // console.log('✅ Usuario confirmó salir');
         return true;
       })
       .catch(() => {
-        console.log('❌ Usuario canceló navegación');
+        // console.log('❌ Usuario canceló navegación');
         return false;
       });
   }

@@ -48,7 +48,7 @@ export class RegistroProfesorComponent {
   // #region Cambios Pendientes
   // Método para confirmar si hay cambios pendientes
   hayCambiosPendientes(): boolean | Promise<boolean> {
-    console.log(this.cambiosSinGuardar);
+    // console.log(this.cambiosSinGuardar);
 
     if (!this.cambiosSinGuardar) {
       return true; // ⚠️ ¡Esto es clave! Devuelve TRUE explícito
@@ -57,11 +57,11 @@ export class RegistroProfesorComponent {
     return this.modalService
       .open(this.modalConfirmarSalida, { centered: true })
       .result.then(() => {
-        console.log('✅ Usuario confirmó salir');
+        // console.log('✅ Usuario confirmó salir');
         return true;
       })
       .catch(() => {
-        console.log('❌ Usuario canceló navegación');
+        // console.log('❌ Usuario canceló navegación');
         return false;
       });
   }
@@ -207,9 +207,9 @@ export class RegistroProfesorComponent {
 
             // Reseteamos cambios
             this.resetCambios();
-            console.log(
-              '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
-            );
+            // console.log(
+            //   '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
+            // );
             this.router.navigate(['/ofertas']);
           },
           (loginErr) => {
