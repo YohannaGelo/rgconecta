@@ -100,6 +100,8 @@ export class NuevaOfertaComponent implements OnInit {
   // Nivel seleccionado asociado a la nueva tecnología
   nivelSeleccionado: string = '';
 
+  usuarioPrefierePreguntas: boolean | null = null;
+
   constructor(
     private modalService: NgbModal,
     private http: HttpClient,
@@ -115,6 +117,37 @@ export class NuevaOfertaComponent implements OnInit {
     this.cargarTecnologias();
     this.cargarTitulos();
     this.cargarTecnologias();
+    this.cargarPreferenciasUsuario();
+  }
+
+  cargarPreferenciasUsuario(): void {
+    this.http
+      .get(`${environment.apiUrl}/me`, this.authService.authHeader())
+      .subscribe({
+        next: (usuario: any) => {
+          const userId = usuario.user_id;
+          this.http
+            .get(
+              `${environment.apiUrl}/preferencias/${userId}`,
+              this.authService.authHeader()
+            )
+            .subscribe({
+              next: (pref: any) => {
+                this.usuarioPrefierePreguntas = pref.responder_dudas ?? null;
+                console.log(this.usuarioPrefierePreguntas)
+              },
+              error: (err) => {
+                console.error(
+                  'No se pudieron cargar las preferencias del usuario',
+                  err
+                );
+              },
+            });
+        },
+        error: (err) => {
+          console.error('Error al obtener datos del usuario (/me)', err);
+        },
+      });
   }
 
   cargarSectores(): void {
@@ -263,7 +296,7 @@ export class NuevaOfertaComponent implements OnInit {
   }
 
   agregarNuevaTecnologiaLocal(): void {
-    console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
+    // console.log('Intentando agregar tecnología:', this.nuevaTecnologia);
 
     if (
       this.nuevaTecnologia.nombre &&
@@ -403,7 +436,12 @@ export class NuevaOfertaComponent implements OnInit {
           next: (res) => {
             this.notificationService.success('Oferta publicada correctamente');
             this.resetCambios();
-            this.modalService.open(this.modalPreferencias, { centered: true });
+            if (this.usuarioPrefierePreguntas !== true) {
+              this.modalService.open(this.modalPreferencias, {
+                centered: true,
+              });
+            }
+
             this.router.navigate(['/ofertas']);
           },
           error: (err) => {
@@ -443,6 +481,7 @@ export class NuevaOfertaComponent implements OnInit {
       )
       .subscribe({
         next: () => {
+          this.usuarioPrefierePreguntas = acepta;
           this.notificationService.success('Preferencia actualizada');
           modal.close();
         },

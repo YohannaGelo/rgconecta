@@ -13,6 +13,8 @@ import { PanelComponent } from '../panel/panel.component';
 export class UsuariosComponent implements OnInit {
   vistaTabla = false;
   usuarios: any[] = [];
+  preferencias: Record<number, any> = {};
+
   editando: any = null;
 
   roles = ['admin', 'profesor', 'alumno'];
@@ -57,9 +59,29 @@ export class UsuariosComponent implements OnInit {
     this.vistaTabla = !this.vistaTabla;
   }
 
+  // cargarUsuarios(): void {
+  //   this.usuarioService.getAll().subscribe({
+  //     next: (res) => (this.usuarios = res.data),
+  //     error: (err) => console.error('Error cargando usuarios', err),
+  //   });
+  // }
   cargarUsuarios(): void {
     this.usuarioService.getAll().subscribe({
-      next: (res) => (this.usuarios = res.data),
+      next: (res) => {
+        this.usuarios = res.data;
+
+        // Para cada usuario, carga preferencias
+        res.data.forEach((usuario: any) => {
+          this.usuarioService.getPreferencias(usuario.id).subscribe({
+            next: (prefs) => {
+              this.preferencias[usuario.id] = prefs;
+            },
+            error: () => {
+              this.preferencias[usuario.id] = { responder_dudas: null }; // Por defecto
+            },
+          });
+        });
+      },
       error: (err) => console.error('Error cargando usuarios', err),
     });
   }
@@ -83,7 +105,10 @@ export class UsuariosComponent implements OnInit {
   }
 
   editar(usuario: any): void {
-    this.editando = { ...usuario };
+    this.editando = {
+      ...usuario,
+      responder_dudas: this.preferencias[usuario.id]?.responder_dudas ?? false,
+    };
   }
 
   guardarEdicion(): void {
@@ -99,19 +124,49 @@ export class UsuariosComponent implements OnInit {
       data.email = this.editando.email;
     if (this.editando.role !== original.role) data.role = this.editando.role;
 
-    this.usuarioService.update(this.editando.id, data).subscribe({
-      next: () => {
+    const userId = this.editando.id;
+    const tieneCambiosUsuario = Object.keys(data).length > 0;
+    const tieneCambioPreferencia =
+      this.preferencias[userId] !== undefined &&
+      this.preferencias[userId] !== original.responder_dudas;
+
+    const peticiones: any[] = [];
+
+    // Solo si hay cambios en los datos del usuario
+    if (tieneCambiosUsuario) {
+      peticiones.push(this.usuarioService.update(userId, data));
+    }
+
+    // Solo si hay preferencias cargadas (evitamos undefined)
+    if (this.preferencias[userId] !== undefined) {
+      const preferenciaPayload = {
+        responder_dudas: this.preferencias[userId]?.responder_dudas ?? false,
+        avisos_nuevas_ofertas:
+          this.preferencias[userId]?.avisos_nuevas_ofertas ?? true,
+        newsletter: this.preferencias[userId]?.newsletter ?? false,
+      };
+
+      peticiones.push(
+        this.usuarioService.updatePreferenciasComoAdmin(
+          userId,
+          preferenciaPayload
+        )
+      );
+    }
+
+    // Ejecutar las peticiones (una o ambas)
+    Promise.all(peticiones.map((p) => p.toPromise()))
+      .then(() => {
         this.notificationService.success('Usuario actualizado correctamente');
         this.editando = null;
         this.cargarUsuarios();
-      },
-      error: (err) => {
+      })
+      .catch((err) => {
         console.error('Error actualizando usuario', err);
         this.notificationService.error(
           err.error?.message || 'Error al actualizar el usuario'
         );
-      },
-    });
+      });
   }
 
   eliminar(id: number): void {

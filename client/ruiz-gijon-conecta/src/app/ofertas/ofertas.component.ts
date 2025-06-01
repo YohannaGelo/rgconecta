@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgModule, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-ofertas',
@@ -64,26 +64,25 @@ export class OfertasComponent implements OnInit {
 
     this.loading = true;
 
-    this.http
-      .get<any>(`${environment.apiUrl}/ofertas`, { params })
-      .subscribe({
-        next: (res) => {
-          this.ofertas = res.data;
-          this.currentPage = res.pagination?.current_page ?? 1;
-          this.lastPage = res.pagination?.last_page ?? 1;
+    this.http.get<any>(`${environment.apiUrl}/ofertas`, { params }).subscribe({
+      next: (res) => {
+        this.ofertas = res.data;
+        this.currentPage = res.pagination?.current_page ?? 1;
+        this.lastPage = res.pagination?.last_page ?? 1;
 
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error al cargar ofertas:', err);
-          this.loading = false;
-        },
-      });
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar ofertas:', err);
+        this.loading = false;
+      },
+    });
   }
 
   acortarDescripcion(desc: string, max = 60): string {
     return desc.length > max ? desc.slice(0, max) + '...' : desc;
   }
+
 
   hoy = new Date().toISOString().split('T')[0]; // para comparar fechas de expiración
 

@@ -131,6 +131,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/preferencias', [PreferenciaNotificacionController::class, 'index']);
     Route::get('/preferencias/{id}', [PreferenciaNotificacionController::class, 'show']);
     Route::put('/preferencias', [PreferenciaNotificacionController::class, 'update']);
+    Route::put('/preferencias/{userId}', [PreferenciaNotificacionController::class, 'updateDesdeAdmin']);
+
 });
 
 // Rutas ADMIN
