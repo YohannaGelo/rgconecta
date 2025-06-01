@@ -5,6 +5,7 @@ import { NotificationService } from '../core/services/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SectorService } from '../services/sector.service';
 import { environment } from '../../environments/environment';
+import { NgForm, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-opiniones',
@@ -44,6 +45,8 @@ export class OpinionesComponent implements OnInit {
 
   opinionesPorPagina = 4;
   paginaActual = 1;
+
+  valoracionTouched: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -137,30 +140,64 @@ export class OpinionesComponent implements OnInit {
   compareEmpresa = (e1: any, e2: any) =>
     e1 && e2 ? e1.nombre === e2.nombre : e1 === e2;
 
+  // cargarEmpresas(): void {
+  //   this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
+  //     (response) => {
+  //       if (response && Array.isArray(response.data)) {
+  //         this.empresasDisponibles = [
+  //           ...response.data.map((e: any) => ({
+  //             id: e.id,
+  //             nombre: e.nombre,
+  //             sector: e.sector || 'otros', // si falta sector, pone 'otros'
+  //             web: e.web || '', // si falta web, pone vacío
+  //           })),
+  //           { nombre: 'Otras' }, // opción para crear nueva empresa
+  //         ];
+  //       } else {
+  //         console.error(
+  //           'Formato inesperado en la respuesta de empresas',
+  //           response
+  //         );
+  //         this.empresasDisponibles = [{ nombre: 'Otras' }];
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('Error al cargar empresas', error);
+  //       this.empresasDisponibles = [{ nombre: 'Otras' }];
+  //     }
+  //   );
+  // }
   cargarEmpresas(): void {
     this.http.get<any>(`${environment.apiUrl}/empresas`).subscribe(
       (response) => {
         if (response && Array.isArray(response.data)) {
-          this.empresasDisponibles = [
-            ...response.data.map((e: any) => ({
+          const otras = {
+            nombre: 'Otras (crear nueva empresa)',
+          };
+
+          const empresas = response.data
+            .filter((e: any) => e.nombre !== otras.nombre)
+            .map((e: any) => ({
               id: e.id,
               nombre: e.nombre,
-              sector: e.sector || 'otros', // si falta sector, pone 'otros'
-              web: e.web || '', // si falta web, pone vacío
-            })),
-            { nombre: 'Otras' }, // opción para crear nueva empresa
-          ];
+              sector_id: e.sector_id || 'otros',
+              web: e.web || '',
+            }));
+
+          this.empresasDisponibles = [otras, ...empresas];
         } else {
           console.error(
             'Formato inesperado en la respuesta de empresas',
             response
           );
-          this.empresasDisponibles = [{ nombre: 'Otras' }];
+          this.empresasDisponibles = [
+            { nombre: 'Otras (crear nueva empresa)' },
+          ];
         }
       },
       (error) => {
         console.error('Error al cargar empresas', error);
-        this.empresasDisponibles = [{ nombre: 'Otras' }];
+        this.empresasDisponibles = [{ nombre: 'Otras (crear nueva empresa)' }];
       }
     );
   }
@@ -185,88 +222,90 @@ export class OpinionesComponent implements OnInit {
     }
   }
 
-  enviarOpinion(): void {
-    const empresaValida =
+  enviarOpinion(opinionForm: NgForm, selEmpInput: NgModel): void {
+    this.valoracionTouched = true;
+
+    // Marcar el formulario como tocado
+    Object.values(opinionForm.controls).forEach((control: any) => {
+      if (control?.errors?.['required']) {
+        control.markAsTouched();
+      }
+    });
+
+    const empresaEsOtra = this.empresaSeleccionada?.nombre?.startsWith('Otras');
+
+    const camposValidos =
       this.empresaSeleccionada &&
-      (this.empresaSeleccionada.nombre !== 'Otras' ||
+      this.nuevaOpinion.contenido &&
+      this.nuevaOpinion.valoracion &&
+      (!empresaEsOtra ||
         (this.nuevaEmpresa.nombre && this.nuevaEmpresa.sector_id));
 
-    if (
-      !empresaValida ||
-      !this.nuevaOpinion.anios_en_empresa ||
-      !this.nuevaOpinion.contenido ||
-      !this.nuevaOpinion.valoracion
-    ) {
+    if (!camposValidos) {
       this.notificationService.warning(
-        'Completa todos los campos antes de enviar'
+        'Completa todos los campos obligatorios'
       );
       return;
     }
 
-    // Asigna empresa_id si es válida y no es nueva
-    if (
-      this.empresaSeleccionada &&
-      this.empresaSeleccionada.nombre !== 'Otras'
-    ) {
-      this.nuevaOpinion.empresa_id = this.empresaSeleccionada.id;
-    }
+    // Normaliza la web si es una nueva empresa
+    if (this.empresaSeleccionada?.nombre?.startsWith('Otras')) {
+      this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();
 
-    // ✅ Incluir cabeceras con el token
-    const headers = this.authService.getHeaders();
+      if (
+        this.nuevaEmpresa.web &&
+        !/^https?:\/\//i.test(this.nuevaEmpresa.web)
+      ) {
+        this.nuevaEmpresa.web = 'https://' + this.nuevaEmpresa.web;
+      }
+    }
 
     const payload: any = {
       contenido: this.nuevaOpinion.contenido,
       valoracion: this.nuevaOpinion.valoracion,
-      anios_en_empresa: this.nuevaOpinion.anios_en_empresa,
+      anios_en_empresa: this.nuevaOpinion.anios_en_empresa || 0,
     };
 
-    if (this.empresaSeleccionada.nombre === 'Otras') {
+    if (empresaEsOtra) {
       payload.empresa = this.nuevaEmpresa;
     } else {
       payload.empresa_id = +this.empresaSeleccionada.id;
     }
 
-    // console.log(payload);
-
     this.http
-      .post(`${environment.apiUrl}/opiniones`, payload, { headers })
-      .subscribe(
-        (res) => {
+      .post(`${environment.apiUrl}/opiniones`, payload, {
+        headers: this.authService.getHeaders(),
+      })
+      .subscribe({
+        next: () => {
           this.notificationService.success('Opinión enviada correctamente');
           this.cargarOpiniones();
           this.cargarEmpresas();
-          this.resetearFormulario();
+          this.resetearFormulario(opinionForm);
         },
-        (error) => {
-          console.error('Error al enviar opinión:', error);
-
-          if (error.status === 401) {
-            this.notificationService.warning(
-              'Debes iniciar sesión para dejar una opinión.'
-            );
+        error: (err) => {
+          if (err.status === 401) {
+            this.notificationService.warning('Debes iniciar sesión');
             this.router.navigate(['/login']);
-          }
-          if (error.status === 422) {
+          } else if (err.status === 422) {
             this.notificationService.warning(
-              'Ya has opinado sobre esta empresa. Selecciona otra para continuar.'
+              'Ya has opinado sobre esta empresa'
             );
-            this.resetearFormulario();
           } else {
-            this.notificationService.error(
-              'Error al enviar la opinión. Inténtalo de nuevo más tarde.'
-            );
+            this.notificationService.error('Error al enviar la opinión');
           }
-        }
-      );
+        },
+      });
   }
 
-  resetearFormulario(): void {
+  resetearFormulario(form: NgForm): void {
     this.nuevaOpinion = {
       empresa_id: '',
       anios_en_empresa: '',
       contenido: '',
       valoracion: '',
     };
+    this.valoracionTouched = false;
 
     this.empresaSeleccionada = null;
     this.nuevaEmpresa = {
@@ -275,6 +314,9 @@ export class OpinionesComponent implements OnInit {
       web: '',
       descripcion: '',
     };
+
+    // ✅ Limpia el estado visual del formulario
+    form.resetForm();
   }
 
   filtrarOpiniones(): void {

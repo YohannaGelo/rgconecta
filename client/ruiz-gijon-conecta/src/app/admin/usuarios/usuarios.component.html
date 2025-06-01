@@ -106,9 +106,9 @@
                         <input type="text" class="form-control mb-2" [(ngModel)]="editando.name" placeholder="Nombre" />
                         <input type="email" class="form-control mb-2" [(ngModel)]="editando.email"
                             placeholder="Email" />
-                        <select class="form-select mb-3" [(ngModel)]="editando.role">
+                        <!-- <select class="form-select mb-3" [(ngModel)]="editando.role">
                             <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
-                        </select>
+                        </select> -->
                         <!-- Preferencia de responder dudas -->
                         <div class="form-check form-switch d-flex justify-content-end mb-3">
                             <label class="form-check-label me-5" [attr.for]="'toggle-' + usuario.id">
@@ -181,15 +181,15 @@
                         </td>
 
                         <td>
-                            <div *ngIf="editando?.id !== usuario.id">
+                            <div>
                                 <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">
                                     {{ usuario.role | titlecase }}
                                 </span>
                             </div>
-                            <select *ngIf="editando?.id === usuario.id" class="form-select form-select-sm"
+                            <!-- <select *ngIf="editando?.id === usuario.id" class="form-select form-select-sm"
                                 [(ngModel)]="editando.role">
                                 <option *ngFor="let rol of roles" [value]="rol">{{ rol }}</option>
-                            </select>
+                            </select> -->
                         </td>
                         <td>
                             <!-- Imagen o placeholder -->

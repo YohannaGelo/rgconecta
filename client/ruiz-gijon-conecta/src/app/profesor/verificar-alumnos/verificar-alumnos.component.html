@@ -1,5 +1,20 @@
-<div class="d-flex mx-2 mb-3" style="min-height: calc(100dvh - 220px);">
-    <div class="card shadow border-0 col-12">
+<div class="d-flex flex-column mx-2 mb-3" style="min-height: calc(100dvh - 220px);">
+
+    <!-- Filtros -->
+    <section class="d-flex justify-content-end mb-3 px-2 pt-0">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-xl-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..."
+                    (input)="paginaActual = 1" />
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroPromocion"
+                    placeholder="Buscar por promoción..." (input)="paginaActual = 1" />
+            </div>
+        </div>
+    </section>
+
+    <div class="card shadow border-0 col-12 flex-grow-1 mb-3">
         <!-- Cabecera de la card -->
         <div class="card-header bg-white pt-3">
             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-start">
@@ -14,7 +29,7 @@
         <hr class="">
 
         <!-- Cuerpo de la card -->
-        <div class="card-body p-4">
+        <div class="card-body px-4 pb-0">
             <!-- Estado vacío -->
             <div *ngIf="alumnos.length === 0" class="text-center py-5">
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
@@ -24,8 +39,8 @@
 
             <!-- Lista de alumnos -->
             <div class="row row-cols-1 row-cols-lg-2 g-4 ">
-                <div class="col" *ngFor="let alumno of alumnos">
-                    
+                <div class="col" *ngFor="let alumno of alumnosPaginados">
+
                     <div class="h-100 shadow-sm border-start border-2 border-warning bg-light">
                         <div class="card-body">
                             <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start">
@@ -52,7 +67,8 @@
                             </div>
                         </div>
 
-                        <div class="card-footer bg-transparent d-flex flex-column flex-sm-row justify-content-between align-items-center">
+                        <div
+                            class="card-footer bg-transparent d-flex flex-column flex-sm-row justify-content-between align-items-center">
                             <small class="text-muted  col-lg-6">
                                 Registrado el: {{ alumno.created_at | date:'dd/MM/yyyy' }}
                             </small>
@@ -81,6 +97,24 @@
             </div>
         </div>
     </div>
+
+    <!-- Flechas -->
+    <div class="ms-3 mt-auto">
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
+            (click)="paginaAnterior()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ paginaActual }} de {{ totalPaginas > 0 ? totalPaginas : 1 }}
+        </small>
+
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2"
+            [disabled]="paginaActual >= totalPaginas || totalPaginas === 0" (click)="paginaSiguiente()">
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+
 </div>
 
 <!-- Modal confirmar rechazo -->

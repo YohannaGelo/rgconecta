@@ -134,7 +134,7 @@ export class NuevaOfertaComponent implements OnInit {
             .subscribe({
               next: (pref: any) => {
                 this.usuarioPrefierePreguntas = pref.responder_dudas ?? null;
-                console.log(this.usuarioPrefierePreguntas)
+                console.log(this.usuarioPrefierePreguntas);
               },
               error: (err) => {
                 console.error(
@@ -436,6 +436,8 @@ export class NuevaOfertaComponent implements OnInit {
           next: (res) => {
             this.notificationService.success('Oferta publicada correctamente');
             this.resetCambios();
+            this.usuarioPrefierePreguntas = !!this.usuarioPrefierePreguntas;
+
             if (this.usuarioPrefierePreguntas !== true) {
               this.modalService.open(this.modalPreferencias, {
                 centered: true,

@@ -5,7 +5,8 @@
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
 
             <h3 class="card-title mt-2">Mis opiniones</h3>
-            <button class="btn btn-success d-flex align-items-center px-3 py-2 mt-3 mt-sm-0" (click)="irANuevaOpinion()">
+            <button class="btn btn-success d-flex align-items-center px-3 py-2 mt-3 mt-sm-0"
+                (click)="irANuevaOpinion()">
                 <i class="bi bi-pencil-square me-2"></i> Dejar nueva opinión
             </button>
         </div>
@@ -98,18 +99,19 @@
         </ng-template>
     </div>
 
-    <!-- Flechas (podemos conectar a paginación en el futuro) -->
-    <div class="mb-3  mt-auto">
+    <!-- Flechas -->
+    <div class="mb-3 mt-auto">
         <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
             (click)="paginaAnterior()">
             <i class="bi bi-arrow-left"></i>
         </button>
 
-        <small class="mx-2 text-secondary text-uppercase text-muted">Página {{ paginaActual }} de {{ totalPaginas
-            }}</small>
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ paginaActual }} de {{ totalPaginas > 0 ? totalPaginas : 1 }}
+        </small>
 
-        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2" [disabled]="paginaActual === totalPaginas"
-            (click)="paginaSiguiente()">
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2"
+            [disabled]="paginaActual >= totalPaginas || totalPaginas === 0" (click)="paginaSiguiente()">
             <i class="bi bi-arrow-right"></i>
         </button>
     </div>
@@ -127,7 +129,7 @@
         <p class="mb-0">¿Estás seguro de que deseas eliminar esta opinión?</p>
     </div>
     <div class="modal-footer justify-content-center">
-        <button class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+        <button class="btn btn-secondary" (click)="modal.dismiss()" appAutofocus>Cancelar</button>
         <button class="btn btn-danger" (click)="confirmarEliminar(modal)">Eliminar</button>
     </div>
 </ng-template>

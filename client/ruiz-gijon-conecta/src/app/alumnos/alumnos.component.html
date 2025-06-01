@@ -65,7 +65,7 @@
                                 {{ calcularExperiencia(alumno.experiencias) }} años experiencia
                             </i>
                         </article>
-                        <a [routerLink]="['/alumnos', alumno.id]" class="text-primary text-decoration-none fw-semibold">
+                        <a [routerLink]="['/alumnos', alumno.id]"  [queryParams]="{ urlAnterior: currentPage }" class="text-primary text-decoration-none fw-semibold">
                             Ver Detalles <i class="bi bi-arrow-right fs-6 me-2 fw-bolder"></i>
                         </a>
 

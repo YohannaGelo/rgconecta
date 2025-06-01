@@ -51,18 +51,21 @@
                             <h5 class="card-title ">{{ oferta.titulo }}</h5>
                         </div>
                         <article class="d-flex bg-light justify-content-evenly py-2 mb-3 text-secondary rounded">
-                            <i class="bi bi-clock fs-6 mx-2 fst-normal" title="Duración de la jornada laboral"> {{ getTextoJornada(oferta.jornada) }}</i>
+                            <i class="bi bi-clock fs-6 mx-2 fst-normal" title="Duración de la jornada laboral"> {{
+                                getTextoJornada(oferta.jornada) }}</i>
 
                             <i class="bi bi-geo-alt fs-6 me-2 fst-normal"> {{ oferta.localizacion }}</i>
                         </article>
-                        <p class="card-text" [innerHTML]="acortarDescripcion(oferta.descripcion) | ocultarLinks" style="min-height: 2.2rem;"></p>
+                        <p class="card-text" [innerHTML]="acortarDescripcion(oferta.descripcion) | ocultarLinks"
+                            style="min-height: 2.2rem;"></p>
                         <!-- <p [innerHTML]="oferta.descripcion"></p> -->
 
 
-                        <a [routerLink]="['/ofertas', oferta.id]"
+                        <a [routerLink]="['/ofertas', oferta.id]" [queryParams]="{ urlAnterior: currentPage }"
                             class="text-primary text-decoration-none fw-semibold mt-auto">
                             Ver Detalles <i class="bi bi-arrow-right fs-6 me-2 fw-bolder"></i>
                         </a>
+
                     </div>
                 </div>
             </div>

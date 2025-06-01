@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-alumnos',
@@ -31,10 +32,14 @@ export class AlumnosComponent implements OnInit {
     { label: 'Buscando empleo', value: 'buscando_empleo' },
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.cargarAlumnos();
+    this.route.queryParams.subscribe((params) => {
+      const page = +params['page'] || 1;
+      this.currentPage = page;
+      this.cargarAlumnos(page);
+    });
   }
 
   cargarAlumnos(pagina: number = 1): void {

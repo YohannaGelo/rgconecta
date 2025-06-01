@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { environment } from '../../../environments/environment';
-
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-detalle-oferta',
@@ -37,21 +37,39 @@ export class DetalleOfertaComponent implements OnInit {
 
   hoy = new Date().toISOString().split('T')[0]; // para comparar fechas de expiración
 
+  urlAnterior: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+
+    const param = this.route.snapshot.queryParamMap.get('urlAnterior');
+    // console.log('🔙 urlAnterior:', param); // 👈 DEBUG
+
+    this.urlAnterior = param ? +param : null;
+
     if (id) {
       this.cargarOferta(+id);
     }
   }
 
+  volverAtras(): void {
+    if (this.urlAnterior) {
+      this.router.navigate(['/ofertas'], {
+        queryParams: { page: this.urlAnterior },
+      });
+    } else {
+      this.location.back(); // fallback si no hay info
+    }
+  }
 
   cargarOferta(id: number): void {
     const headers = this.authService.getHeaders();
