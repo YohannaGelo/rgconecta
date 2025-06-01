@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         ]);
     })
+    ->withCommands([
+        __DIR__ . '/../app/Console/Commands'
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

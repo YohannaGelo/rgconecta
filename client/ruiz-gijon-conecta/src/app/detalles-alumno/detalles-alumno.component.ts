@@ -4,8 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { NotificationService } from '../core/services/notification.service';
 import { environment } from '../../environments/environment';
-
-
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-detalles-alumno',
@@ -16,14 +15,23 @@ import { environment } from '../../environments/environment';
 export class DetallesAlumnoComponent implements OnInit {
   alumno: any = null;
 
+  urlAnterior: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
+
+    const param = this.route.snapshot.queryParamMap.get('urlAnterior');
+    // console.log('🔙 urlAnterior:', param); // 👈 DEBUG
+
+    this.urlAnterior = param ? +param : null;
+
     const id = this.route.snapshot.paramMap.get('id');
     const token = sessionStorage.getItem('token');
 
@@ -48,9 +56,21 @@ export class DetallesAlumnoComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al cargar alumno:', error);
-          this.notificationService.error('No se pudo cargar la información del alumno.');
+          this.notificationService.error(
+            'No se pudo cargar la información del alumno.'
+          );
         },
       });
+  }
+
+  volverAtras(): void {
+    if (this.urlAnterior) {
+      this.router.navigate(['/alumnos'], {
+        queryParams: { page: this.urlAnterior },
+      });
+    } else {
+      this.location.back(); // fallback
+    }
   }
 
   getSituacionClase(situacion: string): string {

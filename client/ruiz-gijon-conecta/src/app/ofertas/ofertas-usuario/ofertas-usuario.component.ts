@@ -6,7 +6,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
-
 @Component({
   selector: 'app-ofertas-usuario',
   standalone: false,
@@ -144,7 +143,6 @@ export class OfertasUsuarioComponent implements OnInit {
         },
       });
   }
-
 
   cargarTecnologias(): void {
     this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
@@ -285,4 +283,6 @@ export class OfertasUsuarioComponent implements OnInit {
   paginaSiguiente(): void {
     if (this.paginaActual < this.totalPaginas) this.paginaActual++;
   }
+
+
 }

@@ -59,7 +59,7 @@ export class PerfilAlumnoComponent implements OnInit {
 
   opinion = {
     contenido: '',
-    valoracion: 5,
+    valoracion: 3,
     anios_en_empresa: 0,
   };
 

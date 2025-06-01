@@ -5,7 +5,6 @@ import { NotificationService } from '../../core/services/notification.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from '../../../environments/environment';
 
-
 @Component({
   selector: 'app-verificar-alumnos',
   standalone: false,
@@ -17,6 +16,13 @@ export class VerificarAlumnosComponent implements OnInit {
   alumnoARechazarId: number | null = null;
 
   alumnos: any[] = [];
+
+  // Paginación
+  alumnosPorPagina = 4;
+  paginaActual = 1;
+
+  filtroNombre: string = '';
+  filtroPromocion: string = '';
 
   constructor(
     private http: HttpClient,
@@ -70,6 +76,28 @@ export class VerificarAlumnosComponent implements OnInit {
           this.notification.error('Error al verificar al alumno');
         },
       });
+  }
+
+  get alumnosFiltrados(): any[] {
+    const normalize = (str: string) =>
+      str
+        ?.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') || '';
+
+    return this.alumnos.filter((alumno) => {
+      const nombre = normalize(alumno.user?.name);
+      const promocion = normalize(alumno.promocion);
+
+      const coincideNombre =
+        !this.filtroNombre || nombre.includes(normalize(this.filtroNombre));
+
+      const coincidePromocion =
+        !this.filtroPromocion ||
+        promocion.includes(normalize(this.filtroPromocion));
+
+      return coincideNombre && coincidePromocion;
+    });
   }
 
   acortarNombre(nombre: string): string {
@@ -159,5 +187,22 @@ export class VerificarAlumnosComponent implements OnInit {
           this.alumnoARechazarId = null;
         },
       });
+  }
+
+  get alumnosPaginados(): any[] {
+    const inicio = (this.paginaActual - 1) * this.alumnosPorPagina;
+    return this.alumnosFiltrados.slice(inicio, inicio + this.alumnosPorPagina);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.alumnosFiltrados.length / this.alumnosPorPagina);
+  }
+
+  paginaAnterior(): void {
+    if (this.paginaActual > 1) this.paginaActual--;
+  }
+
+  paginaSiguiente(): void {
+    if (this.paginaActual < this.totalPaginas) this.paginaActual++;
   }
 }

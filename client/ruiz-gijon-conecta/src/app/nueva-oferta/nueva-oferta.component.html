@@ -92,7 +92,7 @@
                 <label class="form-label text-uppercase text-secondary">Descripción de la oferta <span
                         class="text-primary small">*</span></label>
                 <textarea class="form-control" rows="5" (ngModelChange)="onFormChange()" [(ngModel)]="descripcion"
-                    name="descripcion" placeholder="Describe brevemente las funciones del puesto..."
+                    name="descripcion" placeholder="Describe brevemente las funciones del puesto. Puedes añadir también un enlace con más información (por ejemplo: https://linkedin.com/oferta)."
                     #descInput="ngModel" required></textarea>
                 <div *ngIf="descInput.invalid && descInput.touched" class="invalid-feedback d-block">
                     La descripción es obligatoria

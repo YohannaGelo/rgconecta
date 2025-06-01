@@ -1,6 +1,10 @@
 <!-- Detalles -->
 <div class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1" style="min-height: calc(100dvh - 215px);">
 
+    <button class="btn btn-primary rounded-2 text-white px-1" (click)="volverAtras()" style="width: 2rem;">
+        <i class="bi bi-arrow-return-left small"></i>
+    </button>
+
     <!-- Info principal -->
     <section class="col bg-white rounded-2 shadow p-4 pb-1">
 
@@ -27,24 +31,35 @@
         <!-- Empresa: web y sector -->
         <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.empresa">
             <p class="text-secondary my-2 form-label">WEB DE LA EMPRESA</p>
-            <p class="mb-1">
+
+            <!-- Si tiene web -->
+            <p class="mb-1" *ngIf="oferta.empresa.web; else sinWeb">
                 <a [href]="oferta.empresa.web" target="_blank" rel="noopener noreferrer" class="text-primary">
                     {{ oferta.empresa.web }}
                 </a>
             </p>
-            <p class="badge bg-primary bg-opacity-10 rounded-pill text-secondary mt-2 px-2"><i
-                    class="bi bi-box-fill me-2"></i>{{ oferta.empresa.sector?.nombre }}</p>
+
+            <!-- Si NO tiene web -->
+            <ng-template #sinWeb>
+                <p class="text-muted fst-italic mb-1">No disponible</p>
+            </ng-template>
+
+            <p class="badge bg-primary bg-opacity-10 rounded-pill text-secondary mt-2 px-2">
+                <i class="bi bi-box-fill me-2"></i>{{ oferta.empresa.sector?.nombre }}
+            </p>
         </div>
+
 
         <!-- Descripción de la oferta -->
         <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.descripcion">
             <p class="text-secondary my-2 form-label">PUESTO DE TRABAJO</p>
             <p class="mb-2" [innerHTML]="oferta.descripcion | linkify"></p>
             <p class="mb-1 text-secondary small">
-                {{ obtenerTipoTrabajo(oferta.localizacion) }} 
+                {{ obtenerTipoTrabajo(oferta.localizacion) }}
             </p>
             <p class="small bg-opacity-10 rounded-pill text-primary mt-2 px-2 text-end"><i
-                    class="bi bi-calendar-date me-2"></i><span class="text-secondary">Disponible hasta:</span> {{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }}</p>
+                    class="bi bi-calendar-date me-2"></i><span class="text-secondary">Disponible hasta:</span> {{
+                oferta.fecha_expiracion | date: 'dd-MM-yyyy' }}</p>
         </div>
 
 

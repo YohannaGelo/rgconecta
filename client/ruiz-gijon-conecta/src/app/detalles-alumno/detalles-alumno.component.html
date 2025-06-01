@@ -1,5 +1,10 @@
 <div *ngIf="alumno" class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1"
     style="min-height: calc(100dvh - 220px);">
+
+    <button class="btn btn-primary rounded-2 text-white px-1" (click)="volverAtras()" style="width: 2rem;">
+        <i class="bi bi-arrow-return-left small"></i>
+    </button>
+    
     <!-- info principal -->
     <section class="col bg-white rounded-2 shadow p-4">
         <!-- datos personales -->

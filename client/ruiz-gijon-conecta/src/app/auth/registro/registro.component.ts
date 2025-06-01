@@ -587,7 +587,6 @@ export class RegistroComponent implements OnInit {
     let empresaData: EmpresaData;
 
     // Si es una empresa nueva
-    // if (this.empresaSeleccionada?.nombre === 'Otras') {
     if (this.empresaSeleccionada?.nombre?.startsWith('Otras')) {
       // Normaliza la URL
       this.nuevaEmpresa.web = this.nuevaEmpresa.web.trim();

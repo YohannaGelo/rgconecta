@@ -2,6 +2,7 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-ofertas',
@@ -22,10 +23,14 @@ export class OfertasComponent implements OnInit {
   categorias: string[] = [];
   localizacionesDisponibles: string[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute ) {}
 
   ngOnInit(): void {
-    this.cargarOfertas();
+    this.route.queryParams.subscribe((params) => {
+      const page = +params['page'] || 1;
+      this.currentPage = page;
+      this.cargarOfertas(page);
+    });
     this.cargarLocalizaciones();
     this.cargarCategorias();
   }
@@ -82,7 +87,6 @@ export class OfertasComponent implements OnInit {
   acortarDescripcion(desc: string, max = 60): string {
     return desc.length > max ? desc.slice(0, max) + '...' : desc;
   }
-
 
   hoy = new Date().toISOString().split('T')[0]; // para comparar fechas de expiración
 
