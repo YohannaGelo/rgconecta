@@ -32,7 +32,12 @@ export class NavbarComponent implements OnInit {
   // Para cambiar los estilos del switch del header
   isInOfertasSection(): boolean {
     const ruta = this.router.url;
-    return ['/home', '/ofertas', '/nueva-oferta'].includes(ruta);
+    return (
+      ruta === '/home' ||
+      ruta === '/ofertas' ||
+      ruta === '/nueva-oferta' ||
+      ruta.startsWith('/ofertas/')
+    );
   }
 
   acortarNombre(nombre: string): string {
