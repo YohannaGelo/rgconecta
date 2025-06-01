@@ -55,9 +55,10 @@
 
                             <i class="bi bi-geo-alt fs-6 me-2 fst-normal"> {{ oferta.localizacion }}</i>
                         </article>
-                        <p class="card-text" style="min-height: 2.2rem;">
-                            {{ acortarDescripcion(oferta.descripcion) }}
-                        </p>
+                        <p class="card-text" [innerHTML]="acortarDescripcion(oferta.descripcion) | ocultarLinks" style="min-height: 2.2rem;"></p>
+                        <!-- <p [innerHTML]="oferta.descripcion"></p> -->
+
+
                         <a [routerLink]="['/ofertas', oferta.id]"
                             class="text-primary text-decoration-none fw-semibold mt-auto">
                             Ver Detalles <i class="bi bi-arrow-right fs-6 me-2 fw-bolder"></i>

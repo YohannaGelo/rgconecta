@@ -49,9 +49,8 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Correo electrónico <i
-                                class="bi bi-info-circle text-warning" placement="top"
-                                ngbTooltip="Si necesitas modificar el correo electrónico, contacta con soporte a través de la pestaña lateral de contacto."></i></label>
+            <label class="form-label">Correo electrónico <i class="bi bi-info-circle text-warning" placement="top"
+                ngbTooltip="Si necesitas modificar el correo electrónico, contacta con soporte a través de la pestaña lateral de contacto."></i></label>
             <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
               name="email" readonly>
           </div>
@@ -61,6 +60,15 @@
             <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="profesor.departamento"
               name="departamento">
           </div>
+
+          <div class="form-check form-switch my-4 d-flex justify-content-end">
+            <label class="form-check-label me-5" for="toggleRespondeDudas">
+              Aceptar preguntas sobre tus ofertas publicadas
+            </label>
+            <input class="form-check-input" type="checkbox" id="toggleRespondeDudas"
+              [(ngModel)]="preferencias.responder_dudas" name="responder_dudas" (change)="onFormChange()" />
+          </div>
+
 
 
           <div class="mb-3 d-flex align-items-center gap-2">

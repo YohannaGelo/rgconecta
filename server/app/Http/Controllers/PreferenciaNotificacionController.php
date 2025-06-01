@@ -51,4 +51,24 @@ class PreferenciaNotificacionController extends Controller
 
         return response()->json($preferencias);
     }
+
+    public function updateDesdeAdmin(Request $request, $userId)
+    {
+        $validated = $request->validate([
+            'responder_dudas' => 'nullable|boolean',
+            'avisos_nuevas_ofertas' => 'nullable|boolean',
+            'newsletter' => 'nullable|boolean',
+        ]);
+
+        $preferencia = \App\Models\PreferenciaNotificacion::firstOrNew(['user_id' => $userId]);
+
+        $preferencia->fill($validated);
+        $preferencia->user_id = $userId;
+        $preferencia->save();
+
+        return response()->json([
+            'message' => 'Preferencias actualizadas correctamente.',
+            'data' => $preferencia,
+        ]);
+    }
 }

@@ -20,8 +20,9 @@
 - ~~PANTALLA CARGA!!!!~~
 - ~~¿Pq al actualizar página siempre vuelve al login?~~
 - ~~En años... poner un minimo? por la edad...~~
+- ~~Añadir en Admin y en perfiles la opción de modificar las preferencias~~
+- Ajustar el toggle del navbar
 - Poder poner 0 años de experiencia
-- Añadir en Admin y en perfiles la opción de modificar las preferencias
 - Implementar logica filtros en mis opiniones y mis ofertas -> o quitar flechas
 
 ---
@@ -49,3 +50,5 @@
 - Uso de middleware (laravel)
 - Uso de Guards (angular)
 - Interceptor para cuando se hacen llamadas mostrar pantalla de carga
+- Pipe para detectar url en texto y hacerla linkeable
+- Pipe para detectar url en texto y recoratar para que no sea útil (vista ofertas - usuarios no registrados)

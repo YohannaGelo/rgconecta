@@ -10,6 +10,8 @@ import { NotificationService } from '../core/services/notification.service';
 import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-perfil-profesor',
@@ -42,14 +44,40 @@ export class PerfilProfesorComponent implements OnInit {
   transform: ImageTransform = {};
   rotation = 0;
 
+  preferencias: any = {};
+
   constructor(
     private modalService: NgbModal,
     public authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
+    this.loadPreferencias();
+  }
+
+  loadPreferencias(): void {
+    this.authService.currentUser$.subscribe((data) => {
+      const userId = data?.user?.id;
+      if (!userId) return;
+
+      this.http
+        .get<any>(
+          `${environment.apiUrl}/preferencias/${userId}`,
+          this.authService.authHeader()
+        )
+        .subscribe({
+          next: (res) => {
+            this.preferencias = res;
+          },
+          error: (err) => {
+            console.error('Error cargando preferencias:', err);
+            this.preferencias = { responder_dudas: false };
+          },
+        });
+    });
   }
 
   // #region Cambios Pendientes
@@ -267,6 +295,25 @@ export class PerfilProfesorComponent implements OnInit {
       user: userUpdates,
       departamento: this.profesor.departamento,
     };
+
+    this.http
+      .put(
+        `${environment.apiUrl}/preferencias`,
+        {
+          responder_dudas: this.preferencias.responder_dudas,
+        },
+        this.authService.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          console.log('Preferencias actualizadas');
+        },
+        error: () => {
+          this.notificationService.warning(
+            'No se pudieron actualizar las preferencias'
+          );
+        },
+      });
 
     //console.log('Actualizando perfil del profesor:', profesorActualizado);
     this.authService

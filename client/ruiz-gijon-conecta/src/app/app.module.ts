@@ -45,6 +45,8 @@ import { AyudaComponent } from './ayuda/ayuda.component';
 import { VerificarComponent } from './auth/verificar/verificar.component';
 import { LoaderComponent } from './shared/components/loader/loader.component';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
+import { LinkifyPipe } from './pipes/linkify.pipe';
+import { OcultarLinksPipe } from './pipes/ocultar-links.pipe';
 
 
 @NgModule({
@@ -83,7 +85,9 @@ import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
     ProfesoresVistaComponent,
     AyudaComponent,
     VerificarComponent,
-    LoaderComponent
+    LoaderComponent,
+    LinkifyPipe,
+    OcultarLinksPipe
   ],
   imports: [
     BrowserModule,

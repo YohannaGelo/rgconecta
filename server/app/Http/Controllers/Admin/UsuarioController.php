@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Cloudinary\Cloudinary;
-
+use App\Models\PreferenciaNotificacion;
 
 class UsuarioController extends Controller
 {
@@ -20,12 +20,40 @@ class UsuarioController extends Controller
     }
 
     // PUT /api/admin/usuarios/{user}
+    // public function update(Request $request, User $user)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'sometimes|string|max:255',
+    //         'email' => 'sometimes|email|unique:users,email,' . $user->id,
+    //         'role' => 'sometimes|in:admin,profesor,alumno',
+    //     ]);
+
+    //     if (empty($validated)) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'No se enviaron datos para actualizar.',
+    //         ], 400);
+    //     }
+
+    //     $resultado = $user->update($validated);
+
+    //     return response()->json([
+    //         'success' => $resultado,
+    //         'message' => $resultado ? 'Usuario actualizado correctamente.' : 'Falló la actualización.',
+    //         'data' => $user->fresh() // Forzamos recarga desde DB
+    //     ]);
+    // }
+
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'role' => 'sometimes|in:admin,profesor,alumno',
+            'preferencias' => 'sometimes|array',
+            'preferencias.responder_dudas' => 'nullable|boolean',
+            'preferencias.avisos_nuevas_ofertas' => 'nullable|boolean',
+            'preferencias.newsletter' => 'nullable|boolean',
         ]);
 
         if (empty($validated)) {
@@ -35,14 +63,27 @@ class UsuarioController extends Controller
             ], 400);
         }
 
-        $resultado = $user->update($validated);
+        $user->update($validated);
+
+        // 🆕 Actualizar o crear preferencias si se incluyeron
+        if ($request->has('preferencias')) {
+            PreferenciaNotificacion::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'responder_dudas' => $request->preferencias['responder_dudas'] ?? false,
+                    'avisos_nuevas_ofertas' => $request->preferencias['avisos_nuevas_ofertas'] ?? false,
+                    'newsletter' => $request->preferencias['newsletter'] ?? false,
+                ]
+            );
+        }
 
         return response()->json([
-            'success' => $resultado,
-            'message' => $resultado ? 'Usuario actualizado correctamente.' : 'Falló la actualización.',
-            'data' => $user->fresh() // Forzamos recarga desde DB
+            'success' => true,
+            'message' => 'Usuario actualizado correctamente.',
+            'data' => $user->fresh()
         ]);
     }
+
 
 
     public function destroyFoto(User $user)

@@ -154,6 +154,8 @@ export class PerfilAlumnoComponent implements OnInit {
     default: ['básico', 'intermedio', 'avanzado'],
   };
 
+  preferencias: any = {};
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -176,6 +178,30 @@ export class PerfilAlumnoComponent implements OnInit {
     this.cargarTecnologias();
     this.cargarSectores();
     this.cargarEmpresas();
+
+    this.loadPreferencias();
+  }
+
+  loadPreferencias(): void {
+    this.authService.currentUser$.subscribe((data) => {
+      const userId = data?.user?.id;
+      if (!userId) return;
+
+      this.http
+        .get<any>(
+          `${environment.apiUrl}/preferencias/${userId}`,
+          this.authService.authHeader()
+        )
+        .subscribe({
+          next: (res) => {
+            this.preferencias = res;
+          },
+          error: (err) => {
+            console.error('Error cargando preferencias:', err);
+            this.preferencias = { responder_dudas: false };
+          },
+        });
+    });
   }
 
   cargarSectores(): void {
@@ -500,6 +526,24 @@ export class PerfilAlumnoComponent implements OnInit {
     };
 
     // console.log('📤 Enviando datos para actualizar:', alumnoActualizado);
+    this.http
+      .put(
+        `${environment.apiUrl}/preferencias`,
+        {
+          responder_dudas: this.preferencias.responder_dudas,
+        },
+        this.authService.authHeader()
+      )
+      .subscribe({
+        next: () => {
+          console.log('Preferencias actualizadas');
+        },
+        error: () => {
+          this.notificationService.warning(
+            'No se pudieron actualizar las preferencias'
+          );
+        },
+      });
 
     this.authService.updateProfile(alumnoActualizado).subscribe(
       (res) => {

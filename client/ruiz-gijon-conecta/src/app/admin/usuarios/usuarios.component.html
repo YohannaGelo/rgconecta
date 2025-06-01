@@ -82,12 +82,23 @@
                             <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
                         </p>
 
+                        <div class="form-check form-switch mt-2 d-flex justify-content-end">
+                            <label class="form-check-label me-5">
+                                ¿Responde dudas?
+                            </label>
+                            <input class="form-check-input" type="checkbox"
+                                [checked]="preferencias[usuario.id]?.responder_dudas" disabled />
+                            
+                        </div>
+
                         <p class="mb-0">
                             <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">
                                 <i class="bi bi-person-badge me-2"></i>
                                 {{ usuario.role | titlecase }}
                             </span>
                         </p>
+
+
                     </div>
 
                     <!-- Modo edición -->
@@ -98,6 +109,18 @@
                         <select class="form-select mb-3" [(ngModel)]="editando.role">
                             <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
                         </select>
+                        <!-- Preferencia de responder dudas -->
+                        <div class="form-check form-switch d-flex justify-content-end mb-3">
+                            <label class="form-check-label me-5" [attr.for]="'toggle-' + usuario.id">
+                                ¿Responde dudas?
+                            </label>
+                            <input class="form-check-input" type="checkbox"
+                                [(ngModel)]="preferencias[usuario.id].responder_dudas"
+                                [attr.id]="'toggle-' + usuario.id" />
+                            
+                        </div>
+
+
                         <div class="d-grid gap-2">
                             <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
                                 <i class="bi bi-check-lg me-1"></i>Guardar
@@ -121,6 +144,7 @@
                         <th class="ps-4">ID</th>
                         <th>Nombre</th>
                         <th>Email</th>
+                        <th>¿Responde dudas?</th>
                         <th>Rol</th>
                         <th>Foto</th>
                         <th class="text-end pe-4">Acciones</th>
@@ -136,13 +160,26 @@
                         </td>
                         <td>
 
-                            <div *ngIf="editando?.id !== usuario.id"><span *ngIf="!usuario.email_verified_at" class="my-2 small">
-                                <span class="badge bg-danger  rounded-pill">Email no verificado</span>
-                            </span> {{ usuario.email }} </div>
+                            <div *ngIf="editando?.id !== usuario.id"><span *ngIf="!usuario.email_verified_at"
+                                    class="my-2 small">
+                                    <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                                </span> {{ usuario.email }} </div>
                             <input *ngIf="editando?.id === usuario.id" type="email" class="form-control form-control-sm"
                                 [(ngModel)]="editando.email" />
-                            
+
                         </td>
+                        <td>
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <!-- Vista lectura -->
+                                <input *ngIf="editando?.id !== usuario.id" class="form-check-input" type="checkbox"
+                                    [checked]="preferencias[usuario.id]?.responder_dudas" disabled />
+
+                                <!-- Vista edición -->
+                                <input *ngIf="editando?.id === usuario.id" class="form-check-input" type="checkbox"
+                                    [(ngModel)]="preferencias[usuario.id].responder_dudas" />
+                            </div>
+                        </td>
+
                         <td>
                             <div *ngIf="editando?.id !== usuario.id">
                                 <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">

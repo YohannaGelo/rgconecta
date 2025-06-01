@@ -21,3 +21,9 @@
     }
 }
 
+.link-oculto {
+    pointer-events: none !important;
+    cursor: default !important;
+    text-decoration: none !important;
+    word-break: break-word !important;
+}

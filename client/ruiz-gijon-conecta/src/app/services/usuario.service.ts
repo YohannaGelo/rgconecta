@@ -23,6 +23,21 @@ export class UsuarioService {
     );
   }
 
+  getPreferencias(userId: number) {
+    return this.http.get(
+      `${environment.apiUrl}/preferencias/${userId}`,
+      this.authService.authHeader()
+    );
+  }
+
+  updatePreferenciasComoAdmin(userId: number, data: any) {
+    return this.http.put(
+      `${environment.apiUrl}/preferencias/${userId}`,
+      data,
+      this.authService.authHeader()
+    );
+  }
+
   deleteFoto(id: number) {
     return this.http.delete<any>(
       `${this.baseUrl}/${id}/foto`,

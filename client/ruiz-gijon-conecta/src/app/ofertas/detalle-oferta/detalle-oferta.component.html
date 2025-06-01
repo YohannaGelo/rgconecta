@@ -39,7 +39,7 @@
         <!-- Descripción de la oferta -->
         <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.descripcion">
             <p class="text-secondary my-2 form-label">PUESTO DE TRABAJO</p>
-            <p class="mb-2">{{ oferta.descripcion }}</p>
+            <p class="mb-2" [innerHTML]="oferta.descripcion | linkify"></p>
             <p class="mb-1 text-secondary small">
                 {{ obtenerTipoTrabajo(oferta.localizacion) }} 
             </p>
