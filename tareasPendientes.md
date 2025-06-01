@@ -21,7 +21,7 @@
 - ~~¿Pq al actualizar página siempre vuelve al login?~~
 - ~~En años... poner un minimo? por la edad...~~
 - ~~Añadir en Admin y en perfiles la opción de modificar las preferencias~~
-- Ajustar el toggle del navbar
+- ~~Ajustar el toggle del navbar~~
 - Poder poner 0 años de experiencia
 - Implementar logica filtros en mis opiniones y mis ofertas -> o quitar flechas
 
