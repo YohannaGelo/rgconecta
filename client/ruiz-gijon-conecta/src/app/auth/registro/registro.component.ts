@@ -64,7 +64,7 @@ export class RegistroComponent implements OnInit {
 
   opinion = {
     contenido: '',
-    valoracion: 5,
+    valoracion: 3,
     anios_en_empresa: 0,
   };
 

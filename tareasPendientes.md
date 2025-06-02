@@ -48,6 +48,7 @@
 - Paginación en los paneles Admin
 - Poder dejar el año de fin en blanco para simular que aún está en curso
 - Implementar aviso de ofertas por mail (ya está en la tabla de preferencias... pero lo ideal sería poder filtrar el tipo de oferta a recibir)
+- Que se eliminen ofertas tras cierto tiempo de estar expiradas.
 
 ## A TENER EN CUENTA PARA PRESENTACIÓN
 
