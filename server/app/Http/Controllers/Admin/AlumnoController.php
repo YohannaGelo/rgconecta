@@ -34,6 +34,7 @@ class AlumnoController extends Controller
             'fecha_nacimiento' => 'sometimes|date'
         ]);
 
+        
         $verificando = !$alumno->is_verified && $validated['is_verified'];
 
         $alumno->update($validated);
