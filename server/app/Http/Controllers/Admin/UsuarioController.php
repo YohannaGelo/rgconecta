@@ -63,7 +63,16 @@ class UsuarioController extends Controller
             ], 400);
         }
 
-        $user->update($validated);
+        // 🆕 Si cambia el correo, borrar verificación y reenviar email
+        if (isset($validated['email']) && $validated['email'] !== $user->email) {
+            $user->email = $validated['email'];
+            $user->email_verified_at = null;
+            $user->save();
+
+            $user->sendEmailVerificationNotification();
+        } else {
+            $user->update($validated);
+        }
 
         // 🆕 Actualizar o crear preferencias si se incluyeron
         if ($request->has('preferencias')) {
