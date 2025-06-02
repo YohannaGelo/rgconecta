@@ -31,6 +31,7 @@ class AlumnoController extends Controller
             'promocion' => 'required|string|max:255',
             'titulo_profesional' => 'nullable|string|max:255',
             'is_verified' => 'required|boolean',
+            'fecha_nacimiento' => 'sometimes|date'
         ]);
 
         $verificando = !$alumno->is_verified && $validated['is_verified'];

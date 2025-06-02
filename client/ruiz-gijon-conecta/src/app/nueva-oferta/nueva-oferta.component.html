@@ -92,7 +92,8 @@
                 <label class="form-label text-uppercase text-secondary">Descripción de la oferta <span
                         class="text-primary small">*</span></label>
                 <textarea class="form-control" rows="5" (ngModelChange)="onFormChange()" [(ngModel)]="descripcion"
-                    name="descripcion" placeholder="Describe brevemente las funciones del puesto. Puedes añadir también un enlace con más información (por ejemplo: https://linkedin.com/oferta)."
+                    name="descripcion"
+                    placeholder="Describe brevemente las funciones del puesto. Puedes añadir también un enlace con más información (por ejemplo: https://linkedin.com/oferta)."
                     #descInput="ngModel" required></textarea>
                 <div *ngIf="descInput.invalid && descInput.touched" class="invalid-feedback d-block">
                     La descripción es obligatoria
@@ -133,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- Fechas -->
+
             <div class="row mt-3">
                 <div class="col-md-6">
                     <label class="form-label text-uppercase text-secondary">Fecha de expiración <span
@@ -182,31 +183,21 @@
                                 ngbTooltip="El tipo de la primera habilidad que añadas determinará la categoría principal de la oferta."></i>
                         </label>
 
-                        <ng-select [items]="tecnologiasDisponibles" [(ngModel)]="tecnologiaSeleccionada"
-                            name="tecnologiaSeleccionada" [searchable]="true" placeholder="Selecciona o escribe"
-                            (change)="onTecnologiaChange()">
+                        <ng-select [items]="tecnologiasDisponibles" bindLabel="nombre"
+                            [(ngModel)]="tecnologiaSeleccionada" name="tecnologiaSeleccionada" [searchable]="true"
+                            placeholder="Selecciona o escribe" (change)="onTecnologiaChange()">
 
-                            <!-- ✅ Plantilla personalizada para el dropdown -->
+                            <!-- Plantilla para desplegable -->
                             <ng-template ng-option-tmp let-item="item">
-                                <div [ngStyle]="{
-                                        'border-bottom': item.nombre?.startsWith('Otros') ? '1px solid #ccc' : '',
-                                        'padding-bottom': item.nombre?.startsWith('Otros') ? '4px' : ''
-                                        }">
-                                    {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
-                                </div>
+                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
                             </ng-template>
 
-                            <!-- 🔽 Etiqueta que aparece en el desplegable -->
+                            <!-- Plantilla para valor seleccionado -->
                             <ng-template ng-label-tmp let-item="item">
                                 {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
                             </ng-template>
-
-                            <!-- 🔽 Etiqueta que aparece en la lista de opciones -->
-                            <ng-template ng-option-tmp let-item="item">
-                                {{ item.nombre }} - ({{ tiposTecnologiaMap[item.tipo] || item.tipo | titlecase }})
-                            </ng-template>
-
                         </ng-select>
+
 
 
                         <!-- Selector de nivel solo cuando NO se selecciona 'Otros' -->
