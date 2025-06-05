@@ -147,17 +147,21 @@ export class OfertasUsuarioComponent implements OnInit {
   cargarTecnologias(): void {
     this.http.get<any[]>(`${environment.apiUrl}/tecnologias`).subscribe(
       (data) => {
-        this.tecnologiasDisponibles = data.map((tec) => ({
+        const tecnologias = data.map((tec) => ({
           id: tec.id,
           nombre: tec.nombre,
           tipo: tec.tipo,
           pivot: tec.pivot || { nivel: '' },
         }));
-        this.tecnologiasDisponibles.push({
-          nombre: 'Otros',
-          tipo: 'otros',
-          pivot: { nivel: '' },
-        });
+
+        this.tecnologiasDisponibles = [
+          {
+            nombre: 'Otros (crear nueva habilidad)',
+            tipo: 'otros',
+            pivot: { nivel: '' },
+          },
+          ...tecnologias,
+        ];
       },
       (error) => {
         console.error('❌ Error al cargar tecnologías:', error);
@@ -168,8 +172,7 @@ export class OfertasUsuarioComponent implements OnInit {
 
   onTecnologiaChange(): void {
     if (
-      this.tecnologiaSeleccionada &&
-      this.tecnologiaSeleccionada.nombre !== 'Otros'
+      this.tecnologiaSeleccionada?.nombre !== 'Otros (crear nueva habilidad)'
     ) {
       this.nuevaTecnologia = { nombre: '', tipo: '', pivot: { nivel: '' } };
     }
@@ -283,6 +286,4 @@ export class OfertasUsuarioComponent implements OnInit {
   paginaSiguiente(): void {
     if (this.paginaActual < this.totalPaginas) this.paginaActual++;
   }
-
-
 }

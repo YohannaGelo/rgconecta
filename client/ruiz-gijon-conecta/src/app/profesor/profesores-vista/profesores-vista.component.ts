@@ -5,7 +5,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationService } from '../../core/services/notification.service';
 import { environment } from '../../../environments/environment';
 
-
 @Component({
   selector: 'app-profesores-vista',
   standalone: false,
@@ -21,6 +20,9 @@ export class ProfesoresVistaComponent implements OnInit {
   profesores: any[] = [];
   filtroNombre: string = '';
 
+  currentPage = 1;
+  lastPage = 1;
+
   constructor(
     private modalService: NgbModal,
     private http: HttpClient,
@@ -35,11 +37,15 @@ export class ProfesoresVistaComponent implements OnInit {
   cargarProfesores(): void {
     this.http
       .get<any>(
-        `${environment.apiUrl}/profesores`,
+        `${environment.apiUrl}/profesores?page=${this.currentPage}`,
         this.authService.authHeader()
       )
       .subscribe({
-        next: (res) => (this.profesores = res.data),
+        next: (res) => {
+          this.profesores = res.data;
+          this.currentPage = res.pagination?.current_page ?? 1;
+          this.lastPage = res.pagination?.last_page ?? 1;
+        },
         error: (err) => console.error('Error al cargar profesores', err),
       });
   }
@@ -94,5 +100,12 @@ export class ProfesoresVistaComponent implements OnInit {
           this.notification.error('No se pudo enviar el mensaje.');
         },
       });
+  }
+
+  cambiarPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.lastPage) {
+      this.currentPage = pagina;
+      this.cargarProfesores();
+    }
   }
 }
