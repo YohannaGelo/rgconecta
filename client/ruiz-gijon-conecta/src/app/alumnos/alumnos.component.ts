@@ -71,37 +71,6 @@ export class AlumnosComponent implements OnInit {
     this.cargarAlumnos(1); // Reinicia a página 1 al aplicar filtros
   }
 
-  // aplicarFiltros(): void {
-  //   const experienciaMap: { [key: string]: number } = {
-  //     'más de 1 año': 1,
-  //     'más de 5 años': 5,
-  //     'más de 10 años': 10,
-  //   };
-
-  //   const params: any = {};
-
-  //   if (this.filtroTecnologia) params.tecnologia = this.filtroTecnologia;
-  //   if (this.filtroSituacion) params.situacion = this.filtroSituacion?.trim();
-  //   if (this.filtroExperiencia) {
-  //     const valorNumerico = experienciaMap[this.filtroExperiencia];
-  //     if (valorNumerico) {
-  //       params.experiencia = valorNumerico;
-  //     }
-  //   }
-
-  //   this.http.get<any>(`${environment.apiUrl}/alumnos`, { params }).subscribe({
-  //     next: (response) => {
-  //       this.alumnos = response.data;
-  //       this.tecnologias = response.stats.tecnologias;
-  //       this.currentPage = response.pagination?.current_page ?? 1;
-  //       this.lastPage = response.pagination?.last_page ?? 1;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al aplicar filtros', error);
-  //     },
-  //   });
-  // }
-
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.lastPage) {
       this.cargarAlumnos(pagina);

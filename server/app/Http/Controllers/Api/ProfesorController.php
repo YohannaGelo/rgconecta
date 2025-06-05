@@ -20,6 +20,7 @@ class ProfesorController extends Controller
      * Display a listing of the resource.
      */
     // Listar profesores con sus usuarios
+    // Listar profesores con sus usuarios
     public function index(Request $request)
     {
         $query = Profesor::with('user:id,name,email');
@@ -35,13 +36,19 @@ class ProfesorController extends Controller
         return response()->json([
             'success' => true,
             'data' => $profesores->items(),
-            'pagination' => $profesores->only(['total', 'current_page', 'per_page', 'last_page']),
+            'pagination' => [
+                'total' => $profesores->total(),
+                'current_page' => $profesores->currentPage(),
+                'per_page' => $profesores->perPage(),
+                'last_page' => $profesores->lastPage(),
+            ],
             'stats' => [
                 'total_profesores' => Profesor::count(),
                 'departamentos' => Profesor::groupBy('departamento')->pluck('departamento')
             ]
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.

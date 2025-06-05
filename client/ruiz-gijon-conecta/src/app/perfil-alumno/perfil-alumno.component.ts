@@ -407,7 +407,7 @@ export class PerfilAlumnoComponent implements OnInit {
       (data) => {
         // Aseguramos que cada tecnología tiene el formato adecuado con "nombre" y "pivot"
         const otros = {
-          nombre: 'Otros (añadir nueva tecnología)',
+          nombre: 'Otros (crear nueva habilidad)',
           tipo: 'otros',
           pivot: { nivel: '' },
         };
