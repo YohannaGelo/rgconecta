@@ -35,17 +35,18 @@ export class OfertasComponent implements OnInit {
     this.cargarOfertas();
   }
 
-  formatearFechas(ofertas: any[]): any[] {
-    return ofertas.map((oferta) => ({
-      ...oferta,
-      fecha_expiracion: this.esFechaValida(oferta.fecha_expiracion)
-        ? new Date(oferta.fecha_expiracion)
-        : null,
-      fecha_publicacion: this.esFechaValida(oferta.fecha_publicacion)
-        ? new Date(oferta.fecha_publicacion)
-        : null,
-    }));
-  }
+formatearFechas(ofertas: any[]): any[] {
+  return ofertas.map((oferta) => ({
+    ...oferta,
+    fecha_expiracion: this.esFechaValida(oferta.fecha_expiracion)
+      ? new Date(oferta.fecha_expiracion).toISOString().slice(0, 10)
+      : null,
+    fecha_publicacion: this.esFechaValida(oferta.fecha_publicacion)
+      ? new Date(oferta.fecha_publicacion).toISOString().slice(0, 10)
+      : null,
+  }));
+}
+
 
   private esFechaValida(fecha: any): boolean {
     return !!fecha && !isNaN(Date.parse(fecha));

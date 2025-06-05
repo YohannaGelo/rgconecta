@@ -38,6 +38,7 @@ class Oferta extends Model
             ->withPivot('nivel');
     }
 
+
     // Relación con empresa (1:N)
     public function empresa()
     {
