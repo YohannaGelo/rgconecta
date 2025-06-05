@@ -552,7 +552,7 @@ export class RegistroComponent implements OnInit {
     // Marcar campos básicos
     selEmpInput.control.markAsTouched();
     inicioInput.control.markAsTouched();
-    finInput.control.markAsTouched();
+    // finInput.control.markAsTouched();
     puestoInput.control.markAsTouched();
 
     // const creandoNuevaEmpresa = this.empresaSeleccionada?.nombre === 'Otras';
@@ -577,7 +577,6 @@ export class RegistroComponent implements OnInit {
     if (
       !this.empresaSeleccionada ||
       !this.comienzoExperiencia ||
-      !this.finExperiencia ||
       !this.puestoExperiencia
     ) {
       this.notificationService.warning('Completa los datos de la experiencia.');
@@ -645,7 +644,7 @@ export class RegistroComponent implements OnInit {
     // Verifica que los campos estén completos
     if (
       this.comienzoExperiencia &&
-      this.finExperiencia &&
+      // this.finExperiencia &&
       this.puestoExperiencia
     ) {
       const nuevaExp = {

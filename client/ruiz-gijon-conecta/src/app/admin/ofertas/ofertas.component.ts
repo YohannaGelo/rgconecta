@@ -19,6 +19,8 @@ export class OfertasComponent implements OnInit {
   filtroLocalizacion: string = '';
   filtroJornada: string = '';
 
+  hoy = new Date();
+
   private panel: PanelComponent;
 
   constructor(
@@ -31,6 +33,22 @@ export class OfertasComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarOfertas();
+  }
+
+  formatearFechas(ofertas: any[]): any[] {
+    return ofertas.map((oferta) => ({
+      ...oferta,
+      fecha_expiracion: this.esFechaValida(oferta.fecha_expiracion)
+        ? new Date(oferta.fecha_expiracion)
+        : null,
+      fecha_publicacion: this.esFechaValida(oferta.fecha_publicacion)
+        ? new Date(oferta.fecha_publicacion)
+        : null,
+    }));
+  }
+
+  private esFechaValida(fecha: any): boolean {
+    return !!fecha && !isNaN(Date.parse(fecha));
   }
 
   ofertasFiltradas(): any[] {
@@ -70,7 +88,7 @@ export class OfertasComponent implements OnInit {
   cargarOfertas(): void {
     this.ofertaService.getAll().subscribe({
       next: (res) => {
-        this.ofertas = res.data;
+        this.ofertas = this.formatearFechas(res.data);
       },
       error: (err) => {
         console.error('Error al cargar ofertas:', err);
@@ -78,6 +96,18 @@ export class OfertasComponent implements OnInit {
       },
     });
   }
+
+  // cargarOfertas(): void {
+  //   this.ofertaService.getAll().subscribe({
+  //     next: (res) => {
+  //       this.ofertas = res.data;
+  //     },
+  //     error: (err) => {
+  //       console.error('Error al cargar ofertas:', err);
+  //       this.notificationService.error('Error al cargar ofertas');
+  //     },
+  //   });
+  // }
 
   editar(oferta: any): void {
     this.editando = { ...oferta };

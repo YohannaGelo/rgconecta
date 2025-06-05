@@ -201,7 +201,7 @@
 
                                 <!-- Botón eliminar imagen solo si está en edición y tiene imagen -->
                                 <button *ngIf="editando?.id === usuario.id && usuario.foto_perfil"
-                                    class="btn btn-sm btn-outline-danger" (click)="eliminarImagen(usuario)">
+                                    class="btn btn-sm btn-outline-danger" (click)="eliminarImagen(usuario)" title="Eliminar foto de perfil">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </div>

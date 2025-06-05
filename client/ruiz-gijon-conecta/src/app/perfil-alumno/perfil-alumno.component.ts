@@ -703,7 +703,7 @@ export class PerfilAlumnoComponent implements OnInit {
   ): void {
     selEmpInput.control.markAsTouched();
     inicioInput.control.markAsTouched();
-    finInput.control.markAsTouched();
+    // finInput.control.markAsTouched();
     puestoInput.control.markAsTouched();
 
     const creandoNuevaEmpresa =
@@ -761,7 +761,7 @@ export class PerfilAlumnoComponent implements OnInit {
 
     if (
       this.comienzoExperiencia &&
-      this.finExperiencia &&
+      // this.finExperiencia &&
       this.puestoExperiencia
     ) {
       if (parseInt(this.finExperiencia) < parseInt(this.comienzoExperiencia)) {
