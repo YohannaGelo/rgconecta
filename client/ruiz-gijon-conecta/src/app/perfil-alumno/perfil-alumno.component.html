@@ -128,7 +128,10 @@
                         placeholder="Selecciona o busca un ciclo" (change)="onFormChange()"
                         [ngClass]="{ 'ng-invalid': tituloInput.invalid && tituloInput.touched }">
                         <ng-template ng-option-tmp let-item="item">
-                            {{ item.tipo | titlecase }} - {{ item.nombre }}
+                            <div class="small">
+                                <strong>{{ item.tipo | titlecase }}</strong><br>
+                                <span class=" text-break">{{ item.nombre }}</span>
+                            </div>
                         </ng-template>
                     </ng-select>
                 </div>

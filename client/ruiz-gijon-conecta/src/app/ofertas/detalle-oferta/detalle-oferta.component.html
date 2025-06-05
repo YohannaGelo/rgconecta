@@ -1,5 +1,6 @@
 <!-- Detalles -->
-<div class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1" style="min-height: calc(100dvh - 215px);">
+<div class="row mx-2 my-3 justify-content-between gap-3 flex-column flex-sm-row flex-grow-1"
+    style="min-height: calc(100dvh - 215px);">
 
     <button class="btn btn-primary rounded-2 text-white px-1" (click)="volverAtras()" style="width: 2rem;">
         <i class="bi bi-arrow-return-left small"></i>
@@ -34,7 +35,8 @@
 
             <!-- Si tiene web -->
             <p class="mb-1" *ngIf="oferta.empresa.web; else sinWeb">
-                <a [href]="oferta.empresa.web" target="_blank" rel="noopener noreferrer" class="text-primary">
+                <a [href]="oferta.empresa.web" target="_blank" rel="noopener noreferrer"
+                    class="text-primary text-break">
                     {{ oferta.empresa.web }}
                 </a>
             </p>
@@ -53,7 +55,7 @@
         <!-- Descripción de la oferta -->
         <div class="bg-light py-1 pb-2 px-4 mt-3" *ngIf="oferta?.descripcion">
             <p class="text-secondary my-2 form-label">PUESTO DE TRABAJO</p>
-            <p class="mb-2" [innerHTML]="oferta.descripcion | linkify"></p>
+            <p class="mb-2 text-break" [innerHTML]="oferta.descripcion | linkify"></p>
             <p class="mb-1 text-secondary small">
                 {{ obtenerTipoTrabajo(oferta.localizacion) }}
             </p>
@@ -121,13 +123,16 @@
             <ng-container *ngIf="opinionesPaginadas.length > 0; else sinOpiniones">
                 <div *ngFor="let op of opinionesPaginadas" class="bg-light p-3 mb-3 rounded">
                     <h5 class="fw-light text-secondary">
-                        {{ op.user?.role === 'profesor' ? 'Profesor:' : 'Alumno:' }}
+                        <ng-container [ngSwitch]="op.user?.role">
+                            <ng-container *ngSwitchCase="'alumno'">Alumno: </ng-container>
+                            <ng-container *ngSwitchCase="'profesor'">Profesor: </ng-container>
+                        </ng-container>
                         <span class="fw-semibold">{{ acortarNombre(op.user?.name) }}</span>
                     </h5>
                     <h6 class="fw-light text-secondary">
                         Experiencia en la empresa: <span class="fw-semibold">{{ op.anios_en_empresa }} años</span>
                     </h6>
-                    <p class="overflow-hidden">{{ acortarDescripcion(op.contenido) }}</p>
+                    <p class="overflow-hidden text-break">{{ acortarDescripcion(op.contenido) }}</p>
                     <div class="d-flex align-items-center mt-2">
                         <span *ngFor="let idx of [1,2,3,4,5]">
 

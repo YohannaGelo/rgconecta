@@ -1,4 +1,4 @@
-<div *ngIf="alumno" class="row mx-2 my-3 justify-content-between gap-3 flex-grow-1"
+<div *ngIf="alumno" class="row mx-2 my-3 justify-content-between gap-3 flex-column flex-sm-row  flex-grow-1"
     style="min-height: calc(100dvh - 220px);">
 
     <button class="btn btn-primary rounded-2 text-white px-1" (click)="volverAtras()" style="width: 2rem;">
@@ -60,7 +60,8 @@
                             <p>{{ exp.puesto }}</p>
                         </div>
                         <h5 class="text-primary">
-                            {{ exp.fecha_inicio | date: 'yyyy' }}-{{ exp.fecha_fin | date: 'yyyy' }}
+                            {{ exp.fecha_inicio | date: 'yyyy' }} -
+                            {{ exp.fecha_fin ? (exp.fecha_fin | date: 'yyyy') : 'Actualidad' }}
                         </h5>
                     </div>
                     <hr *ngIf="i < alumno.experiencias.length - 1" class="col-11 mx-auto my-1 mb-2" />

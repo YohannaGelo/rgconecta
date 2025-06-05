@@ -34,6 +34,30 @@ class OpinionController extends Controller
             ->latest()
             ->paginate(10);
 
+        // 🔁 Recalcular los años desde experiencia, si se puede
+        $opiniones->getCollection()->transform(function ($opinion) {
+            $user = $opinion->user;
+            $empresaId = $opinion->empresa_id;
+
+            if ($user && $user->alumno) {
+                $experiencia = $user->alumno->experiencias
+                    ->firstWhere('empresa_id', $empresaId);
+
+                if ($experiencia) {
+                    $inicio = \Carbon\Carbon::createFromDate($experiencia->fecha_inicio, 1, 1); // Año, enero, 1
+                    $fin = $experiencia->fecha_fin
+                        ? \Carbon\Carbon::createFromDate($experiencia->fecha_fin, 12, 31)       // Año, diciembre, 31
+                        : now();
+
+
+                    $opinion->anios_en_empresa = (int) $inicio->diffInYears($fin);
+
+                }
+            }
+
+            return $opinion;
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'Opiniones obtenidas correctamente.',

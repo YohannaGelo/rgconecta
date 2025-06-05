@@ -76,8 +76,15 @@
                         {{ oferta.titulacion.nombre }}
                     </span>
 
-                    <p class="small bg-opacity-10 rounded-pill text-primary"><i
-                        class="bi bi-calendar-date me-2"></i><span class="text-secondary">Disponible hasta:</span> {{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }}</p>
+                    <p
+                        class="small bg-opacity-10 rounded-pill text-primary d-flex justify-content-start align-items-center">
+                        <span>
+                            <i class="bi bi-calendar-date me-2"></i>
+                            <span class="text-secondary">Disponible hasta:</span> {{ oferta.fecha_expiracion | date:
+                            'dd-MM-yyyy' }}
+                        </span>
+                        <span *ngIf="oferta.fecha_expiracion <= hoy" class="badge bg-danger ms-2 rounded-pill">Finalizada</span>
+                    </p>
 
                     <div *ngIf="oferta.tecnologias?.length > 0">
                         <p class="mb-1 small text-muted">Tecnologías:</p>
@@ -144,7 +151,9 @@
                                 [(ngModel)]="editando.localizacion" />
                         </td>
                         <td>
-                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.fecha_expiracion | date: 'dd-MM-yyyy'  }}</div>
+                        
+                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }} <span *ngIf="oferta.fecha_expiracion <= hoy" class="badge bg-danger ms-2 rounded-pill">Fin.</span>
+                            </div>
                             <input *ngIf="editando?.id === oferta.id" type="date" class="form-control form-control-sm"
                                 [(ngModel)]="editando.fecha_expiracion" />
                         </td>
