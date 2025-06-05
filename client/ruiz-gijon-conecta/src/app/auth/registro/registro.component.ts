@@ -598,7 +598,7 @@ export class RegistroComponent implements OnInit {
 
       const { nombre, sector_id, web, descripcion } = this.nuevaEmpresa;
 
-      if (!nombre || !web || !sector_id) {
+      if (!nombre || !sector_id) {
         this.notificationService.warning(
           'Debes introducir el nombre, sector y web de la nueva empresa.'
         );
@@ -1066,20 +1066,22 @@ export class RegistroComponent implements OnInit {
     sessionStorage.removeItem('opinionesPendientes');
   }
 
-  calcularAnios(fechaInicio: string, fechaFin: string): number {
-    if (!fechaInicio || !fechaFin) return 0; // protección básica
+  calcularAnios(fechaInicio: string, fechaFin?: string): number {
+    if (!fechaInicio) return 0; // protección básica si no hay inicio
 
     const inicio = new Date(fechaInicio);
-    const fin = new Date(fechaFin);
+    const fin = fechaFin ? new Date(fechaFin) : new Date(); // si no hay fin, usamos hoy
 
     if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) return 0;
 
     let anios = fin.getFullYear() - inicio.getFullYear();
     const mes = fin.getMonth() - inicio.getMonth();
-    if (mes < 0 || (mes === 0 && fin.getDate() < inicio.getDate())) {
+    const dia = fin.getDate() - inicio.getDate();
+
+    if (mes < 0 || (mes === 0 && dia < 0)) {
       anios--;
     }
 
-    return anios;
+    return Math.max(anios, 0); // Nunca negativo
   }
 }

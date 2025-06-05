@@ -51,7 +51,6 @@ class OpinionController extends Controller
 
 
                     $opinion->anios_en_empresa = (int) $inicio->diffInYears($fin);
-
                 }
             }
 
@@ -189,6 +188,27 @@ class OpinionController extends Controller
             ])
             ->latest()
             ->get();
+
+        $opiniones->transform(function ($opinion) use ($user) {
+            $empresaId = $opinion->empresa_id;
+
+            if ($user->alumno) {
+                $experiencia = $user->alumno->experiencias
+                    ->firstWhere('empresa_id', $empresaId);
+
+                if ($experiencia) {
+                    $inicio = \Carbon\Carbon::createFromDate($experiencia->fecha_inicio, 1, 1);
+                    $fin = $experiencia->fecha_fin
+                        ? \Carbon\Carbon::createFromDate($experiencia->fecha_fin, 12, 31)
+                        : now();
+
+                    $opinion->anios_en_empresa = (int) $inicio->diffInYears($fin);
+                }
+            }
+
+            return $opinion;
+        });
+
 
         return response()->json([
             'success' => true,
