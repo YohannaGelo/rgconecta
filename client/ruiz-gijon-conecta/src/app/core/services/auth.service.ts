@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -37,13 +37,6 @@ export class AuthService {
     }
   }
 
-  // constructor(private http: HttpClient, private router: Router) {
-  //   if (this.token) {
-  //     // Si hay token al iniciar, intenta cargar el usuario actual
-  //     this.loadCurrentUser().subscribe();
-  //   }
-  // }
-
   getToken(): string | null {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
   }
@@ -61,11 +54,27 @@ export class AuthService {
   }
 
   // Cargar usuario actual desde el backend
+  // loadCurrentUser(): Observable<any> {
+  //   const headers = this.getHeaders();
+
+  //   return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
+  //     tap((user) => {
+  //       this.currentUserSubject.next(user);
+  //     })
+  //   );
+  // }
   loadCurrentUser(): Observable<any> {
     const headers = this.getHeaders();
+    console.log('🔐 Headers usados en /me:', headers.get('Authorization')); // ✅
+
     return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
       tap((user) => {
+        console.log('🎯 Usuario obtenido:', user);
         this.currentUserSubject.next(user);
+      }),
+      catchError((err) => {
+        console.error('❌ Error al obtener usuario', err);
+        return throwError(() => err);
       })
     );
   }
@@ -113,6 +122,8 @@ export class AuthService {
   }
 
   setToken(newToken: string): void {
+    this.token = newToken;
+
     // Reemplaza en ambos para seguridad: solo uno estará activo
     if (localStorage.getItem('token')) {
       localStorage.setItem('token', newToken);
@@ -121,6 +132,9 @@ export class AuthService {
     }
 
     this.token = newToken;
+
+    // 👇 Importante para que los guards reconozcan el cambio inmediato
+    this.isAuthenticatedSubject.next(true);
   }
 
   setCurrentUser(user: any): void {

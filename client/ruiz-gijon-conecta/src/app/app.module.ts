@@ -49,6 +49,8 @@ import { LinkifyPipe } from './pipes/linkify.pipe';
 import { OcultarLinksPipe } from './pipes/ocultar-links.pipe';
 import { VolverArribaComponent } from './shared/components/volver-arriba/volver-arriba.component';
 import { PasswordToggleDirective } from './shared/components/password-toggle.directive';
+import { AutologinComponent } from './autologin/autologin.component';
+
 
 
 @NgModule({
@@ -91,7 +93,8 @@ import { PasswordToggleDirective } from './shared/components/password-toggle.dir
     LinkifyPipe,
     OcultarLinksPipe,
     VolverArribaComponent,
-    PasswordToggleDirective
+    PasswordToggleDirective,
+    AutologinComponent
   ],
   imports: [
     BrowserModule,
