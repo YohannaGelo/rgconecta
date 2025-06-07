@@ -32,14 +32,34 @@ export class AlumnosComponent implements OnInit {
     { label: 'Buscando empleo', value: 'buscando_empleo' },
   ];
 
+  ordenOptions = [
+    { label: 'Nombre (A-Z)', value: 'nombre_asc' },
+    { label: 'Nombre (Z-A)', value: 'nombre_desc' },
+    { label: 'Más experiencia', value: 'experiencia' },
+    { label: 'Más recientes', value: 'recientes' },
+  ];
+
+  filtroNombre: string = '';
+  ordenSeleccionado: string | null = null;
+
+  mostrarFiltros = false;
+  esMovil: boolean = window.innerWidth < 992;
+
   constructor(private http: HttpClient, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.actualizarEsMovil();
+    window.addEventListener('resize', this.actualizarEsMovil.bind(this));
+
     this.route.queryParams.subscribe((params) => {
       const page = +params['page'] || 1;
       this.currentPage = page;
       this.cargarAlumnos(page);
     });
+  }
+
+  actualizarEsMovil() {
+    this.esMovil = window.innerWidth < 992;
   }
 
   cargarAlumnos(pagina: number = 1): void {
@@ -48,6 +68,9 @@ export class AlumnosComponent implements OnInit {
     if (this.filtroTecnologia) params.tecnologia = this.filtroTecnologia;
     if (this.filtroExperiencia) params.experiencia = this.filtroExperiencia;
     if (this.filtroSituacion) params.situacion = this.filtroSituacion;
+
+    if (this.filtroNombre) params.nombre = this.filtroNombre;
+    if (this.ordenSeleccionado) params.orden = this.ordenSeleccionado;
 
     // console.log('📤 Filtros aplicados:', params);
 
@@ -173,5 +196,9 @@ export class AlumnosComponent implements OnInit {
     if (this.currentPage < this.lastPage) {
       this.cambiarPagina(this.currentPage + 1);
     }
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.actualizarEsMovil.bind(this));
   }
 }

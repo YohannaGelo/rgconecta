@@ -13,12 +13,15 @@ class AvisoNuevoAlumno extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $url;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(public $alumno)
+    public function __construct(public $alumno, $url)
     {
         $alumno->load('user');
+        $this->url = $url;
     }
 
     public function build()
@@ -51,7 +54,7 @@ class AvisoNuevoAlumno extends Mailable
                         <p style='margin: 1rem;'>Este alumno está pendiente de verificación. Si tienes un momento, accede a la
                             plataforma para revisar su perfil.</p>
                         <div style='text-align: center; margin-top: 30px;'>
-                            <a href='{$frontendUrl}/verificar-alumnos' style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
+                            <a href='{$this->url}' style='display: inline-block; padding: 12px 24px; background-color: #2b4e84; color: white;
                                             text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
                                 Verificar alumno
                             </a>

@@ -42,7 +42,7 @@
           <div class="col-sm-6">
             <label for="input-password" class="form-label text-uppercase text-secondary">Contraseña <span
                 class="text-primary small">*</span></label>
-            <input type="password" class="form-control text-secondary" id="input-password" placeholder="********"
+            <input type="password" appPasswordToggle appPasswordToggle class="form-control text-secondary" id="input-password" placeholder="********"
               required (ngModelChange)="onFormChange()" [(ngModel)]="password" name="password" #passwordInput="ngModel"
               (ngModelChange)="validarPassword()" />
 
@@ -63,7 +63,7 @@
           <div class="col-sm-6 mt-3 mt-sm-0">
             <label for="input-confirm-password" class="form-label text-uppercase text-secondary">Confirmar
               contraseña <span class="text-primary small">*</span></label>
-            <input type="password" class="form-control text-secondary" id="input-confirm-password"
+            <input type="password" appPasswordToggle class="form-control text-secondary" id="input-confirm-password"
               placeholder="********" required (ngModelChange)="onFormChange()" [(ngModel)]="confirmPassword"
               name="confirmPassword" #confirmPasswordInput="ngModel" (ngModelChange)="validarConfirmPassword()" />
 
@@ -475,8 +475,6 @@
           <label for="input_exp" class="form-label text-uppercase text-secondary">Promoción (IES Ruiz Gijón) <i
               class="bi bi-info-circle text-warning" placement="top"
               ngbTooltip="Indica los años de tu promoción en el IES Ruiz Gijón. Si no lo recuerdas con exactitud, puedes escribir una fecha aproximada (por ejemplo: 2020/2024)."></i></label>
-          <!-- <input type="text" class="form-control text-secondary" id="input_exp" placeholder="2023 / 2025" required
-            (ngModelChange)="onFormChange()" [(ngModel)]="promocion" name="promocion" /> -->
           <input type="text" class="form-control text-secondary" id="input_exp" placeholder="2022/2024" required
             (ngModelChange)="onFormChange()" [(ngModel)]="promocion" name="promocion" #promoInput="ngModel"
             pattern="^\d{4}/\d{4}$" />
@@ -522,10 +520,10 @@
 
 
       <!-- ENVÍO FORMULARIO -->
-      <div class="row bg-white rounded-2 shadow py-4 px-2 mt-3 align-items-center justify-content-center text-center">
+      <div class="row bg-white rounded-2 shadow py-4 px-1 mt-3 align-items-center justify-content-center text-center">
         <div class="col-12 col-sm-6 col-lg-7 mb-3 mb-sm-0">
           <h4 class="fw-bold mb-3">¿Listo para registrarte?</h4>
-          <button type="submit" class="btn btn-primary rounded-5 py-1 px-3 shadow-sm">Confirmar</button>
+          <button type="submit" class="btn btn-primary rounded-5 py-1 px-3 px-md-2 px-xl-3 shadow-sm">Confirmar registro</button>
         </div>
         <div class="col-8 col-sm-4 col-lg-5">
           <img src="assets/img/perfil.png" alt="Imagen para envío" class="img-fluid rounded-circle">
@@ -686,6 +684,40 @@
       </button>
       <button class="btn btn-warning px-4" (click)="modal.close()">
         Salir sin guardar
+      </button>
+    </div>
+
+  </div>
+</ng-template>
+
+<!-- MODAL: Verificación de correo tras registro -->
+<ng-template #modalVerificacionCorreo let-modal>
+  <div class="modal-content shadow rounded-4 border-0">
+
+    <!-- Encabezado -->
+    <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+      <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+        Verificación de cuenta
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="modal-body text-center mt-2">
+      <i class="bi bi-envelope-check text-info fs-2 pb-2"></i>
+      <p class="text-secondary fs-5 mt-2 mb-0">
+        Hemos enviado un correo de verificación a tu dirección.<br>
+        Por favor, accede a tu email y confirma tu cuenta para poder validarte como alumno.
+      </p>
+      <p class="text-muted small mt-2">
+        Si no lo encuentras, revisa tu carpeta de spam.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer border-0 justify-content-center pb-4">
+      <button class="btn btn-primary px-4" (click)="modal.close()">
+        Entendido
       </button>
     </div>
 

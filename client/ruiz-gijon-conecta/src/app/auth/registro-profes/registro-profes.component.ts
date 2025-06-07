@@ -23,6 +23,9 @@ export class RegistroProfesorComponent {
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('emailInput') emailInputRef!: NgModel;
 
+  @ViewChild('modalVerificacionCorreo') modalVerificacionCorreo!: TemplateRef<any>;
+
+
   name: string = '';
   email: string = '';
   password: string = '';
@@ -207,6 +210,10 @@ export class RegistroProfesorComponent {
 
             // Reseteamos cambios
             this.resetCambios();
+
+            // Mostrr modal de correo enviado
+            this.modalService.open(this.modalVerificacionCorreo, { centered: true });
+
             // console.log(
             //   '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
             // );

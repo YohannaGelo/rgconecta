@@ -14,7 +14,7 @@
 
           <div class="form-group mt-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input type="password" id="password" class="form-control" placeholder="Introduce tu contraseña"
+            <input type="password" appPasswordToggle id="password" class="form-control" placeholder="Introduce tu contraseña"
               [(ngModel)]="password" name="password" required minlength="6" />
           </div>
 
@@ -94,7 +94,7 @@
     <div class="modal-body text-center">
       <p class="text-muted mb-3">Introduce la clave que te ha proporcionado el centro para continuar con el registro
         como profesor.</p>
-      <input type="password" class="form-control text-center shadow-sm" [(ngModel)]="claveProfesor"
+      <input type="password" appPasswordToggle class="form-control text-center shadow-sm" [(ngModel)]="claveProfesor"
         placeholder="🔒 Clave de acceso" (keydown.enter)="enviarClave(modal)" />
     </div>
 

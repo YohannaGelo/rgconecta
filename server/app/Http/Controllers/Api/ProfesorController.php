@@ -23,7 +23,7 @@ class ProfesorController extends Controller
     // Listar profesores con sus usuarios
     public function index(Request $request)
     {
-        $query = Profesor::with('user:id,name,email');
+        $query = Profesor::with('user:id,name,email,foto_perfil');
 
         // Filtro por departamento (ej: ?departamento=Informatica)
         if ($request->filled('departamento')) {
