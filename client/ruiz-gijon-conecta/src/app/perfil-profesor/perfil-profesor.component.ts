@@ -245,6 +245,8 @@ export class PerfilProfesorComponent implements OnInit {
             });
             this.authService.setAuthenticated(true);
 
+            this.cambiosSinGuardar = false;
+            
             this.notificationService.success(
               '¡Contraseña actualizada y sesión renovada!'
             );
