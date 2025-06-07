@@ -122,11 +122,14 @@ class UsuarioController extends Controller
     // DELETE /api/admin/usuarios/{user}
     public function destroy(User $user)
     {
-        // Si tiene relaciones con profesor o alumno
-        // $user->alumno()?->delete();
-        // $user->profesor()?->delete();
+        // Eliminar relaciones dependientes
+        $user->preferencias()?->delete();
+        $user->ofertas()->delete(); // Aquí está la clave
+        $user->opiniones()->delete(); // También es buena idea si tienes esta relación
+        $user->alumno()?->delete();
+        $user->profesor()?->delete();
 
-        $user->forceDelete(); // Si usas softDeletes, esto lo borra de verdad
+        $user->forceDelete();
 
         return response()->json([
             'success' => true,

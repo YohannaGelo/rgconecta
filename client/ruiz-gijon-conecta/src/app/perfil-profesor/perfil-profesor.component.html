@@ -102,12 +102,12 @@
     <form #changePasswordForm="ngForm">
       <div class="mb-3">
         <label class="form-label">Contraseña actual</label>
-        <input type="password" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="currentPassword"
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="currentPassword"
           name="currentPassword" required>
       </div>
       <div class="mb-3">
         <label class="form-label">Nueva contraseña</label>
-        <input type="password" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="newPassword"
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="newPassword"
           name="newPassword" required (ngModelChange)="validatePassword()">
         <div *ngIf="!passwordValid && newPassword" class="text-danger small mt-1">
           La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.
@@ -115,7 +115,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label">Confirmar nueva contraseña</label>
-        <input type="password" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="confirmNewPassword"
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="confirmNewPassword"
           name="confirmNewPassword" required>
         <div *ngIf="newPassword !== confirmNewPassword && confirmNewPassword" class="text-danger small mt-1">
           Las contraseñas no coinciden.

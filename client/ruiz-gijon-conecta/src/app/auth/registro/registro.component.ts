@@ -60,6 +60,9 @@ export class RegistroComponent implements OnInit {
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('emailInput') emailInputRef!: NgModel;
 
+  @ViewChild('modalVerificacionCorreo')
+  modalVerificacionCorreo!: TemplateRef<any>;
+
   ultimaEmpresaAgregada: any = null;
 
   opinion = {
@@ -892,6 +895,12 @@ export class RegistroComponent implements OnInit {
 
             // Reseteamos cambios
             this.resetCambios();
+
+            // Mostrr modal de correo enviado
+            this.modalService.open(this.modalVerificacionCorreo, {
+              centered: true,
+            });
+
             // console.log(
             //   '🧹 Flag cambiosSinGuardar puesto a false tras guardar'
             // );

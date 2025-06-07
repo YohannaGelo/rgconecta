@@ -50,6 +50,12 @@ class AlumnoController extends Controller
             $query->whereRaw('LOWER(situacion_laboral) = ?', [strtolower(trim($request->situacion))]);
         }
 
+        if ($request->filled('nombre')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->nombre . '%');
+            });
+        }
+
 
         if ($request->filled('experiencia')) {
             $query->whereHas('experiencias', function ($q) use ($request) {
@@ -57,6 +63,28 @@ class AlumnoController extends Controller
                 $q->whereRaw('(IFNULL(fecha_fin, YEAR(CURDATE())) - fecha_inicio) >= ?', [$request->experiencia]);
             });
         }
+
+        if ($request->filled('orden')) {
+            switch ($request->orden) {
+                case 'nombre_asc':
+                case 'nombre_desc':
+                    $query->join('users', 'alumnos.user_id', '=', 'users.id')
+                        ->orderBy('users.name', $request->orden === 'nombre_asc' ? 'asc' : 'desc')
+                        ->select('alumnos.*'); // 🔥 esencial
+                    break;
+
+                case 'experiencia':
+                    $query->withCount('experiencias')->orderBy('experiencias_count', 'desc');
+                    break;
+
+                case 'recientes':
+                    $query->orderBy('alumnos.created_at', 'desc');
+                    break;
+            }
+        }
+
+
+
 
         $alumnos = $query->paginate(8);
 

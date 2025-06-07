@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Verified;
 use App\Models\User;
+use App\Http\Controllers\AutoLoginController;
 
 Route::get('/email/verify/{id}/{hash}', function ($id, $hash, Request $request) {
 
@@ -49,3 +50,7 @@ Route::get('/email/verify/{id}/{hash}', function ($id, $hash, Request $request) 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/autologin/{user}', [AutologinController::class, 'handle'])
+    ->name('autologin')
+    ->middleware('signed');

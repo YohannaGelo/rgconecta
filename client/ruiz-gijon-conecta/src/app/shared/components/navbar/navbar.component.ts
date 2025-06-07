@@ -40,6 +40,11 @@ export class NavbarComponent implements OnInit {
     );
   }
 
+  estaVerificado(): boolean {
+    const user = this.currentUser?.user || this.currentUser;
+    return !!user?.email_verified_at;
+  }
+
   acortarNombre(nombre: string): string {
     if (!nombre) return '';
 

@@ -50,3 +50,11 @@ button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* 🔒 Oculta el botón de mostrar/ocultar contraseña que añade el navegador */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-contacts-auto-fill-button {
+  display: none !important;
+}

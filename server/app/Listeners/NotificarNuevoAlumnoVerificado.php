@@ -12,6 +12,7 @@ use App\Mail\BienvenidaAlumnoPendiente;
 use App\Mail\AvisoNuevoAlumno;
 use App\Models\Alumno;
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 class NotificarNuevoAlumnoVerificado
 {
@@ -26,7 +27,7 @@ class NotificarNuevoAlumnoVerificado
     /**
      * Handle the event.
      */
-        public function handle(Verified $event): void
+    public function handle(Verified $event): void
     {
         $user = $event->user;
 
@@ -40,7 +41,21 @@ class NotificarNuevoAlumnoVerificado
         Mail::to($user->email)->send(new BienvenidaAlumnoPendiente($alumno));
 
         // Enviar aviso a profes y admin
+        // $destinatarios = User::whereIn('role', ['profesor', 'admin'])->pluck('email')->toArray();
+        // Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno));
+        // Generar URL firmada de autologin (puedes ajustar el user que la recibe)
+        $admin = User::where('role', 'admin')->first(); // o cualquier otro
+        // $url = URL::signedRoute('autologin', ['user' => $admin->id]);
+        $url = URL::temporarySignedRoute(
+            'autologin',
+            now()->addMinutes(30),
+            ['user' => $admin->id]
+        );
+
+        $url = str_replace('/rgc_api', '', $url);
+
+        // Enviar aviso a profes y admin
         $destinatarios = User::whereIn('role', ['profesor', 'admin'])->pluck('email')->toArray();
-        Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno));
+        Mail::to($destinatarios)->send(new AvisoNuevoAlumno($alumno, $url));
     }
 }

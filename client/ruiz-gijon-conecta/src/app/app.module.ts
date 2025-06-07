@@ -48,6 +48,7 @@ import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LinkifyPipe } from './pipes/linkify.pipe';
 import { OcultarLinksPipe } from './pipes/ocultar-links.pipe';
 import { VolverArribaComponent } from './shared/components/volver-arriba/volver-arriba.component';
+import { PasswordToggleDirective } from './shared/components/password-toggle.directive';
 
 
 @NgModule({
@@ -89,7 +90,8 @@ import { VolverArribaComponent } from './shared/components/volver-arriba/volver-
     LoaderComponent,
     LinkifyPipe,
     OcultarLinksPipe,
-    VolverArribaComponent
+    VolverArribaComponent,
+    PasswordToggleDirective
   ],
   imports: [
     BrowserModule,
