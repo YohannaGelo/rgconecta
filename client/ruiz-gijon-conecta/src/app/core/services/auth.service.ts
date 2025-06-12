@@ -65,11 +65,11 @@ export class AuthService {
   // }
   loadCurrentUser(): Observable<any> {
     const headers = this.getHeaders();
-    console.log('🔐 Headers usados en /me:', headers.get('Authorization')); // ✅
+    // console.log('🔐 Headers usados en /me:', headers.get('Authorization')); // ✅
 
     return this.http.get<any>(`${this.apiUrl}/me`, { headers }).pipe(
       tap((user) => {
-        console.log('🎯 Usuario obtenido:', user);
+        // console.log('🎯 Usuario obtenido:', user);
         this.currentUserSubject.next(user);
       }),
       catchError((err) => {
