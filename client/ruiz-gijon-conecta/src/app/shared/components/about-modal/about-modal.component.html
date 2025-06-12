@@ -9,7 +9,7 @@
         <p class="text-secondary fs-5 mb-0">{{ info.appName }}</p>
         <a href="mailto:{{ info.supportEmail }}">{{ info.supportEmail }}</a><br />
 
-        <p class="text-muted small mb-0">Versión: {{ version }}</p>
+        <p class="text-muted small mb-0">Versión: {{ info.staticVersion }}</p>
         <p class="text-muted small mb-0">Hash: <code>{{ commit }}</code></p>
         <p class="text-muted small mb-2">Build: {{ build | date:'medium' }}</p>
 
