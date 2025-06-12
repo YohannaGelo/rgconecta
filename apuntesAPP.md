@@ -266,6 +266,7 @@ Esto te deja listo para empezar a trabajar en Angular dentro de la carpeta `Clie
 
 ### Para fusionar a `main` de forma limpia:
 
+Solo queda registrado el último commit.
 Desde la raíz del repo (o cualquier subcarpeta dentro del mismo):
 
 ```bash
