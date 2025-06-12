@@ -1,36 +1,33 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class VersionService {
-  private commitHash: string | null = localStorage.getItem('commitHash');
+  private currentHash: string = '';
   private buildDate: string = '';
 
   constructor(private http: HttpClient) {}
 
   checkVersion(): void {
+    const url = `${environment.frontUrl}/assets/version.json?cb=${Date.now()}`;
+
     this.http
-      .get<{ commitHash: string; buildDate: string }>(
-        `/assets/version.json?cb=${Date.now()}`,
-        {
-          headers: { 'Cache-Control': 'no-cache' },
-        }
-      )
+      .get<{ commitHash: string; buildDate: string }>(url, {
+        headers: { 'Cache-Control': 'no-cache' },
+      })
       .subscribe({
         next: ({ commitHash, buildDate }) => {
-          if (this.commitHash && this.commitHash !== commitHash) {
+          if (this.currentHash && this.currentHash !== commitHash) {
             const shouldReload = confirm(
               '⚡ Nueva versión disponible. ¿Actualizar ahora?'
             );
             if (shouldReload) {
-              localStorage.setItem('commitHash', commitHash);
               window.location.reload();
             }
-          } else {
-            localStorage.setItem('commitHash', commitHash);
-            this.commitHash = commitHash;
-            this.buildDate = buildDate;
           }
+          this.currentHash = commitHash;
+          this.buildDate = buildDate;
         },
         error: () => {
           console.warn('⚠️ No se pudo comprobar la versión del frontend.');
@@ -39,7 +36,7 @@ export class VersionService {
   }
 
   getHash(): string {
-    return this.commitHash ?? '';
+    return this.currentHash;
   }
 
   getBuildDate(): string {
