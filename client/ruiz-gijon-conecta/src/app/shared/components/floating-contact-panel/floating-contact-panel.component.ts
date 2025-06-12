@@ -6,6 +6,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
+
 @Component({
   selector: 'app-floating-contact-panel',
   standalone: false,
@@ -42,6 +43,7 @@ export class FloatingContactPanelComponent implements OnInit {
       }
     });
   }
+
 
   togglePanel(): void {
     this.abierto = !this.abierto;
