@@ -3,19 +3,22 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class VersionService {
-  private currentHash: string | null = localStorage.getItem('commitHash');
+  private commitHash: string | null = localStorage.getItem('commitHash');
+  private buildDate: string = '';
 
   constructor(private http: HttpClient) {}
 
   checkVersion(): void {
     this.http
-      .get<{ version: string; commitHash: string; buildDate: string }>(
-        '/assets/version.json',
-        { headers: { 'Cache-Control': 'no-cache' } }
+      .get<{ commitHash: string; buildDate: string }>(
+        `/assets/version.json?cb=${Date.now()}`,
+        {
+          headers: { 'Cache-Control': 'no-cache' },
+        }
       )
       .subscribe({
-        next: ({ commitHash }) => {
-          if (this.currentHash && this.currentHash !== commitHash) {
+        next: ({ commitHash, buildDate }) => {
+          if (this.commitHash && this.commitHash !== commitHash) {
             const shouldReload = confirm(
               '⚡ Nueva versión disponible. ¿Actualizar ahora?'
             );
@@ -25,7 +28,8 @@ export class VersionService {
             }
           } else {
             localStorage.setItem('commitHash', commitHash);
-            this.currentHash = commitHash;
+            this.commitHash = commitHash;
+            this.buildDate = buildDate;
           }
         },
         error: () => {
@@ -35,14 +39,10 @@ export class VersionService {
   }
 
   getHash(): string {
-    return this.currentHash ?? '';
+    return this.commitHash ?? '';
   }
 
   getBuildDate(): string {
-    return ''; // opcional
-  }
-
-  getVersion(): string {
-    return ''; // opcional si no usas el número
+    return this.buildDate;
   }
 }
