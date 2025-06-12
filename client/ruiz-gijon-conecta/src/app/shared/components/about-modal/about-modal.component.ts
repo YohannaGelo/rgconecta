@@ -21,7 +21,6 @@ export class AboutModalComponent {
   ) {}
 
   ngOnInit(): void {
-    this.version = this.versionService.getVersion();
     this.commit = this.versionService.getHash();
     this.build = this.versionService.getBuildDate();
   }
