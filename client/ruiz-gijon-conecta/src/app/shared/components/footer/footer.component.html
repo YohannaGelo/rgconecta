@@ -1,10 +1,26 @@
 <!-- Footer -->
-<footer class="row bg-white rounded-2  ps-3 shadow mx-2 my-3 mt-auto text-center text-xl-start"   style="min-height: 50px;">
-    <p class="col-xl-9 text-secondary small pt-3">2025 &copy; Ruiz Gijón Conecta - Todos los derechos reservados. Diseño y desarrollo: Yohanna Gelo (inspirado en Zine E. Falout)
-        </p>
-    <a href="https://www.linkedin.com/in/yohannagelo/" target="_blank"
-        class="col-xl-3 text-secondary small mb-3 mb-xl-0 mt-xl-3 text-decoration-none text-xl-end pe-xl-4">
-        Contacta con la desarrolladora  
-        <i class="bi bi-linkedin ms-1"></i>
-    </a>
+<footer class="d-flex flex-column gap-1 flex-xl-row justify-content-between bg-white rounded-2 shadow mx-2 my-3 mt-auto px-3 py-3 py-xl-2 text-secondary small align-items-center" style="min-height: 50px;">
+
+    <!-- Izquierda: Texto legal -->
+    <div class="">
+        © 2025 Ruiz Gijón Conecta — Todos los derechos reservados. 
+        Diseño y desarrollo: Yohanna Gelo (inspirado en Zine E. Falout)
+    </div>
+
+    <!-- Centro: Acerca de -->
+    <div class="">
+        <span class="text-primary fw-bold" style="cursor: pointer;" (click)="openAboutModal()">
+            Acerca de
+        </span>
+    </div>
+
+    <!-- Derecha: Contacto -->
+    <div class="">
+        <a href="https://www.linkedin.com/in/yohannagelo/" target="_blank" class="text-secondary text-decoration-none">
+            Cont. desarrolladora
+            <i class="bi bi-linkedin ms-1"></i>
+        </a>
+    </div>
+
 </footer>
+

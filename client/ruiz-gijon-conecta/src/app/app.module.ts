@@ -50,6 +50,7 @@ import { OcultarLinksPipe } from './pipes/ocultar-links.pipe';
 import { VolverArribaComponent } from './shared/components/volver-arriba/volver-arriba.component';
 import { PasswordToggleDirective } from './shared/components/password-toggle.directive';
 import { AutologinComponent } from './autologin/autologin.component';
+import { AboutModalComponent } from './shared/components/about-modal/about-modal.component';
 
 
 
@@ -94,7 +95,8 @@ import { AutologinComponent } from './autologin/autologin.component';
     OcultarLinksPipe,
     VolverArribaComponent,
     PasswordToggleDirective,
-    AutologinComponent
+    AutologinComponent,
+    AboutModalComponent
   ],
   imports: [
     BrowserModule,
