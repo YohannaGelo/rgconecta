@@ -77,7 +77,7 @@ Así, la versión visual que aparece en el modal de "Acerca de" y otros puntos p
 
 ---
 
-### 🔀 3. **Fusionar cambios en `main`**
+### 🔀 3. **Fusionar cambios en `main` (modo limpio)**
 
 1. 🛡️ Cambia a la rama `main`:
 
@@ -85,14 +85,29 @@ Así, la versión visual que aparece en el modal de "Acerca de" y otros puntos p
    git checkout main
    ```
 
-2. 🔃 Fusiona `develop` de forma limpia:
+2. 🧹 Reemplaza el contenido de `main` con el de `develop`:
 
    ```bash
-   git merge --squash develop
-   git commit -m "🚀 Deploy versión X.X - resumen del cambio"
+   git reset --hard origin/develop
    ```
 
-3. 💡 Opcional: puedes probar el proyecto localmente en `main` si lo deseas (`ng serve` o `php artisan serve`).
+   > Esto iguala por completo el contenido de `main` al de `develop`, pero sin traer sus commits.
+
+3. 🧷 Prepara los cambios para un solo commit (squash):
+
+   ```bash
+   git reset --soft origin/main
+   ```
+
+   > Deja todos los archivos como si fueran cambios nuevos por confirmar.
+
+4. 📝 Crea un único commit:
+
+   ```bash
+   git commit -m "🚀 Deploy RGConecta vX.X - resumen del cambio"
+   ```
+
+5. 💡 (Opcional) Prueba que todo funcione localmente (`ng serve` o `php artisan serve`).
 
 ---
 
