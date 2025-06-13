@@ -1,15 +1,20 @@
 <!-- Footer -->
-<footer class="d-flex flex-column gap-1 flex-xl-row justify-content-between bg-white rounded-2 shadow mx-2 my-3 mt-auto px-3 py-3 py-xl-2 text-secondary small align-items-center" style="min-height: 50px;">
-
+<footer
+    class="d-flex flex-column gap-1 flex-xl-row justify-content-between bg-white rounded-2 shadow mx-2 my-3 mt-auto px-3 py-3 py-xl-2 text-secondary small align-items-center"
+    style="min-height: 50px;">
+    <!-- <button class="btn btn-warning btn-sm m-2" (click)="openUpdateModalManualmente()">
+        Probar Modal de Actualización
+    </button> -->
     <!-- Izquierda: Texto legal -->
     <div class="text-center">
-        © 2025 Ruiz Gijón Conecta {{ info.staticVersion }} — Todos los derechos reservados. 
+        © 2025 Ruiz Gijón Conecta {{ info.staticVersion }} — Todos los derechos reservados.
         Diseño y desarrollo: Yohanna Gelo (inspirado en Zine E. Falout)
     </div>
 
     <!-- Centro: Acerca de -->
     <div class="">
-        <small class="text-muted text-primary fw-bold text-uppercase" style="cursor: pointer;" (click)="openAboutModal()">
+        <small class="text-muted text-primary fw-bold text-uppercase" style="cursor: pointer;"
+            (click)="openAboutModal()">
             Acerca de
         </small>
     </div>
@@ -23,4 +28,3 @@
     </div>
 
 </footer>
-
