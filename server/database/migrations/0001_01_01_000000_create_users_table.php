@@ -18,8 +18,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            $table->enum('role', ['admin', 'profesor', 'alumno'])->default('alumno'); 
-            
+            $table->enum('role', ['admin', 'profesor', 'alumno'])->default('alumno');
+
+            $table->string('foto_perfil')->nullable();
+            $table->string('foto_perfil_public_id')->nullable(); // 👈 añadido para la eliminación de imagen de cloudinary
+
             $table->rememberToken();
             $table->timestamps();
         });
@@ -45,8 +48,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

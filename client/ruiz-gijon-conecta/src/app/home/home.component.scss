@@ -1,0 +1,35 @@
+/* Efectos hover para cards */
+.hover-scale {
+    transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: translateY(-5px);
+}
+
+.hover-shadow {
+    transition: box-shadow 0.3s ease;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Gradientes y fondos */
+.bg-primary-gradient {
+    background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+}
+
+.bg-pattern {
+    background-image: url('data:image/svg+xml;utf8,<svg ...></svg>');
+    background-size: 400px;
+}
+
+/* Iconos circulares */
+.icon-stat {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

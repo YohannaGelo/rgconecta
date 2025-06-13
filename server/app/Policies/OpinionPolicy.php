@@ -38,7 +38,7 @@ class OpinionPolicy
     public function update(User $user, Opinion $opinion)
     {
         // Solo el autor puede editar
-        return $opinion->alumno_id === $user->alumno?->id;
+        return $opinion->user_id === $user->id;
     }
 
     /**

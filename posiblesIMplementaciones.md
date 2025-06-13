@@ -1,3 +1,17 @@
+# IMPLEMENTADAS
+
+## cloudinay en laravel para imagenes
+
+sube imagenes y recupera la url
+
+## toastr en angular
+
+para mostrar alert personalizados
+
+---
+
+## POSIBILIDADES
+
 ## Crear app android e iOS
 
 Perfecto, ¡vas con ventaja entonces! 👏 Si ya tienes el diseño hecho en Bootstrap + Sass, eso te permite avanzar muy rápido en Angular sin preocuparte demasiado por el estilado.
@@ -19,12 +33,14 @@ Sí puedes reutilizar:
 ### 🧱 ¿Cómo lo montas en Angular (con tu diseño)?
 
 1. **Crear proyecto Angular**
+
    ```bash
    ng new conecta-frontend --style=scss
    cd conecta-frontend
    ```
 
 2. **Instalar Bootstrap**
+
    ```bash
    npm install bootstrap
    ```
@@ -40,6 +56,7 @@ Sí puedes reutilizar:
    ```
 
 4. **Copiar tus archivos SASS/SCSS**
+
    - Si tenías un `main.scss`, lo puedes fusionar con `src/styles.scss`.
    - O modularizarlo en varias partes (`_buttons.scss`, `_layout.scss`, etc.).
 
@@ -56,6 +73,7 @@ Como ya estás usando Bootstrap + Angular:
 - ✅ Puedes añadir **Capacitor** más adelante sin cambiar casi nada.
 - ✅ Tu diseño ya es **responsive**, así que con pequeños ajustes podrás tenerlo decente en móvil.
 - 🚀 En el futuro solo necesitarías:
+  
   ```bash
   npm install @capacitor/core @capacitor/cli
   npx cap init
@@ -85,22 +103,26 @@ Es una herramienta de **Ionic** que permite empaquetar cualquier aplicación web
 ### 📱 ¿Cómo se genera para iOS?
 
 1. **Instala Capacitor en tu proyecto Angular (solo una vez):**
+
    ```bash
    npm install @capacitor/core @capacitor/cli
    npx cap init
    ```
 
 2. **Compila tu app Angular:**
+
    ```bash
    ng build --prod
    ```
 
 3. **Añade la plataforma iOS:**
+
    ```bash
    npx cap add ios
    ```
 
 4. **Abre el proyecto en Xcode:**
+
    ```bash
    npx cap open ios
    ```
@@ -126,24 +148,26 @@ No, para **Android no necesitas pagar nada** para desarrollar ni probar tu app e
 
 ---
 
-### ✅ Gratis para:
+### ✅ Gratis para
+
 - **Desarrollar apps.**
 - **Probar en emuladores o dispositivos físicos.**
 - **Distribuir manualmente tu APK** (por ejemplo, a amigos, en tu web, o para pruebas).
 
 ---
 
-### 💰 Solo pagas si quieres:
+### 💰 Solo pagas si quieres
+
 - **Publicar en Google Play Store.**
   - Tarifa única: **25 USD** (una sola vez en la vida).
   - Después puedes subir todas las apps que quieras.
 
 ---
 
-### 🚀 En resumen:
+### 🚀 En resumen
+
 - ✅ **Desarrollo Android = Gratis**
 - ✅ **Pruebas en móvil = Gratis**
 - 💵 **Subir al Play Store = 25 USD una vez**
 
 ---
-

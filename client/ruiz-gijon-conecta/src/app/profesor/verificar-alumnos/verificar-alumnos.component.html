@@ -1,0 +1,154 @@
+<div class="d-flex flex-column mx-2 mb-3" style="min-height: calc(100dvh - 220px);">
+
+    <!-- Filtros -->
+    <section class="d-flex justify-content-end mb-3 px-2 pt-0">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-xl-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..."
+                    (input)="paginaActual = 1" />
+            </div>
+            <div class="col-sm-6 col-xl-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroPromocion"
+                    placeholder="Buscar por promoción..." (input)="paginaActual = 1" />
+            </div>
+        </div>
+    </section>
+
+    <div class="card shadow border-0 col-12 flex-grow-1 mb-3">
+        <!-- Cabecera de la card -->
+        <div class="card-header bg-white pt-3">
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-start">
+                <h3 class="mb-0 mt-1">
+                    <i class="bi bi-people-fill me-2"></i>Alumnos pendientes de verificación
+                </h3>
+                <span class="badge bg-warning text-dark fs-6 py-2 px-3 mt-1">
+                    {{alumnos.length}} pendientes
+                </span>
+            </div>
+        </div>
+        <hr class="">
+
+        <!-- Cuerpo de la card -->
+        <div class="card-body px-4 pb-0">
+            <!-- Estado vacío -->
+            <div *ngIf="alumnos.length === 0" class="text-center py-5">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <h4 class="mt-3 text-muted">¡Todo al día!</h4>
+                <p class="text-muted mb-0">No hay alumnos pendientes de verificación</p>
+            </div>
+
+            <!-- Lista de alumnos -->
+            <div class="row row-cols-1 row-cols-lg-2 g-4 ">
+                <div class="col" *ngFor="let alumno of alumnosPaginados">
+
+                    <div class="h-100 shadow-sm border-start border-2 border-warning bg-light">
+                        <div class="card-body">
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start">
+                                <img [src]="getUserImage(alumno.user.foto_perfil)" alt="Foto de perfil"
+                                    class="rounded-circle me-3 me-lg-4"
+                                    style="width: 80px; height: 80px; object-fit: cover;">
+
+                                <div class="flex-grow-1 overflow-hidden text-center text-sm-start mt-3 mt-sm-0">
+                                    <h5 class="card-title mb-1">{{ acortarNombre(alumno.user.name) }}</h5>
+                                    <p class="card-text text-muted small mb-2">
+                                        <i class="bi bi-envelope me-1"></i> {{ alumno.user.email }}
+                                    </p>
+
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+
+                                        <span class="badge bg-white text-dark" *ngIf="alumno.titulo_profesional">
+                                            {{ acortarTitulo(alumno.titulo_profesional) }}
+                                        </span>
+                                    </div>
+                                    <p class=" text-dark p-1 rounded-3 mt-2">
+                                        <i class="bi bi-mortarboard me-1"></i> {{ alumno.promocion }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="card-footer bg-transparent d-flex flex-column flex-sm-row justify-content-between align-items-center">
+                            <small class="text-muted  col-lg-6">
+                                Registrado el: {{ alumno.created_at | date:'dd/MM/yyyy' }}
+                            </small>
+                            <div class="mt-2 mt-sm-0">
+                                <button class="btn btn-sm btn-outline-danger me-2 col"
+                                    (click)="abrirModalRechazo(alumno.id)">
+                                    Rechazar
+                                </button>
+                                <button class="btn btn-sm btn-success col" (click)="verificarAlumno(alumno.id)">
+                                    <i class="bi bi-check-lg me-1"></i> Verificar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mb-0">
+
+        <!-- Pie de la card (opcional) -->
+        <div class="card-footer bg-white text-muted small">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>Total de solicitudes: {{ alumnos.length }}</span>
+                <!-- <span>Última actualización: {{ hoy | date:'dd/MM/yyyy HH:mm' }}</span> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Flechas -->
+    <div class="ms-3 mt-auto">
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
+            (click)="paginaAnterior()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ paginaActual }} de {{ totalPaginas > 0 ? totalPaginas : 1 }}
+        </small>
+
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2"
+            [disabled]="paginaActual >= totalPaginas || totalPaginas === 0" (click)="paginaSiguiente()">
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal confirmar rechazo -->
+<ng-template #modalConfirmarRechazo let-modal>
+    <div class="modal-content shadow rounded-4 border-0">
+
+        <!-- Cabecera -->
+        <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+            <h5 class="modal-title text-dark text-uppercase fs-6">
+                Rechazar alumno
+            </h5>
+            <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="modal-body text-center mt-2">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-2 pb-2"></i>
+            <p class="text-secondary fs-5 mt-2 mb-0">
+                ¿Estás segura/o de que deseas rechazar este alumno?
+            </p>
+            <p class="text-muted small mt-2 mb-0">
+                Esta acción no se puede deshacer y eliminará todos sus datos.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 justify-content-center pb-4">
+            <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+                Cancelar
+            </button>
+            <button class="btn btn-danger px-4" (click)="confirmarRechazo(modal)">
+                Rechazar
+            </button>
+        </div>
+
+    </div>
+</ng-template>

@@ -4,16 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
-use App\Enums\SectorEmpresa;
-
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use App\Models\Sector;
 
 class EmpresaController extends Controller
 {
 
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -21,16 +19,19 @@ class EmpresaController extends Controller
     public function index(Request $request)
     {
         $query = Empresa::withCount(['ofertas', 'opiniones'])
-            ->with('ofertas');
+            ->with(['ofertas', 'sector']);
 
-        // Filtro por sector (si se envía ?sector=tecnologia)
-        if ($request->has('sector')) {
-            $query->where('sector', $request->sector);
+        // Filtro por sector_id (ej: ?sector_id=3)
+        if ($request->has('sector_id')) {
+            $query->where('sector_id', $request->sector_id);
         }
 
-        // Ordenar por más activas (ej: ?sort=ofertas_count)
+        // Ordenar por más activas
         if ($request->has('sort')) {
             $query->orderBy($request->sort, 'desc');
+        } else {
+            // Por defecto: ordenar alfabéticamente por nombre
+            $query->orderBy('nombre');
         }
 
         $empresas = $query->paginate(8);
@@ -40,14 +41,12 @@ class EmpresaController extends Controller
             'message' => 'Empresas obtenidas correctamente.',
             'data' => $empresas->items(),
             'pagination' => $empresas->only(['total', 'current_page', 'per_page', 'last_page']),
-            // Estadísticas globales
             'stats' => [
                 'total_empresas' => Empresa::count(),
-                'sectores' => Empresa::groupBy('sector')->pluck('sector')
+                'sectores' => Sector::select('id', 'nombre')->orderBy('nombre')->get()
             ]
         ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -55,10 +54,9 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            // 'sector' => 'required|string|in:tecnologia,educacion,salud,otros',
-            'sector' => ['required', 'string', Rule::in(Empresa::SECTORES)],
+            'sector_id' => ['required', 'exists:sectores,id'],
             'web' => 'nullable|url',
-            'descripcion' => 'nullable|string'
+            'descripcion' => 'nullable|string',
         ]);
 
         $empresa = Empresa::create($validated);
@@ -66,7 +64,7 @@ class EmpresaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Empresa creada correctamente.',
-            'data' => $empresa,
+            'data' => $empresa->load('sector'),
         ], 201);
     }
 
@@ -76,17 +74,15 @@ class EmpresaController extends Controller
     public function show($id)
     {
         $empresa = Empresa::with([
+            'sector',
             'ofertas' => function ($query) {
                 $query->select('id', 'titulo', 'empresa_id', 'localizacion', 'fecha_publicacion')
                     ->where('fecha_expiracion', '>', now());
             },
-            // 'opiniones.alumno.user:id,name,foto_perfil'
-            'opiniones.alumno.user:id,name'
+            'opiniones.alumno.user:id,name,foto_perfil'
         ])->findOrFail($id);
 
-        // Estadísticas adicionales
         $stats = [
-            // 'avg_valoracion' => round($empresa->opiniones()->avg('valoracion'), 1),
             'avg_valoracion' => round($empresa->opiniones()->avg('valoracion') ?? 0, 1),
             'total_ofertas_activas' => $empresa->ofertas()->where('fecha_expiracion', '>', now())->count()
         ];
@@ -105,18 +101,17 @@ class EmpresaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'sometimes|string|max:255',
-            'sector' => 'sometimes|string|in:' . implode(',', SectorEmpresa::values()),
+            'sector_id' => ['sometimes', 'exists:sectores,id'],
             'web' => 'nullable|url',
-            'descripcion' => 'nullable|string'
+            'descripcion' => 'nullable|string',
         ]);
 
-        // Actualizar solo los campos proporcionados
         $empresa->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Empresa actualizada correctamente.',
-            'data' => $empresa->fresh() // Devuelve los datos actualizados
+            'data' => $empresa->fresh()->load('sector'),
         ]);
     }
 

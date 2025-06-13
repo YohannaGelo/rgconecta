@@ -1,0 +1,30 @@
+@use 'custom' as cus;
+
+// Modificar el color de hover para btn-primary y btn-dark
+.btn-primary {
+    background-color: cus.$primary;
+    border-color: cus.$primary;
+
+    &:hover {
+        background-color: cus.$primary-hover;
+        border-color: cus.$primary-hover;
+    }
+}
+
+.btn-dark {
+    background-color: cus.$dark;
+    border-color: cus.$dark;
+
+    &:hover {
+        background-color: cus.$dark-hover;
+        border-color: cus.$dark-hover;
+    }
+}
+
+.link-oculto {
+    pointer-events: none !important;
+    cursor: default !important;
+    text-decoration: none !important;
+    word-break: break-word !important;
+}
+

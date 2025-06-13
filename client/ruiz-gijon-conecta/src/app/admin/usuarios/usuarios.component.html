@@ -1,0 +1,235 @@
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
+        <h2 class="mb-0 col-9">Gestión de Usuarios</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3 px-2">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <select class="form-select" [(ngModel)]="filtroRol">
+                    <option value="">Todos los roles</option>
+                    <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Estado vacío -->
+    <div *ngIf="usuarios.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+        <p class="mb-0">Aún no hay usuarios registrados.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && usuarios.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" *ngFor="let usuario of usuariosFiltrados()">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary rounded-pill">ID: {{ usuario.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item" (click)="editar(usuario)">
+                                        <i class="bi bi-pencil me-2"></i>Editar
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item text-danger" (click)="eliminar(usuario.id)">
+                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Imagen -->
+                    <div class="text-center mb-3">
+                        <img [src]="getFotoPerfil(usuario.foto_perfil || usuario.foto_perfil)" alt="Imagen de usuario"
+                            class="img-fluid rounded-circle border border-2 shadow-sm me-1" style="width: 90px;">
+                        <ng-template [ngIf]="!usuario.foto_perfil">
+                            <i class="bi bi-person-circle fs-1 text-muted"></i>
+                        </ng-template>
+                    </div>
+
+                    <!-- Eliminar imagen (solo en edición y si existe) -->
+                    <div class="d-grid mb-2" *ngIf="editando?.id === usuario.id && usuario.foto_perfil">
+                        <button class="btn btn-sm btn-outline-danger" (click)="eliminarImagen(usuario)">
+                            <i class="bi bi-trash3 me-1"></i>Eliminar imagen
+                        </button>
+                    </div>
+
+                    <!-- Vista o edición -->
+                    <div *ngIf="editando?.id !== usuario.id">
+                        <h4 class="card-title mb-1">{{ usuario.name }}</h4>
+                        <p *ngIf="!usuario.email_verified_at" class="my-2 small">
+                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                        </p>
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
+                        </p>
+
+                        <div class="form-check form-switch mt-2 d-flex justify-content-end">
+                            <label class="form-check-label me-5">
+                                ¿Responde dudas?
+                            </label>
+                            <input class="form-check-input" type="checkbox"
+                                [checked]="preferencias[usuario.id]?.responder_dudas" disabled />
+                            
+                        </div>
+
+                        <p class="mb-0">
+                            <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">
+                                <i class="bi bi-person-badge me-2"></i>
+                                {{ usuario.role | titlecase }}
+                            </span>
+                        </p>
+
+
+                    </div>
+
+                    <!-- Modo edición -->
+                    <div *ngIf="editando?.id === usuario.id" class="mt-3">
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.name" placeholder="Nombre" />
+                        <input type="email" class="form-control mb-2" [(ngModel)]="editando.email"
+                            placeholder="Email" />
+                        <!-- <select class="form-select mb-3" [(ngModel)]="editando.role">
+                            <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
+                        </select> -->
+                        <!-- Preferencia de responder dudas -->
+                        <div class="form-check form-switch d-flex justify-content-end mb-3">
+                            <label class="form-check-label me-5" [attr.for]="'toggle-' + usuario.id">
+                                ¿Responde dudas?
+                            </label>
+                            <input class="form-check-input" type="checkbox"
+                                [(ngModel)]="preferencias[usuario.id].responder_dudas"
+                                [attr.id]="'toggle-' + usuario.id" />
+                            
+                        </div>
+
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                <i class="bi bi-check-lg me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de tabla -->
+    <div *ngIf="vistaTabla && usuarios.length > 0" class="card border-0 shadow-sm rounded-2 shadow p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>¿Responde dudas?</th>
+                        <th>Rol</th>
+                        <th>Foto</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let usuario of usuariosFiltrados()">
+                        <td class="ps-4">{{ usuario.id }}</td>
+                        <td>
+                            <div *ngIf="editando?.id !== usuario.id">{{ usuario.name }}</div>
+                            <input *ngIf="editando?.id === usuario.id" type="text" class="form-control form-control-sm"
+                                [(ngModel)]="editando.name" />
+                        </td>
+                        <td>
+
+                            <div *ngIf="editando?.id !== usuario.id"><span *ngIf="!usuario.email_verified_at"
+                                    class="my-2 small">
+                                    <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                                </span> {{ usuario.email }} </div>
+                            <input *ngIf="editando?.id === usuario.id" type="email" class="form-control form-control-sm"
+                                [(ngModel)]="editando.email" />
+
+                        </td>
+                        <td>
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <!-- Vista lectura -->
+                                <input *ngIf="editando?.id !== usuario.id" class="form-check-input" type="checkbox"
+                                    [checked]="preferencias[usuario.id]?.responder_dudas" disabled />
+
+                                <!-- Vista edición -->
+                                <input *ngIf="editando?.id === usuario.id" class="form-check-input" type="checkbox"
+                                    [(ngModel)]="preferencias[usuario.id].responder_dudas" />
+                            </div>
+                        </td>
+
+                        <td>
+                            <div>
+                                <span class="badge rounded-pill" [ngClass]="getRoleClass(usuario.role)">
+                                    {{ usuario.role | titlecase }}
+                                </span>
+                            </div>
+                            <!-- <select *ngIf="editando?.id === usuario.id" class="form-select form-select-sm"
+                                [(ngModel)]="editando.role">
+                                <option *ngFor="let rol of roles" [value]="rol">{{ rol }}</option>
+                            </select> -->
+                        </td>
+                        <td>
+                            <!-- Imagen o placeholder -->
+                            <div class="d-flex align-items-center gap-2">
+                                <img [src]="getFotoPerfil(usuario.foto_perfil || usuario.foto_perfil)"
+                                    alt="Imagen de usuario"
+                                    class="img-fluid rounded-circle border border-2 shadow-sm me-1"
+                                    style="width: 35px;">
+
+                                <!-- Botón eliminar imagen solo si está en edición y tiene imagen -->
+                                <button *ngIf="editando?.id === usuario.id && usuario.foto_perfil"
+                                    class="btn btn-sm btn-outline-danger" (click)="eliminarImagen(usuario)" title="Eliminar foto de perfil">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                <ng-container *ngIf="editando?.id !== usuario.id">
+                                    <button class="btn btn-sm btn-outline-primary" (click)="editar(usuario)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" (click)="eliminar(usuario.id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="editando?.id === usuario.id">
+                                    <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

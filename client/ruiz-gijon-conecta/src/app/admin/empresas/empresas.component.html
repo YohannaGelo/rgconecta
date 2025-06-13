@@ -1,0 +1,199 @@
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2 px-2">
+        <h2 class="mb-0 col-9">Gestión de Empresas</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3 px-2">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <!-- <div class="row g-3 mb-4 col-md-6 "> -->
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <ng-select [items]="sectores" bindLabel="nombre" bindValue="id" placeholder="Filtrar por sector..."
+                    [(ngModel)]="filtroSectorId" [clearable]="true" [searchable]="true" class="">
+                </ng-select>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Formulario para nueva empresa -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="mb-3 text-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Empresa
+            </h5>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Nombre</label>
+                    <input type="text" class="form-control" [(ngModel)]="nuevaEmpresa.nombre"
+                        placeholder="Ej: Acme Tech" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Sector</label>
+                    <select class="form-select" [(ngModel)]="nuevaEmpresa.sector_id">
+                        <option [ngValue]="null" disabled selected>Selecciona un sector</option>
+                        <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                    </select>
+
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Web</label>
+                    <input class="form-control" [(ngModel)]="nuevaEmpresa.web" name="webEmpresa"
+                        #webEmpresaInput="ngModel" placeholder="https://empresa.com o www.empresa.com" required
+                        pattern="^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})(\/\S*)?$" />
+                    
+                </div>
+                <div class="col-md-1 d-grid">
+                    <button class="btn btn-primary w-100" (click)="guardarNueva()">
+                        <i class="bi bi-save me-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="empresas.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+        <p class="mb-0">Aún no hay empresas registradas.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && empresas.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" *ngFor="let empresa of empresasFiltradas()">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary rounded-pill text-white">ID: {{ empresa.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item" (click)="editar(empresa)">
+                                        <i class="bi bi-pencil me-2"></i>Editar
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item text-danger" (click)="eliminar(empresa.id)">
+                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4 class="card-title mb-1">{{ empresa.nombre }}</h4>
+                    <p class="text-muted mb-2"><i class="bi bi-tag me-1"></i>{{ empresa.sector?.nombre || 'Sin sector'
+                        }}</p>
+                    <a *ngIf="empresa.web" [href]="empresa.web"
+                        class="badge text-muted small mb-0 bg-light text-start d-block w-100 text-truncate"
+                        target="_blank" rel="noopener noreferrer" style="max-width: 100%;">
+                        <i class="bi bi-globe me-1"></i>{{ empresa.web }}
+                    </a>
+
+
+                    <!-- Edición -->
+                    <div *ngIf="editando?.id === empresa.id" class="mt-3">
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.nombre"
+                            placeholder="Nombre" />
+
+                        <select class="form-select mb-2" [(ngModel)]="editando.sector_id">
+                            <option [ngValue]="null" disabled>Selecciona un sector</option>
+                            <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                        </select>
+
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.web" placeholder="Web" />
+
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                <i class="bi bi-check-lg me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de tabla -->
+    <div *ngIf="vistaTabla && empresas.length > 0" class="card border-0 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Sector</th>
+                        <th>Web</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let empresa of empresasFiltradas()">
+                        <td class="ps-4 fw-semibold text-muted">{{ empresa.id }}</td>
+
+                        <!-- Nombre -->
+                        <td>
+                            <div *ngIf="editando?.id !== empresa.id">{{ empresa.nombre }}</div>
+                            <input *ngIf="editando?.id === empresa.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.nombre" />
+                        </td>
+
+                        <!-- Sector -->
+                        <td>
+                            <div *ngIf="editando?.id !== empresa.id">{{ empresa.sector?.nombre || 'Sin sector' }}</div>
+                            <select *ngIf="editando?.id === empresa.id" class="form-select form-select-sm"
+                                [(ngModel)]="editando.sector_id">
+                                <option [ngValue]="null" disabled>Selecciona un sector</option>
+                                <option *ngFor="let s of sectores" [ngValue]="s.id">{{ s.nombre }}</option>
+                            </select>
+                        </td>
+
+                        <!-- Web -->
+                        <td>
+                            <div *ngIf="editando?.id !== empresa.id">{{ empresa.web }}</div>
+                            <input *ngIf="editando?.id === empresa.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.web" />
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                <ng-container *ngIf="editando?.id !== empresa.id">
+                                    <button class="btn btn-sm btn-outline-primary" (click)="editar(empresa)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" (click)="eliminar(empresa.id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </ng-container>
+
+                                <ng-container *ngIf="editando?.id === empresa.id">
+                                    <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

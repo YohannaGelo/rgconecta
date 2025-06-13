@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('alumno_id')->constrained()->onDelete('cascade');
             $table->foreignId('empresa_id')->constrained()->onDelete('cascade');
             $table->string('puesto'); // Ej: "Desarrollador Frontend"
-            $table->date('fecha_inicio');
-            $table->date('fecha_fin')->nullable(); // Nullable si sigue trabajando
+            $table->year('fecha_inicio');
+            $table->year('fecha_fin')->nullable(); // Nullable si sigue trabajando
             $table->text('descripcion')->nullable();
             $table->timestamps();
         });

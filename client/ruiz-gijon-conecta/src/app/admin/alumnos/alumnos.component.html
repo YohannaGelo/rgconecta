@@ -1,0 +1,192 @@
+<div class="container py-4">
+    <div class="d-flex flex-row justify-content-between align-items-center mb-2 gap-2">
+        <h2 class="mb-0 col-9">Gestión de Alumnos</h2>
+        <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" (click)="toggleVista()">
+            <i class="bi" [ngClass]="{ 'bi-list-ul': !vistaTabla, 'bi-grid': vistaTabla }"></i>
+            <span class="d-none d-sm-inline">Cambiar vista</span>
+        </button>
+    </div>
+
+    <!-- Filtros -->
+    <section class="row justify-content-end mb-3 px-2">
+        <div class="col-xl-9 row justify-content-end g-2">
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <input type="text" class="form-control" [(ngModel)]="filtroPromocion"
+                    placeholder="Buscar por promoción..." />
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <select class="form-select" [(ngModel)]="filtroVerificadoString">
+                    <option value="">Verificaciones</option>
+                    <option value="true">Alumnos verificados</option>
+                    <option value="false">Alumnos no verificados</option>
+                </select>
+
+            </div>
+        </div>
+    </section>
+
+
+    <div *ngIf="alumnos.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+        <p class="mb-0">Aún no hay alumnos registrados.</p>
+    </div>
+
+    <!-- Vista de tarjetas -->
+    <div *ngIf="!vistaTabla && alumnos.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" *ngFor="let alumno of alumnosFiltrados()">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary rounded-pill">ID: {{ alumno.id }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item" (click)="editar(alumno)">
+                                        <i class="bi bi-pencil me-2"></i>Editar
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item text-danger" (click)="eliminar(alumno.id)">
+                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div *ngIf="editando?.id !== alumno.id">
+                        <h5 class="card-title mb-1">{{ alumno.user?.name }}</h5>
+                        <p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
+                            <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                        </p>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-envelope me-1"></i>{{ alumno.user?.email }}
+                        </p>
+                        <p class="mb-1 badge bg-primary bg-opacity-10 text-primary"><i
+                                class="bi bi-mortarboard me-2"></i> {{ alumno.promocion }}</p>
+                        <p class="mb-1"><strong>Situación:</strong> {{ alumno.situacion_laboral }}</p>
+                        <p class="mb-1 small"><strong>Fecha nac.:</strong> {{ alumno.fecha_nacimiento |
+                            date:'dd-MM-yyyy' }}</p>
+
+                        <span class="badge mt-auto" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
+                            {{ alumno.is_verified ? 'Verificado' : 'No verificado' }}
+                        </span>
+                    </div>
+
+                    <!-- Edición -->
+                    <div *ngIf="editando?.id === alumno.id" class="mt-3">
+                        <input type="text" class="form-control mb-2" [(ngModel)]="editando.promocion"
+                            placeholder="Promoción" />
+                        <select class="form-select mb-2" [(ngModel)]="editando.situacion_laboral">
+                            <option *ngFor="let s of situaciones" [value]="s">{{ s }}</option>
+                        </select>
+                        <input type="date" class="form-control mb-2" [(ngModel)]="editando.fecha_nacimiento" [max]="hoy"
+                            [min]="fechaMinima" />
+
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" [(ngModel)]="editando.is_verified" />
+
+
+                            <label class="form-check-label">Verificado</label>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                <i class="bi bi-check-lg me-1"></i>Guardar
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tabla -->
+    <div *ngIf="vistaTabla && alumnos.length > 0" class="card border-0 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Promoción</th>
+                        <th>Situación</th>
+                        <th>Fecha de nacimiento</th>
+                        <th>Alumno verificado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let alumno of alumnosFiltrados()">
+                        <td class="ps-4">{{ alumno.id }}</td>
+                        <td>{{ alumno.user?.name }}</td>
+                        <td>
+                            <p *ngIf="!alumno.user?.email_verified_at" class="my-2 small">
+                                <span class="badge bg-danger  rounded-pill">Email no verificado</span>
+                            </p>{{ alumno.user?.email }}
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== alumno.id" class="badge bg-primary bg-opacity-10 text-primary">
+                                {{ alumno.promocion }}</div>
+                            <input *ngIf="editando?.id === alumno.id" class="form-control form-control-sm"
+                                [(ngModel)]="editando.promocion" />
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== alumno.id">{{ alumno.situacion_laboral }}</div>
+                            <select *ngIf="editando?.id === alumno.id" class="form-select form-select-sm"
+                                [(ngModel)]="editando.situacion_laboral">
+                                <option *ngFor="let s of situaciones" [value]="s">{{ s }}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div *ngIf="editando?.id !== alumno.id">
+                                {{ alumno.fecha_nacimiento | date:'dd-MM-yyyy' }}
+                            </div>
+                            <input *ngIf="editando?.id === alumno.id" class="form-control form-control-sm" type="date"
+                                [(ngModel)]="editando.fecha_nacimiento" [max]="hoy" [min]="fechaMinima" />
+                        </td>
+
+                        <td>
+                            <div *ngIf="editando?.id !== alumno.id">
+                                <span class="badge" [ngClass]="alumno.is_verified ? 'bg-success' : 'bg-secondary'">
+                                    {{ alumno.is_verified ? 'Sí' : 'No' }}
+                                </span>
+                            </div>
+                            <div *ngIf="editando?.id === alumno.id">
+                                <input type="checkbox" [(ngModel)]="editando.is_verified" />
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                <ng-container *ngIf="editando?.id !== alumno.id">
+                                    <button class="btn btn-sm btn-outline-primary" (click)="editar(alumno)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" (click)="eliminar(alumno.id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="editando?.id === alumno.id">
+                                    <button class="btn btn-sm btn-success" (click)="guardarEdicion()">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="editando = null">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+<div class="d-flex flex-column flex-grow-1 my-3" style="min-height: calc(100dvh - 220px);">
+
+    <!-- Filtros -->
+    <!-- Solo visible en móvil -->
+    <button class="btn btn-primary d-lg-none mb-3 w-50 mx-auto" (click)="mostrarFiltros = !mostrarFiltros">
+        <i class="bi bi-funnel"></i> Filtros
+    </button>
+
+    <section class="row  justify-content-center justify-content-md-end mb-3 mx-4"
+        [ngClass]="{ 'd-none': !mostrarFiltros && esMovil }">
+        <div class="col-xl-9 row gap-2">
+            <!-- Ordenación -->
+            <div class="col-12 col-md p-0">
+                <ng-select [items]="ordenOptions" bindLabel="label" bindValue="value" placeholder="📊 Ordenar por"
+                    [(ngModel)]="ordenSeleccionado" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
+                </ng-select>
+            </div>
+
+            <!-- Nombre -->
+            <div class="col-12 col-md p-0">
+                <input type="text" class="form-control shadow rounded-2" placeholder="🔍 Buscar por nombre"
+                    [(ngModel)]="filtroNombre" (ngModelChange)="aplicarFiltros()" />
+            </div>
+
+
+            <!-- Tecnología -->
+            <div class="col-12 col-md p-0">
+                <ng-select [items]="tecnologias" bindLabel="" placeholder="💡 Habilidades"
+                    [(ngModel)]="filtroTecnologia" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
+                </ng-select>
+            </div>
+
+            <!-- Experiencia -->
+            <div class="col-12 col-md p-0">
+                <ng-select [items]="experienciaOptions" bindLabel="label" bindValue="value" placeholder="🎯 Experiencia"
+                    [(ngModel)]="filtroExperiencia" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
+                </ng-select>
+
+            </div>
+
+            <!-- Situación -->
+            <div class="col-12 col-md p-0">
+                <ng-select [items]="situacionOptions" bindLabel="label" bindValue="value" placeholder="💼 Situación"
+                    [(ngModel)]="filtroSituacion" (change)="aplicarFiltros()" class="shadow rounded-2 w-100">
+                </ng-select>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="flex-grow-1 mb-3 mx-2 d-flex">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3 flex-grow-1">
+
+
+            <div class="col d-flex" *ngFor="let alumno of alumnos">
+
+                <!-- Card - ‼️ Revisar alto max de la card en diferentes pantallas‼️ -->
+                <div class="card h-100 shadow-sm py-3 flex-grow-1" style="max-height: 380px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Cabecera -->
+                        <div class="d-flex justify-content-between">
+                            <p [ngClass]="getSituacionClase(alumno.situacion_laboral)"
+                                class="rounded-5 py-0 px-3 pe-none">
+                                {{ getSituacionTexto(alumno.situacion_laboral) }}
+                            </p>
+                            <p class="text-secondary">{{ calcularEdad(alumno.fecha_nacimiento) }} años</p>
+                        </div>
+                        <!-- Nombre -->
+                        <h5 class="card-title text-center">
+                            {{ acortarNombre(alumno.user.name) }}
+                        </h5>
+                        <!-- Descripción -->
+                        <div class="d-flex align-items-center my-2">
+                            <img [src]="getFotoPerfil(alumno.user.foto_perfil)" alt="Imagen de perfil"
+                                class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;" />
+
+                            <div>
+                                <p class="text-secondary mb-2 small">
+                                    {{ alumno.titulo_profesional || 'Sin título' }}
+                                </p>
+
+                            </div>
+                        </div>
+                        <!-- Extra -->
+                        <article class="d-flex bg-light justify-content-evenly py-2 my-3 mt-auto text-secondary rounded"
+                            ngbTooltip="La experiencia mostrada se calcula a partir de las experiencias laborales registradas en el perfil del usuario."
+                            placement="top">
+                            <i class="bi bi-clock-history fs-6 mx-2 fst-normal">
+                                {{ calcularExperiencia(alumno.experiencias) }} años experiencia
+                            </i>
+                        </article>
+                        <a [routerLink]="['/alumnos', alumno.id]" [queryParams]="{ urlAnterior: currentPage }"
+                            class="text-primary text-decoration-none fw-semibold">
+                            Ver Detalles <i class="bi bi-arrow-right fs-6 me-2 fw-bolder"></i>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flechas  -->
+    <div class="ms-4">
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="currentPage === 1"
+            (click)="cambiarPagina(currentPage - 1)">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ currentPage }} de {{ lastPage }}
+        </small>
+
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2" [disabled]="currentPage === lastPage"
+            (click)="cambiarPagina(currentPage + 1)">
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+
+
+
+</div>

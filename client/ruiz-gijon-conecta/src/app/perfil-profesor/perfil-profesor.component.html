@@ -1,0 +1,166 @@
+<ng-container *ngIf="user && user.name">
+
+  <div class="d-flex flex-column mx-2 mb-3" style="min-height: calc(100dvh - 220px);">
+
+    <!-- Card: Imagen + Datos personales -->
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">👤 Datos personales</h5>
+      </div>
+      <div class="card-body d-flex flex-column flex-sm-row gap-3">
+
+        <!-- Imagen -->
+        <div class="me-4 text-center">
+          <!-- <img [src]="getUserImage()" class="rounded-circle img-thumbnail mb-2"
+                style="width: 150px; height: 150px; object-fit: cover;"> -->
+          <img [src]="getUserImage((auth.currentUser$ | async)?.user?.foto_perfil)"
+            class="rounded-circle img-thumbnail mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+
+
+          <input #fileInput type="file" class="form-control mt-2" (change)="fileChangeEvent($event)" accept="image/*" />
+
+          <div *ngIf="showCropper" class="mt-2">
+            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1"
+              [transform]="transform" format="jpeg" [resizeToWidth]="250" [resizeToHeight]="250"
+              (imageCropped)="imageCropped($event)" style="max-height: 200px;">
+            </image-cropper>
+
+            <div class="mt-2 d-flex gap-2 justify-content-center">
+              <button type="button" class="btn btn-outline-primary" (click)="rotateLeft()">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+              <button type="button" class="btn btn-outline-primary" (click)="rotateRight()">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button type="button" class="btn btn-outline-danger" (click)="cancelarImagen()">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos personales -->
+        <div class="flex-grow-1 col-sm-6">
+
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.name"
+              name="name">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Correo electrónico <i class="bi bi-info-circle text-warning" placement="top"
+                ngbTooltip="Si necesitas modificar el correo electrónico, contacta con soporte a través de la pestaña lateral de contacto."></i></label>
+            <input type="email" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="user.email"
+              name="email" readonly>
+          </div>
+
+          <div class="mb-3" *ngIf="(auth.currentUser$ | async)?.user?.role === 'profesor'">
+            <label class="form-label">Departamento</label>
+            <input type="text" class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="profesor.departamento"
+              name="departamento">
+          </div>
+
+          <div class="form-check form-switch my-4 d-flex justify-content-end">
+            <label class="form-check-label me-5" for="toggleRespondeDudas">
+              Aceptar preguntas sobre tus ofertas publicadas
+            </label>
+            <input class="form-check-input" type="checkbox" id="toggleRespondeDudas"
+              [(ngModel)]="preferencias.responder_dudas" name="responder_dudas" (change)="onFormChange()" />
+          </div>
+
+
+
+          <div class="mb-3 d-flex align-items-center gap-2">
+            <span class="fw-bold">Contraseña</span>
+            <button class="btn btn-sm btn-outline-primary" (click)="openChangePasswordModal()">
+              Cambiar contraseña
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Guardar -->
+    <div class="text-center mt-3">
+      <button class="btn btn-success btn-lg px-5" (click)="updateProfile()">
+        <i class="bi bi-save me-2"></i> Guardar perfil
+      </button>
+    </div>
+
+  </div>
+</ng-container>
+
+<!-- Modal Cambiar Contraseña -->
+<ng-template #changePasswordModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Cambiar contraseña</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #changePasswordForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Contraseña actual</label>
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="currentPassword"
+          name="currentPassword" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="newPassword"
+          name="newPassword" required (ngModelChange)="validatePassword()">
+        <div *ngIf="!passwordValid && newPassword" class="text-danger small mt-1">
+          La contraseña debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Confirmar nueva contraseña</label>
+        <input type="password" appPasswordToggle class="form-control" (ngModelChange)="onFormChange()" [(ngModel)]="confirmNewPassword"
+          name="confirmNewPassword" required>
+        <div *ngIf="newPassword !== confirmNewPassword && confirmNewPassword" class="text-danger small mt-1">
+          Las contraseñas no coinciden.
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancelar</button>
+    <button type="button" class="btn btn-primary"
+      [disabled]="!passwordValid || newPassword !== confirmNewPassword || !currentPassword"
+      (click)="submitNewPassword(modal)">Guardar</button>
+  </div>
+</ng-template>
+
+<!-- MODAL: Formulario para confirmar salida sin guardar cambios -->
+<ng-template #modalConfirmarSalida let-modal>
+  <div class="modal-content shadow rounded-4 border-0">
+
+    <!-- Encabezado -->
+    <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+      <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+        Cambios sin guardar
+      </h5>
+      <button type="button" class="btn-close" (click)="modal.dismiss()" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="modal-body text-center mt-2">
+      <i class="bi bi-box-arrow-left text-warning fs-2 pb-2"></i>
+      <p class="text-secondary fs-5 mt-2 mb-0">
+        Has realizado cambios que no se han guardado.<br>
+        ¿Seguro que quieres salir?
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer border-0 justify-content-center pb-4">
+      <button class="btn btn-outline-secondary px-4 me-2" appAutofocus (click)="modal.dismiss()">
+        Cancelar
+      </button>
+      <button class="btn btn-warning px-4" (click)="modal.close()">
+        Salir sin guardar
+      </button>
+    </div>
+
+  </div>
+</ng-template>

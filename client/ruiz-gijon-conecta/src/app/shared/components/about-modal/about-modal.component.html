@@ -1,0 +1,27 @@
+<!-- Modal Acerca de -->
+<div class="modal-content shadow rounded-4 border-0">
+    <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+        <h5 class="modal-title text-dark text-uppercase fs-6">Información de la aplicación</h5>
+        <button type="button" class="btn-close" (click)="close()" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="modal-body text-center mt-2">
+        <i class="bi bi-info-circle text-primary fs-2 pb-2"></i>
+        <p class="text-secondary fs-5 mb-0">{{ info.appName }}</p>
+        <a href="mailto:{{ info.supportEmail }}">{{ info.supportEmail }}</a><br />
+
+        <p class="text-muted small mb-0">Versión: {{ info.staticVersion }}</p>
+        <p class="text-muted small mb-0">Hash: <code>{{ commit }}</code></p>
+        <p class="text-muted small mb-2">Build: {{ build | date:'medium' }}</p>
+
+        <p class="text-muted small mt-3">
+            Desarrollado por <em>{{ info.author }}</em><br />
+            <a href="mailto:{{ info.personalEmail }}">{{ info.personalEmail }}</a><br />
+            <a [href]="info.linkedin" target="_blank">LinkedIn</a>
+        </p>
+    </div>
+
+    <div class="modal-footer border-0 justify-content-center pb-4">
+        <button class="btn btn-outline-secondary px-4" (click)="close()" appAutofocus>Cerrar</button>
+    </div>
+</div>
