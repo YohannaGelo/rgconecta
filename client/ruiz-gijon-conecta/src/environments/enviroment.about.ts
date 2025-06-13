@@ -1,9 +1,9 @@
 export const ABOUT_INFO = {
   appName: 'Ruiz Gijón Conecta',
   author: 'Yohanna Gelo',
-  supportEmail: 'soporte@iesruizgijon.es',
+  supportEmail: 'soporte@iesruizgijon.com',
   personalEmail: 'yohannagelo@gmail.com',
   linkedin: 'https://www.linkedin.com/in/yohannagelo',
-  staticVersion: 'v1.2', // opcional, la dinámica se gestiona desde version.json
+  staticVersion: 'v1.0',
   year: new Date().getFullYear()
 };
