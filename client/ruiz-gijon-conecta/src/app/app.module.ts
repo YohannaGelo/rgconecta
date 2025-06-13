@@ -51,6 +51,7 @@ import { VolverArribaComponent } from './shared/components/volver-arriba/volver-
 import { PasswordToggleDirective } from './shared/components/password-toggle.directive';
 import { AutologinComponent } from './autologin/autologin.component';
 import { AboutModalComponent } from './shared/components/about-modal/about-modal.component';
+import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
 
 
 
@@ -96,7 +97,8 @@ import { AboutModalComponent } from './shared/components/about-modal/about-modal
     VolverArribaComponent,
     PasswordToggleDirective,
     AutologinComponent,
-    AboutModalComponent
+    AboutModalComponent,
+    UpdateModalComponent
   ],
   imports: [
     BrowserModule,
