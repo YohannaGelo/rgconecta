@@ -6,31 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empresa extends Model
 {
-    protected $fillable = ['nombre', 'sector', 'web'];
+    protected $fillable = ['nombre', 'sector_id', 'web'];
 
-    public const SECTORES = [
-        'tecnologia',
-        'educacion',
-        'salud',
-        'construccion',
-        'comercio',
-        'hosteleria',
-        'finanzas',
-        'logistica',
-        'marketing',
-        'industria',
-        'otros'
-    ];
-
-    public function opiniones() {
+    public function opiniones()
+    {
         return $this->hasMany(Opinion::class);
     }
 
-    // public function ofertas() {
-    //     return $this->hasMany(Oferta::class, 'empresa_nombre', 'nombre'); // Relación por nombre
-    // }
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
+    }
 
-    public function ofertas() {
+
+    public function ofertas()
+    {
         return $this->hasMany(Oferta::class, 'empresa_id'); // Relación ESTÁNDAR por ID
     }
 }

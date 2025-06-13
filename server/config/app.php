@@ -53,6 +53,9 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:4200'),
+    'mail_contact_admin' => env('MAIL_CONTACT_ADMIN', 'juanamaria.gelo-coline@iesruizgijon.com'),
+    'clave_profesor' => env('PROFESOR_REGISTRO_CLAVE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +125,7 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+
 
 ];

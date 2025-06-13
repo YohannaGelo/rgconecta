@@ -1,0 +1,135 @@
+<div class="row d-flex flex-column mx-2" style="min-height: calc(100vh - 220px); ">
+
+    <div class="bg-white rounded-2 p-3 shadow flex-grow-1 mb-3">
+        <!-- Encabezado + botón -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
+
+            <h3 class="card-title mt-2">Mis opiniones</h3>
+            <button class="btn btn-success d-flex align-items-center px-3 py-2 mt-3 mt-sm-0"
+                (click)="irANuevaOpinion()">
+                <i class="bi bi-pencil-square me-2"></i> Dejar nueva opinión
+            </button>
+        </div>
+
+        <!-- Lista de opiniones -->
+        <ng-container *ngIf="opiniones.length > 0; else sinOpiniones">
+            <div *ngFor="let opinion of opinionesPaginadas" class="bg-light p-3 pb-2 mb-3 rounded">
+
+                <!-- Vista normal -->
+                <ng-container *ngIf="opinionEditando?.id !== opinion.id">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1 me-3">
+                            <h5 class="fw-light text-secondary mb-1">
+                                Empresa: <span class="fw-semibold fs-5">{{ opinion.empresa?.nombre }}</span>
+                            </h5>
+                            <h6 class="fw-light text-secondary">
+                                Experiencia en la empresa:
+                                <span class="fw-semibold">
+                                    {{ pluralizarAnios(opinion.anios_en_empresa) }}
+                                </span>
+                            </h6>
+                            <p class="mb-2">{{ opinion.contenido }}</p>
+
+                            <!-- Estrellas en azul/gris -->
+                            <div class="d-flex align-items-center mt-1">
+                                <ng-container *ngFor="let idx of [1,2,3,4,5]">
+                                    <i class="bi" [ngClass]="{
+                        'bi-star-fill text-primary': idx <= opinion.valoracion,
+                        'bi-star text-secondary': idx > opinion.valoracion
+                    }" style="font-size: 1.2rem; margin-right: 4px;">
+                                    </i>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex flex-sm-row mt-2 mt-md-0">
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="activarEdicion(opinion)">
+                                <i class="bi bi-pencil-fill"></i> Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                (click)="abrirModalEliminar(opinion.id, $event)">
+                                <i class="bi bi-trash3-fill"></i> Eliminar
+                            </button>
+
+                        </div>
+                    </div>
+                </ng-container>
+
+                <!-- Modo edición -->
+                <ng-container *ngIf="opinionEditando?.id === opinion.id">
+                    <h5 class="fw-light text-secondary mb-2">
+                        Empresa: <span class="fw-semibold">{{ opinion.empresa?.nombre }}</span>
+                    </h5>
+                    <h6 class="fw-light text-secondary"
+                        title="Los años se calculan a partir de la fecha de inicio y fin de tu experiencia laboral registrada en el perfil.">
+                        Experiencia en la empresa:
+                        <span class="fw-semibold">
+                            {{ pluralizarAnios(opinion.anios_en_empresa) }}
+                        </span>
+                    </h6>
+
+                    <textarea class="form-control mb-2" rows="4" [(ngModel)]="opinionEditando.contenido"></textarea>
+
+                    <!-- Estrellas editables en amarillo -->
+                    <div class="d-flex align-items-center mt-2 mb-3">
+                        <ng-container *ngFor="let idx of [1,2,3,4,5]">
+                            <i class="bi" [ngClass]="{
+                    'bi-star-fill text-warning': idx <= opinionEditando.valoracion,
+                    'bi-star text-secondary': idx > opinionEditando.valoracion
+                }" (click)="opinionEditando.valoracion = idx"
+                                style="font-size: 1.5rem; margin-right: 4px; cursor: pointer;">
+                            </i>
+                        </ng-container>
+                    </div>
+
+                    <div class="text-end">
+                        <button class="btn btn-sm btn-success me-2" (click)="guardarEdicion()">Guardar</button>
+                        <button class="btn btn-sm btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <!-- Sin opiniones -->
+        <ng-template #sinOpiniones>
+            <div class="bg-light p-3 pt-3 rounded">
+                <p class="text-secondary fst-italic">Aún no has publicado ninguna opinión.</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Flechas -->
+    <div class="mb-3 mt-auto">
+        <button class="btn btn-primary rounded-2 text-white px-3 py-2" [disabled]="paginaActual === 1"
+            (click)="paginaAnterior()">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <small class="mx-2 text-secondary text-uppercase text-muted">
+            Página {{ paginaActual }} de {{ totalPaginas > 0 ? totalPaginas : 1 }}
+        </small>
+
+        <button class="btn btn-primary rounded-2 text-white ms-2 px-3 py-2"
+            [disabled]="paginaActual >= totalPaginas || totalPaginas === 0" (click)="paginaSiguiente()">
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+
+
+</div>
+
+<!-- Modal de confirmación -->
+<ng-template #modalConfirmarEliminacion let-modal>
+    <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Eliminar opinión</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body text-center">
+        <p class="mb-0">¿Estás seguro de que deseas eliminar esta opinión?</p>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button class="btn btn-secondary" (click)="modal.dismiss()" appAutofocus>Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminar(modal)">Eliminar</button>
+    </div>
+</ng-template>

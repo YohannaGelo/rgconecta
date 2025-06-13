@@ -2,22 +2,26 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 use App\Interfaces\RoleCheck;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
+use App\Notifications\CustomVerifyEmail;
 
 /**
  * @method bool isAdmin()
  */
-class User extends Authenticatable implements RoleCheck
+class User extends Authenticatable implements MustVerifyEmail, RoleCheck
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
-
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +33,8 @@ class User extends Authenticatable implements RoleCheck
         'email',
         'password',
         'role',
+        'foto_perfil',
+        'foto_perfil_public_id',
     ];
 
     // Relaciones
@@ -45,6 +51,16 @@ class User extends Authenticatable implements RoleCheck
     public function ofertas()
     {
         return $this->hasMany(Oferta::class); // Un usuario puede publicar muchas ofertas
+    }
+
+    public function opiniones()
+    {
+        return $this->hasMany(Opinion::class);
+    }
+
+    public function preferencias()
+    {
+        return $this->hasOne(PreferenciaNotificacion::class);
     }
 
     // Verifica la foto de perfil
@@ -69,12 +85,21 @@ class User extends Authenticatable implements RoleCheck
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'email_verified_at' => 'datetime',
+    //         'password' => 'hashed',
+    //     ];
+    // }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    public function sendEmailVerificationNotification()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        $this->notify(new CustomVerifyEmail);
     }
 
     /**

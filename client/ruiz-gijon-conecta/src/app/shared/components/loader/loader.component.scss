@@ -1,0 +1,204 @@
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.541);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(1px);
+}
+
+.loading-content {
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.spinner-orbit-container {
+    position: relative;
+    width: 10dvw;
+    height: 10dvw;
+    margin: 0 auto 1.5rem;
+    min-width: 80px;
+    min-height: 80px;
+}
+
+.spinner-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    animation: rotateOrbit 2s linear infinite;
+}
+
+.orbit-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.6dvw;
+    height: 0.6dvw;
+    min-width: 8px;
+    min-height: 8px;
+    background-color: #2b4e84;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(43, 78, 132, 0.3);
+}
+
+/* Órbitas con radios distintos */
+/* Órbitas pequeñas */
+.orbit-sm .orbit-dot {
+    background-color: #999ea2;
+    /* background-color: red; */
+
+    width: 0.1dvw;
+    height: 0.1dvw;
+    transform: translate(3.5dvw, 15%);
+}
+
+.orbit-sm {
+    animation-duration: 2s;
+
+}
+
+.orbit-sm-1 .orbit-dot {
+    background-color: #1c2256;
+    /* background-color: green; */
+    width: 0.2dvw;
+    height: 0.2dvw;
+    transform: translate(2.5dvw, -100%);
+}
+
+.orbit-sm-1 {
+    animation-direction: reverse;
+    animation-duration: 2.3s;
+
+}
+
+/* Órbitas medianas */
+.orbit-md .orbit-dot {
+    background-color: #999ea2;
+    /* background-color: blue; */
+    width: 0.3dvw;
+    height: 0.3dvw;
+    transform: translate(3dvw, -30%);
+
+}
+
+.orbit-md {
+    animation-direction: reverse;
+    animation-duration: 2.5s;
+
+}
+
+.orbit-md-1 .orbit-dot {
+    background-color: #2b4e84;
+    /* background-color: yellow; */
+    width: 0.4dvw;
+    height: 0.4dvw;
+    transform: translate(2.6dvw, -100%);
+}
+
+.orbit-md-1 {
+        animation-duration: 2.1s;
+
+}
+
+/* Órbitas grandes */
+.orbit-lg .orbit-dot {
+    background-color: #1c2256;
+    /* background-color: orange; */
+
+    transform: translate(3.7dvw, 90%);
+}
+
+.orbit-lg {
+    animation-duration: 2.4s;
+
+}
+
+.orbit-lg-1 .orbit-dot {
+    background-color: #2b4e84;
+    /* background-color: pink; */
+    width: 0.5dvw;
+    height: 0.5dvw;
+    transform: translate(2.2dvw, 60%);
+}
+
+.orbit-lg-1 {
+    animation-direction: reverse;
+    animation-duration: 2.8s;
+
+}
+
+
+.spinner-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3.5dvw;
+    height: auto;
+    opacity: 0.95;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    min-width: 30px;
+}
+
+@keyframes rotateOrbit {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 992px) {
+    /* Ajustes para órbitas pequeñas */
+    .orbit-sm .orbit-dot {
+        transform: translate(6.5dvw, 25%);
+    }
+
+    .orbit-sm-1 .orbit-dot {
+        transform: translate(5.5dvw, -100%);
+    }
+
+    /* Ajustes para órbitas medianas */
+    .orbit-md .orbit-dot {
+        transform: translate(6dvw, -30%);
+    }
+
+    .orbit-md-1 .orbit-dot {
+        transform: translate(5.5dvw, -100%);
+    }
+
+    /* Ajustes para órbitas grandes */
+    .orbit-lg .orbit-dot {
+        transform: translate(7dvw, 90%);
+    }
+
+    .orbit-lg-1 .orbit-dot {
+        transform: translate(5.2dvw, 60%);
+    }
+
+    /* Logo más grande en móviles */
+    .spinner-logo {
+        width: 5.5dvw;
+        min-width: 40px;
+    }
+}

@@ -14,9 +14,9 @@ class Alumno extends Model
         'fecha_nacimiento',
         'situacion_laboral',
         'is_verified',
-        'foto_perfil',
-        'titulo_profesional',
-        'promocion'
+        // 'foto_perfil',
+        'promocion',
+        'titulo_profesional'
     ];
 
     // Relación con usuarios
@@ -30,7 +30,7 @@ class Alumno extends Model
     public function titulos()
     {
         return $this->belongsToMany(Titulo::class, 'alumno_titulo')
-            ->withPivot(['año_inicio', 'año_fin', 'institucion']);
+            ->withPivot(['fecha_inicio', 'fecha_fin', 'institucion']);
     }
 
     // Relación con experiencias
@@ -49,6 +49,6 @@ class Alumno extends Model
     // Relación con opiniones
     public function opiniones()
     {
-        return $this->hasMany(Opinion::class);
+        return $this->hasManyThrough(Opinion::class, User::class, 'id', 'user_id', 'user_id', 'id');
     }
 }

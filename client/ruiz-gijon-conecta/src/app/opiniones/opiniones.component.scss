@@ -1,0 +1,14 @@
+.formulario-resaltado {
+  box-shadow: 0 0 10px 2px #2b4f8466 !important ;
+  animation: resaltar 0.5s ease-in-out 0s 3;
+  transition: transform 0.4s, box-shadow 0.8s ease-in-out;
+}
+
+@keyframes resaltar {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
+}

@@ -16,18 +16,25 @@ class OpinionSeeder extends Seeder
     {
         Opinion::insert([
             [
-                'alumno_id' => 1,
+                'user_id' => 4,
                 'empresa_id' => 1,
-                'años_en_empresa' => 2,
+                'anios_en_empresa' => 2,
                 'contenido' => 'Excelente ambiente laboral y aprendizaje continuo.',
                 'valoracion' => 5
             ],
             [
-                'alumno_id' => 2,
-                'empresa_id' => 2,
-                'años_en_empresa' => 1,
-                'contenido' => 'Buena empresa, aunque mucha carga de trabajo en picos.',
+                'user_id' => 3,
+                'empresa_id' => 1,
+                'anios_en_empresa' => 2,
+                'contenido' => 'Muy buenas comunicaciones de transporte público',
                 'valoracion' => 4
+            ],
+            [
+                'user_id' => 5,
+                'empresa_id' => 2,
+                'anios_en_empresa' => 1,
+                'contenido' => 'Buena empresa, aunque mucha carga de trabajo en picos.',
+                'valoracion' => 3
             ]
         ]);
     }

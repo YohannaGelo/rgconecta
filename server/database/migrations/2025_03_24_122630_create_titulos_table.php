@@ -19,7 +19,8 @@ return new class extends Migration
                 'ciclo_superior',
                 'grado_universitario',
                 'master',
-                'doctorado'
+                'doctorado',
+                'otros'
             ]);
             $table->timestamps();
         });
@@ -27,8 +28,8 @@ return new class extends Migration
         Schema::create('alumno_titulo', function (Blueprint $table) {
             $table->foreignId('alumno_id')->constrained()->onDelete('cascade');
             $table->foreignId('titulo_id')->constrained()->onDelete('cascade');
-            $table->year('año_inicio'); // Año de inicio del estudio
-            $table->year('año_fin')->nullable(); // Año de finalización (nullable si está en curso)
+            $table->year('fecha_inicio'); // Año de inicio del estudio
+            $table->year('fecha_fin')->nullable(); // Año de finalización (nullable si está en curso)
             $table->string('institucion')->default('IES Ruiz Gijón'); // Ej: "Universidad de Sevilla"
             $table->timestamps();
         });

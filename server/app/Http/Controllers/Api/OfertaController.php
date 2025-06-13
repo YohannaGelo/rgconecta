@@ -7,6 +7,7 @@ use App\Models\Oferta;
 use App\Models\Empresa;
 use App\Enums\SectorEmpresa;
 use App\Models\User;
+use App\Models\Tecnologia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,19 +21,76 @@ class OfertaController extends Controller
      * Display a listing of the resource.
      */
     // Listar ofertas
-    public function index()
+    // public function index()
+    // {
+    //     return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
+    //         ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'descripcion', 'fecha_publicacion', 'fecha_expiracion'])
+    //         ->paginate(8);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Ofertas obtenidas correctamente.',
+    //         'data' => $ofertas->items(),
+    //         'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
+    //     ]);
+    // }
+    public function index(Request $request)
     {
-        return Oferta::with(['tecnologias', 'empresa:id,nombre,sector'])
-            ->select(['id', 'titulo', 'empresa_id', 'jornada', 'localizacion', 'fecha_publicacion', 'fecha_expiracion'])
-            ->paginate(8);
+        $query = Oferta::with([
+            'tecnologias',
+            'empresa:id,nombre,sector_id',
+            'empresa.sector:id,nombre'
+        ])
+            ->select([
+                'id',
+                'titulo',
+                'empresa_id',
+                'jornada',
+                'localizacion',
+                'descripcion',
+                'fecha_publicacion',
+                'fecha_expiracion'
+            ]);
+
+
+        // Filtro: localización
+        if ($request->filled('localizacion')) {
+            $query->where('localizacion', 'LIKE', '%' . $request->localizacion . '%');
+        }
+
+        // Filtro: categoría (tipo de tecnología)
+        if ($request->filled('categoria')) {
+            $query->whereHas('tecnologias', function ($q) use ($request) {
+                $q->where('tipo', $request->categoria);
+            });
+        }
+
+        // Orden por fecha
+        if ($request->filled('fecha')) {
+            if ($request->fecha === 'recientes') {
+                $query->orderByDesc('fecha_publicacion');
+            } elseif ($request->fecha === 'antiguas') {
+                $query->orderBy('fecha_publicacion');
+            }
+        } else {
+            $query->orderByDesc('fecha_publicacion'); // orden por defecto
+        }
+
+        $ofertas = $query->paginate(8);
 
         return response()->json([
             'success' => true,
             'message' => 'Ofertas obtenidas correctamente.',
             'data' => $ofertas->items(),
-            'pagination' => $ofertas->only(['total', 'current_page', 'per_page', 'last_page']),
+            'pagination' => [
+                'total' => $ofertas->total(),
+                'current_page' => $ofertas->currentPage(),
+                'per_page' => $ofertas->perPage(),
+                'last_page' => $ofertas->lastPage(),
+            ],
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -46,9 +104,11 @@ class OfertaController extends Controller
             'empresa_id' => 'nullable|integer|exists:empresas,id',
             'sobre_empresa' => 'nullable|string|required_without:empresa_id',
             // 'sector' => 'required_if:empresa_id,null|string|in:' . implode(',', SectorEmpresa::values()),
-            'sector' => ['required_if:empresa_id,null', 'string', Rule::in(Empresa::SECTORES)],
+            'sector_id' => ['required_if:empresa_id,null', 'exists:sectores,id'],
+
             'web' => 'nullable|url|required_if:empresa_id,null',
             'jornada' => 'required|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'titulacion_id' => 'nullable|exists:titulos,id',
             'anios_experiencia' => 'nullable|integer|min:0',
             'localizacion' => 'required|string',
             'tecnologias' => 'nullable|array',
@@ -58,7 +118,11 @@ class OfertaController extends Controller
         // Gestionar empresa
         $empresa = $request->empresa_id
             ? Empresa::find($request->empresa_id)
-            : Empresa::firstOrCreate(['nombre' => $validated['sobre_empresa']], ['sector' => $validated['sector'], 'web' => $validated['web'] ?? null]);
+            : Empresa::firstOrCreate(
+                ['nombre' => $validated['sobre_empresa']],
+                ['sector_id' => $validated['sector_id'], 'web' => $validated['web'] ?? null]
+            );
+
 
         // Crear oferta (con usuario autenticado)
         $oferta = Oferta::create([
@@ -75,7 +139,7 @@ class OfertaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Oferta creada correctamente.',
-            'data' => $oferta->load(['tecnologias', 'empresa'])
+            'data' => $oferta->load(['tecnologias', 'empresa', 'titulacion'])
         ], 201);
     }
 
@@ -91,7 +155,7 @@ class OfertaController extends Controller
         return response()->json([ // Añadido mensaje de éxito
             'success' => true,
             'message' => 'Oferta obtenida correctamente.',
-            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name']),
+            'data' => $oferta->load(['tecnologias', 'empresa', 'user:id,name', 'titulacion', 'empresa.sector:id,nombre']),
         ]);
     }
 
@@ -101,30 +165,88 @@ class OfertaController extends Controller
     // Actualizar una oferta
     public function update(Request $request, Oferta $oferta)
     {
-        // Validación (similar a store())
+        // Validación
         $validated = $request->validate([
             'titulo' => 'sometimes|string|max:255',
             'descripcion' => 'sometimes|string',
-            'jornada' => 'sometimes|in:completa,media_jornada,3_6_horas,menos_3_horas',
+            'jornada' => [
+                'sometimes',
+                Rule::in(['completa', 'media_jornada', '3_6_horas', 'menos_3_horas']),
+            ],
+            'titulacion_id' => 'nullable|exists:titulos,id',
             'localizacion' => 'sometimes|string',
-            'tecnologias' => 'nullable|array',
             'fecha_expiracion' => 'sometimes|date|after:today',
+            'tecnologias' => 'nullable|array',
         ]);
 
-        // Actualizar campos
+        // Actualizar campos principales
         $oferta->update($validated);
 
-        // Sync tecnologías
+        // Sincronizar tecnologías
         if ($request->has('tecnologias')) {
-            $oferta->tecnologias()->sync($request->tecnologias);
+            $oferta->tecnologias()->detach();
+
+            foreach ($request->tecnologias as $tecno) {
+                // Si es solo un ID (caso simplificado)
+                if (is_numeric($tecno)) {
+                    $oferta->tecnologias()->attach($tecno);
+                    continue;
+                }
+
+                // Crear o encontrar la tecnología por nombre/tipo
+                $tec = Tecnologia::firstOrCreate(
+                    ['nombre' => $tecno['nombre']],
+                    ['tipo' => $tecno['tipo']]
+                );
+
+                $oferta->tecnologias()->attach($tec->id, [
+                    'nivel' => $tecno['pivot']['nivel'] ?? null,
+                ]);
+            }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Oferta actualizada correctamente.',
-            'data' => $oferta->fresh()->load('tecnologias', 'empresa')
+            'data' => $oferta->fresh()->load('tecnologias', 'empresa', 'titulacion'),
         ]);
     }
+
+    /**
+     * Get unique localizaciones.
+     */
+    // Obtener localizaciones únicas
+    public function localizacionesUnicas()
+    {
+        $localizaciones = Oferta::select('localizacion')
+            ->distinct()
+            ->orderBy('localizacion')
+            ->pluck('localizacion');
+
+        return response()->json($localizaciones);
+    }
+
+    /**
+     * Get ofertas of the authenticated user.
+     */
+    // Obtener ofertas del usuario autenticado
+    public function misOfertas()
+    {
+        $userId = Auth::id();
+
+        $ofertas = Oferta::with(['empresa:id,nombre', 'tecnologias', 'titulacion'])
+            ->where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ofertas del usuario obtenidas correctamente.',
+            'data' => $ofertas,
+        ]);
+    }
+
+
 
     /**
      * Remove the specified resource from storage.
