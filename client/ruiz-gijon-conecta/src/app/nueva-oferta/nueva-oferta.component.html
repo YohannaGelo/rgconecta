@@ -139,8 +139,12 @@
                 <div class="col-md-6">
                     <label class="form-label text-uppercase text-secondary">Fecha de expiración <span
                             class="text-primary small">*</span></label>
-                    <input type="date" class="form-control" (ngModelChange)="onFormChange()"
-                        [(ngModel)]="fechaExpiracion" name="fechaExpiracion" #fechaExpiracionInput="ngModel" required />
+                    <!-- <input type="date" class="form-control" (ngModelChange)="onFormChange()"
+                        [(ngModel)]="fechaExpiracion" name="fechaExpiracion" #fechaExpiracionInput="ngModel" required /> -->
+                    <input type="date" class="form-control" [min]="maniana" [(ngModel)]="fechaExpiracion"
+                        name="fechaExpiracion" #fechaExpiracionInput="ngModel" required />
+
+
                     <div *ngIf="fechaExpiracionInput.invalid && fechaExpiracionInput.touched"
                         class="invalid-feedback d-block">
                         La fecha de expiración es obligatoria

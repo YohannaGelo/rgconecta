@@ -35,6 +35,8 @@ export class NuevaOfertaComponent implements OnInit {
   @ViewChildren(NgModel) inputs!: QueryList<NgModel>;
   @ViewChild('selEmpInput') selEmpInput!: NgModel;
 
+  maniana: string = '';
+
   titulo = '';
   descripcion = '';
   jornada = '';
@@ -112,12 +114,19 @@ export class NuevaOfertaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.maniana = this.getFechaManiana();
     this.cargarSectores();
     this.cargarEmpresas();
     this.cargarTecnologias();
     this.cargarTitulos();
     this.cargarTecnologias();
     this.cargarPreferenciasUsuario();
+  }
+
+  getFechaManiana(): string {
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    return mañana.toISOString().split('T')[0]; // formato YYYY-MM-DD
   }
 
   cargarPreferenciasUsuario(): void {
@@ -448,7 +457,15 @@ export class NuevaOfertaComponent implements OnInit {
           },
           error: (err) => {
             console.error('Error al publicar oferta:', err);
-            this.notificationService.error('Error al publicar la oferta');
+            const errores = err?.error?.errors;
+
+            if (errores?.fecha_expiracion?.length) {
+              this.notificationService.warning(
+                'La fecha de expiración debe ser posterior a hoy'
+              );
+            } else {
+              this.notificationService.error('Error al publicar la oferta');
+            }
           },
         });
     } catch (err) {
