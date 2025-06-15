@@ -243,13 +243,35 @@ git commit -m "💬 Descripción"
 git push origin develop
 ```
 
-Fusionar con squash a `main`:
+1. 🛡️ Cambia a la rama `main`:
 
-```bash
-git checkout main
-git merge --squash develop
-git commit -m "🚀 Deploy v1.3 - resumen"
-```
+   ```bash
+   git checkout main
+   ```
+
+2. 🧹 Reemplaza el contenido de `main` con el de `develop`:
+
+   ```bash
+   git reset --hard origin/develop
+   ```
+
+   > Esto iguala por completo el contenido de `main` al de `develop`, pero sin traer sus commits.
+
+3. 🧷 Prepara los cambios para un solo commit (squash):
+
+   ```bash
+   git reset --soft origin/main
+   ```
+
+   > Deja todos los archivos como si fueran cambios nuevos por confirmar.
+
+4. 📝 Crea un único commit:
+
+   ```bash
+   git commit -m "🚀 Deploy RGConecta vX.X - resumen del cambio"
+   ```
+
+5. 💡 (Opcional) Prueba que todo funcione localmente (`ng serve` o `php artisan serve`).
 
 ---
 
