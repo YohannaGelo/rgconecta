@@ -128,8 +128,12 @@
 
                             <div class="mb-2">
                                 <label class="form-label small text-secondary">Fecha expiración</label>
-                                <input type="date" [(ngModel)]="ofertaEditando.fecha_expiracion"
-                                    class="form-control form-control-sm">
+                                <!-- <input type="date" [(ngModel)]="ofertaEditando.fecha_expiracion"
+                                    class="form-control form-control-sm"> -->
+                                <input type="date" class="form-control form-control-sm" [min]="maniana" [(ngModel)]="ofertaEditando.fecha_expiracion"
+                                    name="fechaExpiracion" #fechaExpiracionInput="ngModel" required />
+
+
                             </div>
 
                             <div class="mb-2">

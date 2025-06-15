@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationService } from '../../core/services/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { RecuperarClaveComponent } from '../recuperar-clave/recuperar-clave.component';
 
 @Component({
   selector: 'app-login',
@@ -37,9 +38,17 @@ export class LoginComponent {
   }
 
   abrirModalClaveProfe(selectorModal: any): void {
-    selectorModal.close(); 
+    selectorModal.close();
     this.claveProfesor = '';
     this.modalService.open(this.modalClaveProfesor, { centered: true });
+  }
+
+  abrirModalRecuperarClave(): void {
+    this.modalService.open(RecuperarClaveComponent, {
+      centered: true,
+      backdrop: 'static',
+      size: 'md',
+    });
   }
 
   enviarClave(modal: any): void {

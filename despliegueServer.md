@@ -288,48 +288,93 @@ Crea un archivo en la raíz del proyecto local `/rgconecta/deploy.sh`:
 ```bash
 #!/bin/bash
 
-# === CONFIGURACIÓN ===
-USER=coliney
-HOST=ruizgijon.ddns.net
-REMOTE_BASE=/var/www/yohannagelo/rgconecta
-REMOTE_PUBLIC=$REMOTE_BASE/server/public
+BRANCH="develop"
+WORK_TREE="/var/www/yohannagelo/rgconecta"
+REPO_DIR="/home/coliney/repo/rgconecta.git"
 
-echo "==============================="
-echo "🚀 DEPLOYING RG CONECTA"
-echo "==============================="
+echo "### Recibiendo cambios..."
 
-# === 1. Construir Frontend Angular ===
-echo "📦 Construyendo Angular..."
-cd client/ruiz-gijon-conecta || exit
-npm install
-ng build --configuration=production
-cd ../../
+read oldrev newrev ref
+if [[ $ref = refs/heads/$BRANCH ]]; then
+  echo ">>> Desplegando rama '$BRANCH'..."
 
-# === 2. Subir Frontend ===
-echo "📤 Subiendo frontend Angular al servidor..."
-ssh $USER@$HOST "rm -rf $REMOTE_PUBLIC/*"
-rsync -avz ./client/ruiz-gijon-conecta/dist/ruiz-gijon-conecta/browser/ \
-  $USER@$HOST:$REMOTE_PUBLIC/
+  if [ ! -d "$WORK_TREE/.git" ]; then
+    git clone --branch $BRANCH $REPO_DIR $WORK_TREE
+  else
+    git --work-tree=$WORK_TREE --git-dir=$REPO_DIR checkout -f $BRANCH
+  fi
 
-# === 3. Subir Backend Laravel ===
-echo "📤 Subiendo backend Laravel..."
-rsync -avz --delete \
-  --exclude vendor \
-  --exclude node_modules \
-  ./server/ $USER@$HOST:$REMOTE_BASE/server/
-
-# === 4. Ejecutar configuración en servidor ===
-echo "🔧 Configurando backend en el servidor..."
-ssh $USER@$HOST << EOF
-  cd $REMOTE_BASE/server
+  echo ">>> Backend (Laravel)..."
+  cd $WORK_TREE/server
   composer install --no-dev --optimize-autoloader
-  npm install
-  npm run build
-  rm -rf node_modules
-  chmod -R 775 storage/ bootstrap/cache/
-EOF
+  php artisan migrate --force
 
-echo "✅ DEPLOY COMPLETADO CON ÉXITO"
+  # Limpieza y recompilación de caché
+  php artisan optimize:clear
+  php artisan migrate --force
+  php artisan optimize
+
+  # Permisos
+  chmod -R 777 storage bootstrap/cache
+
+
+
+### ✅ BLOQUE NUEVO: version.json con versión manual y hash
+echo ">>> Generando archivo de versión..."
+
+cd $WORK_TREE
+
+# Obtener hash del último commit
+COMMIT_HASH=$(git --git-dir=$REPO_DIR rev-parse --short HEAD)
+
+# Obtener mensaje
+COMMIT_MESSAGE=$(git --git-dir=$REPO_DIR log -1 --pretty=%s)
+
+# Obtener fecha actual
+BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')
+
+# Leer versión actual si existe (elige uno de estos métodos)
+VERSION_FILE="$WORK_TREE/client/ruiz-gijon-conecta/src/assets/version.json"
+
+# Crear el archivo JSON con toda la info
+echo "{
+  \"commitHash\": \"$COMMIT_HASH\",
+  \"commitMessage\": \"$COMMIT_MESSAGE\",
+  \"buildDate\": \"$BUILD_DATE\"
+}" > "$VERSION_FILE"
+
+echo "✅ version.json generado con:"
+cat "$VERSION_FILE"
+### FIN BLOQUE NUEVO
+
+
+  echo ">>> Frontend (Angular)..."
+  cd $WORK_TREE/client/ruiz-gijon-conecta
+  npm install
+  ng build --configuration=production
+
+   echo ">>> Copiando build de Angular a raíz del proyecto..."
+   if [ -d "dist/ruiz-gijon-conecta" ]; then
+        echo "✅ Build generado, copiando a raíz del proyecto..."
+        cp -r dist/ruiz-gijon-conecta/browser/* $WORK_TREE/
+   else
+        echo "❌ ERROR: No se encontró el build de Angular. Revisa 'outputPath'."
+   fi
+
+
+
+
+
+  echo ">>> Corrigiendo permisos finales..."
+  chmod -R 755 $WORK_TREE
+
+  # Volvemos a ajustar los permisos del server
+  cd $WORK_TREE/server
+  chmod -R 777 storage bootstrap/cache
+
+fi
+
+echo "✅ Despliegue completo."
 
 ```
 

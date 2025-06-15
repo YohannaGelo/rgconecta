@@ -21,6 +21,8 @@ export class OfertasComponent implements OnInit {
 
   hoy = new Date();
 
+  maniana: string = '';
+
   private panel: PanelComponent;
 
   constructor(
@@ -32,21 +34,27 @@ export class OfertasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.maniana = this.getFechaManiana();
     this.cargarOfertas();
   }
 
-formatearFechas(ofertas: any[]): any[] {
-  return ofertas.map((oferta) => ({
-    ...oferta,
-    fecha_expiracion: this.esFechaValida(oferta.fecha_expiracion)
-      ? new Date(oferta.fecha_expiracion).toISOString().slice(0, 10)
-      : null,
-    fecha_publicacion: this.esFechaValida(oferta.fecha_publicacion)
-      ? new Date(oferta.fecha_publicacion).toISOString().slice(0, 10)
-      : null,
-  }));
-}
+  getFechaManiana(): string {
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    return mañana.toISOString().split('T')[0]; // formato YYYY-MM-DD
+  }
 
+  formatearFechas(ofertas: any[]): any[] {
+    return ofertas.map((oferta) => ({
+      ...oferta,
+      fecha_expiracion: this.esFechaValida(oferta.fecha_expiracion)
+        ? new Date(oferta.fecha_expiracion).toISOString().slice(0, 10)
+        : null,
+      fecha_publicacion: this.esFechaValida(oferta.fecha_publicacion)
+        ? new Date(oferta.fecha_publicacion).toISOString().slice(0, 10)
+        : null,
+    }));
+  }
 
   private esFechaValida(fecha: any): boolean {
     return !!fecha && !isNaN(Date.parse(fecha));
@@ -122,8 +130,16 @@ formatearFechas(ofertas: any[]): any[] {
         this.cargarOfertas();
       },
       error: (err) => {
-        console.error('Error actualizando oferta', err);
-        this.notificationService.error('Error al actualizar la oferta');
+        console.error('Error al publicar oferta:', err);
+        const errores = err?.error?.errors;
+
+        if (errores?.fecha_expiracion?.length) {
+          this.notificationService.warning(
+            'La fecha de expiración debe ser posterior a hoy'
+          );
+        } else {
+          this.notificationService.error('Error al publicar la oferta');
+        }
       },
     });
   }

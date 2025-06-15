@@ -7,6 +7,7 @@ import { UpdateModalComponent } from '../../shared/components/update-modal/updat
 @Injectable({ providedIn: 'root' })
 export class VersionService {
   private currentHash: string = '';
+  private commitMessage = '';
   private buildDate: string = '';
 
   constructor(private http: HttpClient, private modalService: NgbModal) {}
@@ -15,19 +16,11 @@ export class VersionService {
     const url = `${environment.frontUrl}/assets/version.json?cb=${Date.now()}`;
 
     this.http
-      .get<{ commitHash: string; buildDate: string }>(url, {
+      .get<{ commitHash: string; commitMessage: string;  buildDate: string }>(url, {
         headers: { 'Cache-Control': 'no-cache' },
       })
       .subscribe({
-        next: ({ commitHash, buildDate }) => {
-          // if (this.currentHash && this.currentHash !== commitHash) {
-          //   const shouldReload = confirm(
-          //     '⚡ Nueva versión disponible. ¿Actualizar ahora?'
-          //   );
-          //   if (shouldReload) {
-          //     window.location.reload();
-          //   }
-          // }
+        next: ({ commitHash, commitMessage, buildDate }) => {
 
           if (this.currentHash && this.currentHash !== commitHash) {
             const modalRef = this.modalService.open(UpdateModalComponent, {
@@ -38,11 +31,10 @@ export class VersionService {
             // modalRef.componentInstance.commitLink = `https://github.com/YohannaGelo/rgconecta/commits/${commitHash}`; // 🔁 Sustituye con tu URL real
             modalRef.componentInstance.buildDate = buildDate;
 
-            // this.currentHash = commitHash;
-            // this.buildDate = buildDate;
           }
 
           this.currentHash = commitHash;
+          this.commitMessage = commitMessage;
           this.buildDate = buildDate;
         },
         error: () => {
@@ -53,6 +45,10 @@ export class VersionService {
 
   getHash(): string {
     return this.currentHash;
+  }
+
+  getCommitMessage(): string {
+    return this.commitMessage;
   }
 
   getBuildDate(): string {

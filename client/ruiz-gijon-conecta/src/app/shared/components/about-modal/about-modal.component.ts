@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ABOUT_INFO } from '../../../../environments/enviroment.about';
 import { VersionService } from '../../../core/services/version.service';
@@ -15,6 +15,10 @@ export class AboutModalComponent {
   build = '';
   info = ABOUT_INFO;
 
+  mostrarCambios = false;
+  @Input() commitHash: string = '';
+  @Input() commitMessage: string = '';
+
   constructor(
     public activeModal: NgbActiveModal,
     private versionService: VersionService
@@ -22,7 +26,18 @@ export class AboutModalComponent {
 
   ngOnInit(): void {
     this.commit = this.versionService.getHash();
+    this.commitMessage = this.versionService.getCommitMessage();
     this.build = this.versionService.getBuildDate();
+
+  }
+
+  get commitLink(): string {
+    return `https://github.com/YohannaGelo/rgconecta/commit/${this.commit}`;
+  }
+
+  get commitMessageFormatted(): string {
+    // Añade salto de línea después de cada punto + espacio
+    return this.commitMessage.replace(/\. /g, '.\n');
   }
 
   close() {

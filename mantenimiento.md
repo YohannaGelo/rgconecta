@@ -1,4 +1,4 @@
-## 🧰 Guía de Mantenimiento y Despliegue - RG Conecta
+## Mantenimineto - RG Conecta
 
 ### ✅ 1. **Actualizar y trabajar en local**
 
@@ -43,7 +43,7 @@ client/ruiz-gijon-conecta/src/environments/environment.about.ts
 export const ABOUT_INFO = {
   appName: "Ruiz Gijón Conecta",
   version: "v.1.3", // ⬅️ actualiza aquí si es necesario
-  supportEmail: "soporte@iesruizgijon.es",
+  supportEmail: "juanamaria.gelo-coline@iesruizgijon.com",
   personalEmail: "yohannagelo@gmail.com",
   author: "Yohanna Gelo",
   linkedin: "https://www.linkedin.com/in/yohannagelo",
@@ -77,7 +77,7 @@ Así, la versión visual que aparece en el modal de "Acerca de" y otros puntos p
 
 ---
 
-### 🔀 3. **Fusionar cambios en `main` (modo limpio)**
+### 🔀 3. **Fusionar cambios en `main`**
 
 1. 🛡️ Cambia a la rama `main`:
 
@@ -85,29 +85,14 @@ Así, la versión visual que aparece en el modal de "Acerca de" y otros puntos p
    git checkout main
    ```
 
-2. 🧹 Reemplaza el contenido de `main` con el de `develop`:
+2. 🔃 Fusiona `develop` de forma limpia:
 
    ```bash
-   git reset --hard origin/develop
+   git merge --squash develop
+   git commit -m "🚀 Deploy versión X.X - resumen del cambio"
    ```
 
-   > Esto iguala por completo el contenido de `main` al de `develop`, pero sin traer sus commits.
-
-3. 🧷 Prepara los cambios para un solo commit (squash):
-
-   ```bash
-   git reset --soft origin/main
-   ```
-
-   > Deja todos los archivos como si fueran cambios nuevos por confirmar.
-
-4. 📝 Crea un único commit:
-
-   ```bash
-   git commit -m "🚀 Deploy RGConecta vX.X - resumen del cambio"
-   ```
-
-5. 💡 (Opcional) Prueba que todo funcione localmente (`ng serve` o `php artisan serve`).
+3. 💡 Opcional: puedes probar el proyecto localmente en `main` si lo deseas (`ng serve` o `php artisan serve`).
 
 ---
 

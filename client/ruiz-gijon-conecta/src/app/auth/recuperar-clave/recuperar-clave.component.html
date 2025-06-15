@@ -1,0 +1,54 @@
+<div class="modal-content shadow rounded-4 border-0">
+
+    <!-- Header -->
+    <div class="modal-header bg-light border-bottom-0 rounded-top-4 py-2">
+        <h5 class="modal-title text-dark d-flex align-items-center text-uppercase fs-6">
+            <i class="bi bi-key me-2 text-primary"></i> Recuperar contraseña
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrar()" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="modal-body text-center mt-2">
+
+        <ng-container *ngIf="!enviado; else enviadoTemplate">
+            <p class="text-secondary fs-6 mb-4">
+                Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.
+            </p>
+
+            <form (ngSubmit)="enviarEnlace()" #form="ngForm" class="px-4">
+                <div class="mb-3 text-start">
+                    <label class="form-label text-uppercase text-secondary">Correo electrónico</label>
+                    <input type="email" class="form-control text-center shadow-sm" [(ngModel)]="email" name="email"
+                        required email />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-3" [disabled]="form.invalid || cargando">
+                    {{ cargando ? 'Enviando...' : 'Enviar enlace' }}
+                </button>
+            </form>
+        </ng-container>
+
+        <ng-template #enviadoTemplate>
+            <div class="text-center my-4">
+                <i class="bi bi-envelope-check text-success fs-1 mb-3"></i>
+                <p class="text-secondary fs-5 mb-2">
+                    Enlace enviado correctamente.
+                </p>
+                <p class="text-muted small mb-0">Revisa tu correo electrónico.</p>
+                <button class="btn btn-outline-primary mt-4 px-4" (click)="cerrar()">
+                    Volver
+                </button>
+            </div>
+        </ng-template>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer border-0 justify-content-center pb-4" *ngIf="!enviado">
+        <button class="btn btn-outline-secondary px-4 me-2" (click)="cerrar()" appAutofocus>
+            Cancelar
+        </button>
+    </div>
+
+</div>

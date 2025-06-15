@@ -32,6 +32,8 @@ use App\Http\Controllers\Admin\SectorController as AdminSectorController;
 use Illuminate\Auth\Events\Verified;
 use App\Models\User;
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,7 +80,8 @@ Route::post('/contacto', [ContactoController::class, 'enviar']);
 
 Route::post('/verificar-clave-profe', [AuthController::class, 'verificarClaveProfe']);
 
-
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 
 // Rutas PROTEGIDAS
 Route::middleware('auth:sanctum')->group(function () {
