@@ -1,4 +1,4 @@
-## 🧰 Guía de Mantenimiento y Despliegue - RG Conecta
+## Mantenimineto - RG Conecta
 
 ### ✅ 1. **Actualizar y trabajar en local**
 
@@ -43,7 +43,7 @@ client/ruiz-gijon-conecta/src/environments/environment.about.ts
 export const ABOUT_INFO = {
   appName: "Ruiz Gijón Conecta",
   version: "v.1.3", // ⬅️ actualiza aquí si es necesario
-  supportEmail: "soporte@iesruizgijon.es",
+  supportEmail: "juanamaria.gelo-coline@iesruizgijon.com",
   personalEmail: "yohannagelo@gmail.com",
   author: "Yohanna Gelo",
   linkedin: "https://www.linkedin.com/in/yohannagelo",
