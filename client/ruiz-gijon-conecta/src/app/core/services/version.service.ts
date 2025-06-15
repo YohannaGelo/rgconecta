@@ -7,6 +7,7 @@ import { UpdateModalComponent } from '../../shared/components/update-modal/updat
 @Injectable({ providedIn: 'root' })
 export class VersionService {
   private currentHash: string = '';
+  private commitMessage = '';
   private buildDate: string = '';
 
   constructor(private http: HttpClient, private modalService: NgbModal) {}
@@ -53,6 +54,10 @@ export class VersionService {
 
   getHash(): string {
     return this.currentHash;
+  }
+
+  getCommitMessage(): string {
+    return this.commitMessage;
   }
 
   getBuildDate(): string {

@@ -14,20 +14,25 @@
 
           <div class="form-group mt-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input type="password" appPasswordToggle id="password" class="form-control" placeholder="Introduce tu contraseña"
-              [(ngModel)]="password" name="password" required minlength="6" />
+            <input type="password" appPasswordToggle id="password" class="form-control"
+              placeholder="Introduce tu contraseña" [(ngModel)]="password" name="password" required minlength="6" />
           </div>
 
           <button type="submit" class="btn btn-primary w-100 mt-4 py-2" [disabled]="!loginForm.form.valid">
             Iniciar sesión
           </button>
 
-          <div class="form-check form-switch mt-3 d-flex justify-content-end">
-            <input class="form-check-input me-3" type="checkbox" id="recordarme" style="cursor: pointer;"
-              [(ngModel)]="recordarme" name="recordarme">
-            <label class="form-check-label" for="recordarme">Recordarme</label>
-          </div>
 
+          <div class="d-flex flex-column align-items-center flex-sm-row justify-content-sm-between  mt-3 ">
+            <a (click)="abrirModalRecuperarClave()" class="text-decoration-none text-secondary"  style="cursor: pointer;">
+              ¿Has olvidado tu contraseña?
+            </a>
+            <div class="form-check form-switch d-flex justify-content-end mt-1 mt-sm-0">
+              <input class="form-check-input me-3" type="checkbox" id="recordarme" style="cursor: pointer;"
+                [(ngModel)]="recordarme" name="recordarme">
+              <label class="form-check-label" for="recordarme">Recordarme</label>
+            </div>
+          </div>
 
           <div class="text-center mt-3">
             <!-- <p class="mb-0">¿No tienes una cuenta? <a routerLink="/registro" class="text-primary">Regístrate aquí</a></p> -->
@@ -66,8 +71,7 @@
           👨‍🎓 Antiguo Alumno
         </button>
 
-        <button class="btn btn-outline-success px-4 py-2 rounded-pill" 
-          (click)="abrirModalClaveProfe(modal)">
+        <button class="btn btn-outline-success px-4 py-2 rounded-pill" (click)="abrirModalClaveProfe(modal)">
           👩‍🏫 Profesor
         </button>
       </div>

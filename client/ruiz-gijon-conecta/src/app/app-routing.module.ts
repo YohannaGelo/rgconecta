@@ -34,6 +34,7 @@ import { AyudaComponent } from './ayuda/ayuda.component';
 import { VerificarComponent } from './auth/verificar/verificar.component';
 import { ProfeClaveGuard } from './core/guards/profe-clave.guard';
 import { AutologinComponent } from './autologin/autologin.component';
+import { ResetearClaveComponent } from './auth/resetear-clave/resetear-clave.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -102,6 +103,10 @@ const routes: Routes = [
   { path: 'ayuda', component: AyudaComponent },
   { path: 'verificar', component: VerificarComponent }, // Ruta para verificar el email
   { path: 'autologin', component: AutologinComponent }, // sin `canActivate`
+  {
+    path: 'resetear-clave',
+    component: ResetearClaveComponent,
+  },
 
   {
     path: 'admin',

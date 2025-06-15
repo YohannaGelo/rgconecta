@@ -57,6 +57,8 @@ export class OfertasUsuarioComponent implements OnInit {
 
   titulosDisponibles: any[] = [];
 
+  maniana: string = '';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -66,8 +68,15 @@ export class OfertasUsuarioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.maniana = this.getFechaManiana();
     this.cargarMisOfertas();
     this.cargarTitulos();
+  }
+
+  getFechaManiana(): string {
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    return mañana.toISOString().split('T')[0]; // formato YYYY-MM-DD
   }
 
   cargarTitulos(): void {
@@ -138,8 +147,16 @@ export class OfertasUsuarioComponent implements OnInit {
           this.cargarMisOfertas(); // recarga la lista tras actualizar
         },
         error: (err) => {
-          console.error('❌ Error al actualizar oferta:', err);
-          this.notificationService.error('Error al actualizar la oferta');
+          console.error('Error al publicar oferta:', err);
+          const errores = err?.error?.errors;
+
+          if (errores?.fecha_expiracion?.length) {
+            this.notificationService.warning(
+              'La fecha de expiración debe ser posterior a hoy'
+            );
+          } else {
+            this.notificationService.error('Error al publicar la oferta');
+          }
         },
       });
   }

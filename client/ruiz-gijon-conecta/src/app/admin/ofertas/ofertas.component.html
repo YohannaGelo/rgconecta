@@ -83,7 +83,8 @@
                             <span class="text-secondary">Disponible hasta:</span> {{ oferta.fecha_expiracion | date:
                             'dd-MM-yyyy' }}
                         </span>
-                        <span *ngIf="oferta.fecha_expiracion <= hoy" class="badge bg-danger ms-2 rounded-pill">Finalizada</span>
+                        <span *ngIf="oferta.fecha_expiracion <= hoy"
+                            class="badge bg-danger ms-2 rounded-pill">Finalizada</span>
                     </p>
 
                     <div *ngIf="oferta.tecnologias?.length > 0">
@@ -100,8 +101,10 @@
                         <input type="text" [(ngModel)]="editando.titulo" class="form-control form-control-sm mb-2" />
                         <input type="text" [(ngModel)]="editando.localizacion"
                             class="form-control form-control-sm mb-2" />
-                        <input type="date" [(ngModel)]="editando.fecha_expiracion"
-                            class="form-control form-control-sm mb-2" name="fecha_expiracion" />
+                        <!-- <input type="date" [(ngModel)]="editando.fecha_expiracion"
+                            class="form-control form-control-sm mb-2" name="fecha_expiracion" /> -->
+                        <input type="date" class="form-control form-control-sm mb-2" [min]="maniana" [(ngModel)]="editando.fecha_expiracion"
+                            name="fechaExpiracion" #fechaExpiracionInput="ngModel" required />
 
                         <select [(ngModel)]="editando.jornada" class="form-select form-select-sm mb-2">
                             <option value="completa">Jornada completa</option>
@@ -152,11 +155,14 @@
                                 [(ngModel)]="editando.localizacion" />
                         </td>
                         <td>
-                        
-                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }} <span *ngIf="oferta.fecha_expiracion <= hoy" class="badge bg-danger ms-2 rounded-pill">Fin.</span>
+
+                            <div *ngIf="editando?.id !== oferta.id">{{ oferta.fecha_expiracion | date: 'dd-MM-yyyy' }}
+                                <span *ngIf="oferta.fecha_expiracion <= hoy"
+                                    class="badge bg-danger ms-2 rounded-pill">Fin.</span>
                             </div>
-                            <input *ngIf="editando?.id === oferta.id" type="date" class="form-control form-control-sm"
-                                [(ngModel)]="editando.fecha_expiracion" />
+                            <input *ngIf="editando?.id === oferta.id" type="date"  [min]="maniana" class="form-control form-control-sm"
+                                [(ngModel)]="editando.fecha_expiracion" #fechaExpiracionInput="ngModel" />
+
                         </td>
                         <td class="d-flex justify-content-end gap-2 flex-wrap">
                             <ng-container *ngIf="editando?.id !== oferta.id">

@@ -11,10 +11,12 @@ export class UpdateModalComponent {
   @Input() commitHash: string = '';
   @Input() buildDate: string = '';
 
+  mostrarCambios = false;
+  @Input() commitMessage: string = '';
+
   constructor(public modal: NgbActiveModal) {}
 
   get commitLink(): string {
-
     return `https://github.com/YohannaGelo/rgconecta/commit/${this.commitHash}`;
   }
 

@@ -52,6 +52,8 @@ import { PasswordToggleDirective } from './shared/components/password-toggle.dir
 import { AutologinComponent } from './autologin/autologin.component';
 import { AboutModalComponent } from './shared/components/about-modal/about-modal.component';
 import { UpdateModalComponent } from './shared/components/update-modal/update-modal.component';
+import { RecuperarClaveComponent } from './auth/recuperar-clave/recuperar-clave.component';
+import { ResetearClaveComponent } from './auth/resetear-clave/resetear-clave.component';
 
 
 
@@ -98,7 +100,9 @@ import { UpdateModalComponent } from './shared/components/update-modal/update-mo
     PasswordToggleDirective,
     AutologinComponent,
     AboutModalComponent,
-    UpdateModalComponent
+    UpdateModalComponent,
+    RecuperarClaveComponent,
+    ResetearClaveComponent
   ],
   imports: [
     BrowserModule,

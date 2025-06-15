@@ -13,6 +13,19 @@
             <a [href]="commitLink" target="_blank"><code>{{ commitHash }}</code></a><br />
             Fecha de compilación: {{ buildDate | date:'medium' }}
         </p>
+        <a class="small text-decoration-underline text-muted d-inline-block " style="cursor:pointer"
+            (click)="mostrarCambios = !mostrarCambios">
+            {{ mostrarCambios ? 'Ocultar últimos cambios' : 'Mostrar últimos cambios' }}
+        </a>
+    </div>
+
+    <div *ngIf="mostrarCambios" class="alert alert-light text-start mt-2 mx-3">
+        <code>
+            <i class="bi bi-git me-2"></i>
+            <strong>Último commit:</strong><br />
+            <em class="text-dark">{{ commitMessage }} Aquí el último cambio</em>
+            </code>
+            
     </div>
 
     <div class="modal-footer border-0 justify-content-center pb-4">
