@@ -26,11 +26,12 @@ export class AboutModalComponent {
 
   ngOnInit(): void {
     this.commit = this.versionService.getHash();
+    this.commitMessage = this.versionService.getCommitMessage();
     this.build = this.versionService.getBuildDate();
   }
 
   get commitLink(): string {
-    return `https://github.com/YohannaGelo/rgconecta/commit/${this.commitHash}`;
+    return `https://github.com/YohannaGelo/rgconecta/commit/${this.commit}`;
   }
 
   close() {
