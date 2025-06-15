@@ -28,7 +28,7 @@ export class UpdateModalComponent {
     return `https://github.com/YohannaGelo/rgconecta/commit/${this.commitHash}`;
   }
 
-    get commitMessageFormatted(): string {
+  get commitMessageFormatted(): string {
     // Añade salto de línea después de cada punto + espacio
     return this.commitMessage.replace(/\. /g, '.\n');
   }
