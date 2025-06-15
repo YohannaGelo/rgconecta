@@ -28,10 +28,16 @@ export class AboutModalComponent {
     this.commit = this.versionService.getHash();
     this.commitMessage = this.versionService.getCommitMessage();
     this.build = this.versionService.getBuildDate();
+
   }
 
   get commitLink(): string {
     return `https://github.com/YohannaGelo/rgconecta/commit/${this.commit}`;
+  }
+
+  get commitMessageFormatted(): string {
+    // Añade salto de línea después de cada punto + espacio
+    return this.commitMessage.replace(/\. /g, '.\n');
   }
 
   close() {
